@@ -1,0 +1,28 @@
+﻿{
+    "dSkillList": [
+        {
+            "id": 0,
+            "name": "移动",
+            "directionid": 1,
+            "desc":"移动"
+        },
+        {
+            "id": 1,
+            "name": "探索",
+            "directionid": 2,
+            "desc":"探索"
+        },
+        {
+            "id": 2,
+            "name": "攻击",
+            "directionid": 3,
+            "desc":"攻击"
+        },
+        {
+            "id": 3,
+            "name": "防御",
+            "directionid": 4,
+            "desc":"防御"
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+﻿{
+    "dRoleList": [
+        {
+            "id": 0,
+            "name": "未知角色",
+            "original_skills": [
+                0,1
+            ]
+        }
+    ]
+}
