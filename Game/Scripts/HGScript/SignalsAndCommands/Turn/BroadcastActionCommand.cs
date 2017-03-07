@@ -7,17 +7,32 @@ using SimpleJson;
 
 public class BroadcastActionCommand:Command
 {
+//    [Inject]
+//    public RoleActionList roleActionList { get; set; }
     [Inject]
-    public JsonArray actionList { get; set; }
+    public JsonArray actionListJS{ get; set;}
 
     [Inject]
     public BootstrapView bootstrapView { get; set; }
 
     [Inject]
-    public DoActionAnimSignal doActionAnimSignal { get; set; }
+    public ResourceService resourceService{ get; set;}
+
+    [Inject]
+    public DoRoleActionAnimSignal doActionAnimSignal { get; set; }
+
+    [Inject]
+    public DoBuildingActionAnimSignal doBuildingActionAnimSignal { get; set; }
 
     [Inject]
     public DoMapUpdateSignal doMapUpdateSignal { get; set; }
+
+    [Inject]
+    public DoBananaUpdateSignal doBananaUpdateSignal{ get; set;}
+
+    [Inject]
+    public DoSightzoonUpdateSignal doSightzoonUpdateSignal{ get; set;}
+
 
     [Inject]
     public ActionAnimStartSignal actionAnimStartSignal { get; set; }
@@ -28,64 +43,407 @@ public class BroadcastActionCommand:Command
     [Inject]
     public GameInfo gameInfo { get; set; }
 
-    RoleAction roleAction;
+    [Inject]
+    public PlayerFailQueue playerFailQueue{ get; set;}
+
+    [Inject]
+    public SPlayerInfo sPlayerInfo{ get; set;}
+    [Inject]
+    public DGameDataCollection dGameDataCollection{ get; set;}
+
+
+    //回合动画时间
+    float step_time=0.5f;
+
 
     public override void Execute()
     {
-        Debug.Log(actionList.ToString());
-        roleAction = new RoleAction();
-        roleAction.InitFromJson(actionList);
         bootstrapView.StartCoroutine(updateDataAndBroadcaseAction());
+
+
+//        for (int step = 0; step < 7; step++)
+//        {
+//            switch (step)
+//            {
+//                case 0:
+//                    break;
+//                case 1:
+//                case 2:
+//                case 3:
+//                case 4:
+//                    foreach (int role_id in roleActionList.addRolesList[step-1].Keys)
+//                    {
+//                        gameInfo.role_dic.Add(role_id, roleActionList.addRolesList[step - 1][role_id]);
+//                    }
+//
+//                    foreach (int role_id in roleActionList.deleteRolesList[step-1])
+//                    {
+//                        gameInfo.role_dic.Remove(role_id);
+//                    }
+//
+//                    foreach (int role_id in roleActionList.moveList[step-1].Keys)
+//                    {
+//                        gameInfo.role_dic[role_id].pos_id = roleActionList.moveList[step - 1][role_id];
+//                    }
+//
+//                    break;
+//                case 5:
+//                    break;
+//                case 6:
+//                    break;
+//            }
+//        }
+
     }
 
     IEnumerator updateDataAndBroadcaseAction()
     {
-        actionAnimStartSignal.Dispatch();
+//        actionAnimStartSignal.Dispatch();
 
         gameInfo.current_turn++;
 
-        for (int step = 0; step < 7; step++)
+
+
+        for (int step = 0; step < actionListJS.Count; step++)
         {
+            Debug.Log(step);
+            JsonObject stepJS = actionListJS[step] as JsonObject;
             switch (step)
             {
                 case 0:
-
+                    yield return new WaitForSeconds(0);
                     break;
+                //移动
                 case 1:
                 case 2:
-                case 3:
+                
+                //角色死亡
                 case 4:
-                    foreach(int roleid in roleAction.moveList[step].Keys)
+                //撤退
+                case 5:
+                //特殊指令中的角色、建筑、视野变化
+                case 7:
+                    DoSightModefiedAction(stepJS);
+//                    int index;
+//                    if (step != 4)
+//                        index = step;
+//                    else
+//                        index = 3;
+//                    foreach (string role_id in roleActionList.addRolesList[index].Keys)
+//                    {
+//                        gameInfo.role_dic.Add(role_id, roleActionList.addRolesList[index][role_id]);
+//
+//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+//                        doActionAnimSignalParam.type = 1;
+//                        doActionAnimSignalParam.role_id = role_id;
+//                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+//
+//                        GameObject roleobj = resourceService.Spawn("role/" + gameInfo.role_dic[role_id].role_did);
+//                        roleobj.name = "role_" + role_id;
+//                    }
+//
+//                    foreach (string role_id in roleActionList.deleteRolesList[index])
+//                    {
+//                        gameInfo.role_dic.Remove(role_id);
+//
+//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+//                        doActionAnimSignalParam.type = 2;
+//                        doActionAnimSignalParam.role_id = role_id;
+//                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+//                    }
+//
+//                    foreach (string role_id in roleActionList.moveList[index].Keys)
+//                    {
+//                        gameInfo.role_dic[role_id].pos_id = roleActionList.moveList[index][role_id];
+//
+//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+//                        doActionAnimSignalParam.type = 0;
+//                        doActionAnimSignalParam.role_id = role_id;
+//                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+//                    }
+//
+//                    foreach (int pos_id in roleActionList.landformList[index].Keys)
+//                    {
+//                        gameInfo.map_info.landform[pos_id] = roleActionList.landformList[index][pos_id];
+//                    }
+//
+//                    foreach (int pos_id in roleActionList.resourceList[index].Keys)
+//                    {
+//                        gameInfo.map_info.resource[pos_id] = roleActionList.resourceList[index][pos_id];
+//                    }
+//
+//                    DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
+//                    doMapUpdateSignalParam.landformList = roleActionList.landformList[index];
+//                    doMapUpdateSignalParam.resourceList = roleActionList.resourceList[index];
+//                    doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
+//
+//                    doSightzoonUpdateSignal.Dispatch(roleActionList.landformList[index]);
+////                    Debug.Log("map dispatch!");
+//                    if (roleActionList.moveList[index].Count == 0)
+//                    {
+//                        yield return new WaitForSeconds(0);
+//                    }
+//                    else
+//                    {
+//                        yield return new WaitForSeconds(step_time);
+//                    }
+                        yield return new WaitForSeconds(step_time);
+                    break;
+                //掉血
+                case 3:
+                    JsonObject damageJS=stepJS["damage"] as JsonObject;
+                    foreach (string role_id in damageJS.Keys)
                     {
-                        gameInfo.role_dic[roleid].pos_id = roleAction.moveList[step][roleid];
+                        int damage = int.Parse(damageJS[role_id].ToString());
+                        gameInfo.role_dic[role_id].blood_sugar -= damage;
 
-                        DoActionAnimSignal.Param doActionAnimSignalParam = new DoActionAnimSignal.Param();
-                        doActionAnimSignalParam.type = 0;
-                        doActionAnimSignalParam.roleid = roleid;
-                        //doActionAnimSignalParam.pos_id = gameInfo.role_dic[roleid].pos_id;
+                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        doActionAnimSignalParam.type = 3;
+                        doActionAnimSignalParam.role_id = role_id;
+                        doActionAnimSignalParam.value = damage;
                         doActionAnimSignal.Dispatch(doActionAnimSignalParam);
                     }
-
-                    DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
-                    doMapUpdateSignalParam.landformList = roleAction.landformList[step];
-                    doMapUpdateSignalParam.resourceList = roleAction.resourceList[step];
-                    doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
-                    Debug.Log("map dispatch!");
-                    
+                    yield return new WaitForSeconds(step_time);
                     break;
-                case 5:
-                    break;
+                //回血
                 case 6:
+                    JsonObject recoveryJS=stepJS["recovery"] as JsonObject;
+                    foreach (string role_id in recoveryJS.Keys)
+                    {
+                        int recovery=int.Parse(recoveryJS[role_id].ToString());
+                        gameInfo.role_dic[role_id].blood_sugar += recovery;
+
+                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        doActionAnimSignalParam.type = 4;
+                        doActionAnimSignalParam.role_id = role_id;
+                        doActionAnimSignalParam.value = recovery;
+                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                    }
+                    yield return new WaitForSeconds(step_time);
+                    break;
+                //不造成角色、建筑、视野变化的指令
+                case 8:
+                    foreach (string role_id in (stepJS["action"] as JsonObject).Keys)
+                    {
+                        JsonObject turnActionJS = (stepJS["action"] as JsonObject)[role_id] as JsonObject;
+
+                        int direction_did = int.Parse(turnActionJS["direction_did"].ToString());
+                        JsonObject param = turnActionJS["param"] as JsonObject;
+                        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+//                        RoleActionList.TurnAction turnAction = roleActionList.turnActionDic[role_id];
+                        switch (direction_did)
+                        {
+                            //采集
+                            case 3:
+                                int banana = int.Parse(param["cost"].ToString());
+                                gameInfo.map_info.resource[roleInfo.pos_id] = 2;
+
+                                if (roleInfo.uid == sPlayerInfo.uid)
+                                {
+                                    gameInfo.allplayers_dic[roleInfo.uid].banana += banana;
+//                                    doBananaUpdateSignal.Dispatch();
+                                }
+
+                                DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
+                                doMapUpdateSignalParam.landformList = new Dictionary<int, int>();
+                                doMapUpdateSignalParam.resourceList = new Dictionary<int, int>();
+                                doMapUpdateSignalParam.resourceList.Add(roleInfo.pos_id, 2);
+                                doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
+
+
+
+                                break;
+
+                            //招募猴子
+                            case 5:
+                                float cost_5 = float.Parse(param["cost"].ToString());
+                                if (roleInfo.uid == sPlayerInfo.uid)
+                                {
+                                    gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_5;
+//                                    doBananaUpdateSignal.Dispatch();
+                                }
+                                break;
+
+                            //升级
+                            case 7:
+                                string building_id = param["cost"].ToString();
+                                gameInfo.building_dic[building_id].level++;
+                                break;
+                            //进食
+                            case 8:
+                                break;
+                            //搭窝
+                            case 9:
+                                float cost_9 = float.Parse(param["cost"].ToString());
+                                if (roleInfo.uid == sPlayerInfo.uid)
+                                {
+                                    gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_9;
+                                    //                                    doBananaUpdateSignal.Dispatch();
+                                }
+                                break;
+                            //抢夺
+                            case 11:
+                                
+                                break;
+                        }
+                    }
+
+                    //banana统一更新视图
+                    doBananaUpdateSignal.Dispatch();
+                    yield return new WaitForSeconds(step_time);
                     break;
             }
 
-            
-            yield return new WaitForSeconds(1);
+
+
             
         }
+
+        while (playerFailQueue.fail_id_queue.Count > 0)
+        {
+            int fail_player_id = playerFailQueue.fail_id_queue.Dequeue();
+
+            foreach (string role_id in gameInfo.role_dic.Keys)
+            {
+                RoleInfo roleInfo = gameInfo.role_dic[role_id];
+                if (roleInfo.uid == fail_player_id)
+                {
+                    DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                    doActionAnimSignalParam.type = 2;
+                    doActionAnimSignalParam.role_id = roleInfo.role_id;
+                    doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                }
+            }
+
+            foreach (string building_id in gameInfo.building_dic.Keys)
+            {
+                BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+                if (buildingInfo.uid == fail_player_id)
+                {
+                    DoBuildingActionAnimSignal.Param doBuildingActionAnimSignalParam = new DoBuildingActionAnimSignal.Param();
+                    doBuildingActionAnimSignalParam.type = 1;
+                    doBuildingActionAnimSignalParam.building_id = buildingInfo.building_id;
+                    doBuildingActionAnimSignal.Dispatch(doBuildingActionAnimSignalParam);
+                }
+            }
+            yield return new WaitForSeconds(step_time);
+        }
+
+        ResetAllRoleDirection();
         actionAnimFinishSignal.Dispatch();
 
         //Debug.Log("ActionAnimFinishSignal");
     }
-}
 
+
+    void DoSightModefiedAction(JsonObject jo)
+    {
+        JsonObject posJS=jo["pos"] as JsonObject;
+        JsonObject addRolesJS=jo["add_roles"] as JsonObject;
+        JsonArray deleteRolesJS=jo["delete_roles"] as JsonArray;
+        JsonObject landformJS = jo["landform_map"] as JsonObject;
+        JsonObject resourceJS = jo["resource_map"] as JsonObject;
+        JsonObject addBuildingsJS=jo["add_buildings"] as JsonObject;
+        JsonArray deleteBuildingsJS=jo["delete_buildings"] as JsonArray;
+
+        foreach (string role_id in posJS.Keys)
+        {
+            int pos_id = int.Parse(posJS[role_id].ToString());
+            gameInfo.role_dic[role_id].pos_id = pos_id;
+
+            DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            doActionAnimSignalParam.type = 0;
+            doActionAnimSignalParam.role_id = role_id;
+            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+        }
+
+        foreach (string role_id in addRolesJS.Keys)
+        {
+            RoleInfo roleInfo = new RoleInfo();
+            roleInfo.InitFromJson(addRolesJS[role_id] as JsonObject,gameInfo);
+
+            gameInfo.role_dic.Add(role_id, roleInfo);
+
+            DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            doActionAnimSignalParam.type = 1;
+            doActionAnimSignalParam.role_id = role_id;
+            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+
+            GameObject roleobj = resourceService.Spawn("role/" + gameInfo.role_dic[role_id].role_did);
+            roleobj.name = "role_" + role_id;
+        }
+
+        foreach (string role_id in deleteRolesJS)
+        {
+            gameInfo.role_dic.Remove(role_id);
+
+            DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            doActionAnimSignalParam.type = 2;
+            doActionAnimSignalParam.role_id = role_id;
+            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+        }
+
+
+
+
+
+        foreach (string building_id in addBuildingsJS.Keys)
+        {
+            BuildingInfo buildingInfo = SimpleJson.SimpleJson.DeserializeObject<BuildingInfo>(addBuildingsJS[building_id].ToString());
+            gameInfo.building_dic.Add(buildingInfo.building_id, buildingInfo);
+
+            DoBuildingActionAnimSignal.Param doBuildingActionAnimSignalParam = new DoBuildingActionAnimSignal.Param();
+            doBuildingActionAnimSignalParam.type = 0;
+            doBuildingActionAnimSignalParam.building_id = buildingInfo.building_id;
+            doBuildingActionAnimSignal.Dispatch(doBuildingActionAnimSignalParam);
+
+            GameObject buildingObj = resourceService.Spawn("building/" + buildingInfo.building_did);
+            buildingObj.name = "building_" + buildingInfo.building_id;
+
+        }
+
+        foreach (string building_id in deleteBuildingsJS)
+        {
+            gameInfo.building_dic.Remove(building_id);
+
+            DoBuildingActionAnimSignal.Param doBuildingActionAnimSignalParam = new DoBuildingActionAnimSignal.Param();
+            doBuildingActionAnimSignalParam.building_id = building_id;
+            doBuildingActionAnimSignalParam.type = 1;
+            doBuildingActionAnimSignal.Dispatch(doBuildingActionAnimSignalParam);
+
+
+        }
+
+        foreach (string pos_id_s in landformJS.Keys)
+        {
+            int pos_id = int.Parse(pos_id_s);
+            int value = int.Parse(landformJS[pos_id_s].ToString());
+            gameInfo.map_info.landform[pos_id] = value;
+        }
+
+        foreach (string pos_id_s in resourceJS.Keys)
+        {
+            int pos_id = int.Parse(pos_id_s);
+            int value = int.Parse(resourceJS[pos_id_s].ToString());
+            gameInfo.map_info.resource[pos_id] = value;
+        }
+
+        DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
+        doMapUpdateSignalParam.InitFromJson(landformJS, resourceJS);
+        doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
+
+        doSightzoonUpdateSignal.Dispatch(doMapUpdateSignalParam.landformList);
+
+    }
+        
+    //将所有role的指令设为防御
+    void ResetAllRoleDirection()
+    {
+        foreach (string role_id in gameInfo.role_dic.Keys)
+        {
+            RoleInfo roleInfo=gameInfo.role_dic[role_id];
+            roleInfo.direction_did = 2;
+            roleInfo.direction_param.Clear();
+        }
+    }
+}

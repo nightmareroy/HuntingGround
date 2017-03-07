@@ -1,6 +1,7 @@
 using System;
 using SimpleJson;
 using System.Text;
+using UnityEngine;
 
 namespace Pomelo.DotNetClient
 {
@@ -54,7 +55,11 @@ namespace Pomelo.DotNetClient
 
         internal void send(PackageType type)
         {
-            if (this._state == ProtocolState.closed) return;
+            if (this._state == ProtocolState.closed)
+            {
+//                Debug.LogWarning("send failed!");
+                return;
+            }
             _transporter.send(PackageProtocol.encode(type));
         }
 

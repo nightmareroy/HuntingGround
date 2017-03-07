@@ -1,6 +1,8 @@
 using System;
 using SimpleJson;
 using UnityEngine;
+using System.Reflection;
+using strange.extensions.signal.impl;
 
 namespace Pomelo.DotNetClient
 {
@@ -68,6 +70,14 @@ namespace Pomelo.DotNetClient
                     data = jsonObj["data"] as object;
                     //Debug.Log("kkk" + data);
                 }
+//                if (type == MessageType.MSG_PUSH)
+//                {
+//                    Assembly assembly = Assembly.GetExecutingAssembly();
+//                    Signal signal= assembly.CreateInstance(route + "PushSignal") as Signal;
+//                    signal.Dispatch();
+//                    Debug.Log("signal dispatched!!!");
+//
+//                }
             }
             
         }

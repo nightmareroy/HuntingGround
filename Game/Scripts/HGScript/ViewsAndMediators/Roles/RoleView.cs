@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using strange.extensions.mediation.impl;
 using UnityEngine;
 using MapNavKit;
+using Vectrosity;
 
 
 public class RoleView:View
 {
-    GameObject pathRoot;
+//    GameObject pathRoot;
 
     Material normalNodeMat;
     Material exploreNodeMat;
     Material attackNodeMat;
     Material defendNodeMat;
     Material moveNodeMat;
+
+    Material lineMaterial;
+//    Texture2D arrowStart;
+//    Texture2D arrowEnd;
 
     [Inject]
     public ResourceService resourceService { get; set; }
@@ -28,26 +33,37 @@ public class RoleView:View
     public ActionAnimStartSignal actionAnimStartSignal { get; set; }
 
     Animator animator;
-    //MapRootMediator mapRootMediator;
+    MapRootMediator mapRootMediator;
+    VectorLine vectorLine;
+
 
     bool isWalking = false;
 
     public void Init()
     {
-        //mapRootMediator = mainContext.mapRootMediator;
+        mapRootMediator = mainContext.mapRootMediator;
         normalNodeMat = Resources.Load("map/HexNode/hexMat") as Material;
         exploreNodeMat = Resources.Load("map/HexNode/hexExploreMat") as Material;
         attackNodeMat = Resources.Load("map/HexNode/hexAttackMat") as Material;
         defendNodeMat = Resources.Load("map/HexNode/hexDefendMat") as Material;
         moveNodeMat = Resources.Load("map/HexNode/hexMoveMat") as Material;
 
-        pathRoot=new GameObject();
-        pathRoot.transform.SetParent(transform);
-        pathRoot.transform.localPosition = Vector3.zero;
+        lineMaterial=Resources.Load("arrow/ThickLine") as Material;
+
+
+//        pathRoot=new GameObject();
+//        pathRoot.transform.SetParent(transform);
+//        pathRoot.transform.localPosition = Vector3.zero;
 
         animator = GetComponent<Animator>();
 
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
+
+
+        if (vectorLine != null)
+        {
+            VectorLine.Destroy(ref vectorLine);
+        }
 
     }
 
@@ -72,64 +88,36 @@ public class RoleView:View
     }
 
 
-    #region direction path
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="startid">入口编号，从上方按照顺时针方向依次为1~6，如果为0表示没有入口，此节点为开始点</param>
-    /// <param name="endid">同上，为0表示没有出口，此节点为终结点</param>
-    public void GenerateADirectionNode(int lastid, int nextid,int nodeid, int directionid )
+    public void GenerateArrow(Vector3[] points)
     {
-        //DirectionInfo directionInfo = gameInfo.curr_direction_dic[roleid];
-        //MapRootMediator mapRootMediator = mainContext.mapRootMediator;
-
-        GameObject pathNode = resourceService.Spawn("map/HexNode/HexNode");
-        pathNode.transform.SetParent(pathRoot.transform);
-        pathNode.transform.position = mainContext.mapRootMediator.mapRootView.GetNodeObj(nodeid).transform.position+new Vector3(0, 5f, 0);
-
-        Renderer rd = pathNode.GetComponent<Renderer>();
-        switch (directionid)
+        if (vectorLine != null)
         {
-            case 1:
-                rd.material = moveNodeMat;
-                break;
-            case 2:
-                rd.material = exploreNodeMat;
-                break;
-            case 3:
-                rd.material = attackNodeMat;
-                break;
-            case 4:
-                rd.material = defendNodeMat;
-                break;
-            default:
-                break;
+            VectorLine.Destroy(ref vectorLine);
+        }
+
+
+        vectorLine = new VectorLine("line",points,lineMaterial,25f,LineType.Continuous,Joins.Weld);
+        vectorLine.endCap = "Arrow";
+        vectorLine.layer = LayerMask.NameToLayer("Game");
+        vectorLine.vectorObject.transform.position=new Vector3(0,3.5f,0);
+        vectorLine.drawTransform = mapRootMediator.transform;
+        vectorLine.Draw3D();
+
+    }
+
+    public void ClearArrow()
+    {
+        if (vectorLine != null)
+        {
+            VectorLine.Destroy(ref vectorLine);
         }
     }
 
-    public void ClearAllDirectionNode()
-    {
-        List<GameObject> objToBeDespawn = new List<GameObject>();
-        for (int i = 0; i < pathRoot.transform.childCount; i++)
-        {
-            objToBeDespawn.Add(pathRoot.transform.GetChild(i).gameObject);
-
-        }
-        foreach (GameObject obj in objToBeDespawn)
-        {
-            resourceService.Despawn("map/HexNode/HexNode", obj);
-        }
-    }
-
-    public void SetPathVisible(bool visible)
-    {
-        pathRoot.SetActive(visible);
-    }
 
     public void OnActionAnimStartSignal()
     {
         //SetPathVisible(false);
-        ClearAllDirectionNode();
+        ClearArrow();  
     }
 
     public Vector3 GetRelativePosToAnotherNode(int fromid, int toid)
@@ -143,74 +131,13 @@ public class RoleView:View
 
     void OnDestroy()
     {
+        Debug.Log("destroy "+gameObject.name+" view");
+        if (vectorLine != null)
+        {
+            VectorLine.Destroy(ref vectorLine);
+        }
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
     }
 
-    public int GetRelativeIdToAnotherNode(int fromid, int toid)
-    {
-        int width=gameInfo.map_info.width;//mapRootMediator.mapRootView.mapHorizontalSize;
-        int from_x=fromid%width;
-        int from_y=fromid/width;
-        //int to_x=toid%width;
-        //int to_y=toid/width;
-
-        if(toid==fromid+width)
-            return 1;
-        else if(toid==fromid-width)
-            return 4;
-
-        if (width % 2 == 0||(width%2==1&&from_y%2==0))
-        {
-            if (from_x % 2 == 0)
-            {
-                if (toid == fromid + 1)
-                    return 3;
-                else if (toid == fromid - 1)
-                    return 5;
-                else if (toid == fromid + width + 1)
-                    return 2;
-                else// if (toid == fromid + width - 1)
-                    return 6;
-            }
-            else
-            {
-                if (toid == fromid + 1)
-                    return 2;
-                else if (toid == fromid - 1)
-                    return 6;
-                else if (toid == fromid - width + 1)
-                    return 3;
-                else// if (toid == fromid - width - 1)
-                    return 5;
-            }
-        }
-        else
-        {
-            
-            if (from_x % 2 == 1)
-            {
-                if (toid == fromid + 1)
-                    return 3;
-                else if (toid == fromid - 1)
-                    return 5;
-                else if (toid == fromid + width + 1)
-                    return 2;
-                else// if (toid == fromid + width - 1)
-                    return 6;
-            }
-            else
-            {
-                if (toid == fromid + 1)
-                    return 2;
-                else if (toid == fromid - 1)
-                    return 6;
-                else if (toid == fromid - width + 1)
-                    return 3;
-                else// if (toid == fromid - width - 1)
-                    return 5;
-            }
-        }
-    }
-    #endregion
 }
 

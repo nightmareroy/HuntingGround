@@ -11,7 +11,7 @@ public class PageManager
         activePage.SetActive(true);
     }
 
-    public bool JumpDown(Page childPage)
+    public bool JumpDown(Page childPage,Action initFunc=null)
     {
         if (!activePage.childList.Contains(childPage))
         {
@@ -19,13 +19,18 @@ public class PageManager
         }
         else
         {
+            if (initFunc != null)
+            {
+                initFunc();
+            }
+
             activePage.SetActive(false);
             childPage.SetActive(true);
             activePage = childPage;
             return true;
         }
     }
-    public bool JumpUp()
+    public bool JumpUp(Action initFunc=null)
     {
         if (activePage.parent == null)
         {
@@ -33,11 +38,28 @@ public class PageManager
         }
         else
         {
+            if (initFunc != null)
+            {
+                initFunc();
+            }
+
             activePage.SetActive(false);
             activePage.parent.SetActive(true);
             activePage = activePage.parent;
             return true;
         }
+    }
+
+    public bool JumpTo(Page page,Action initFunc=null)
+    {
+        if (initFunc != null)
+        {
+            initFunc();
+        }
+        activePage.SetActive(false);
+        page.SetActive(true);
+        activePage = page;
+        return true;
     }
 }
 

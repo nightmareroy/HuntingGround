@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using strange.extensions.command.impl;
 using SimpleJson;
+using UnityEngine;
 
 public class NextturnCommand:Command
 {
@@ -17,28 +18,41 @@ public class NextturnCommand:Command
     [Inject]
     public SPlayerInfo sPlayerInfo { get; set; }
 
+    [Inject]
+    public ActionAnimStartSignal actionAnimStartSignal{ get; set;}
+
+    [Inject]
+    public MapNodeSelectSignal mapNodeSelectSignal{ get; set;}
+
     public override void Execute()
     {
+
+        actionAnimStartSignal.Dispatch();
+
+        mapNodeSelectSignal.Dispatch(null);
+
         JsonObject user = new JsonObject();
         JsonObject direction = new JsonObject();
         user.Add("direction", direction);
 
-        Dictionary<int, RoleInfo> role_dic = gameInfo.role_dic;
-        foreach (int roleid in role_dic.Keys)
+        Dictionary<string, RoleInfo> role_dic = gameInfo.role_dic;
+        foreach (string role_id in role_dic.Keys)
         {
-            if (role_dic[roleid].uid == sPlayerInfo.uid)
+            if (role_dic[role_id].uid == sPlayerInfo.uid)
             {
                 JsonObject roledirectioninfo = new JsonObject();
-                roledirectioninfo.Add("directionid", role_dic[roleid].direction_id);
-                roledirectioninfo.Add("directionpath", SimpleJson.SimpleJson.SerializeObject(role_dic[roleid].direction_path));
-                direction.Add(roleid.ToString(), roledirectioninfo);
+                roledirectioninfo.Add("direction_did", role_dic[role_id].direction_did);
+//                roledirectioninfo.Add("direction_param", SimpleJson.SimpleJson.SerializeObject(role_dic[roleid].direction_param));
+                roledirectioninfo.Add("direction_param", role_dic[role_id].direction_param);
+                direction.Add(role_id.ToString(), roledirectioninfo);
+//                Debug.Log(role_id+",,,"+role_dic[role_id].direction_param[0]);
             }
         }
 
         user.Add("current_turn", gameInfo.current_turn);
 
-
-        netService.Request(netService.nextturn, user, (msg) => {
+        netService.Request(NetService.NextTurn, user, (msg) => {
+//            Debug.Log(msg.rawString);
             callback((bool)msg.data);
         });
     }

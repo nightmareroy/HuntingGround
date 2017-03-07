@@ -27,7 +27,7 @@ public class RegisterCommand:Command
         form["account"] = param.account;
         form["pwd"] = param.pwd;
         //form.AddField("hash", "hashcode");
-        netService.Request(netService.registerRoute,form, (msg) =>
+        netService.Request(NetService.registerRoute,form, (msg) =>
         {
             //Debug.Log(msg.rawString);
             registerCallbackCommand.Dispatch();

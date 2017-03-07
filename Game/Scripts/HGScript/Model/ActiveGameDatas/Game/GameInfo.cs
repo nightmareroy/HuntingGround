@@ -7,14 +7,16 @@ using SimpleJson;
 //[Serializable]
 public class GameInfo//  : ISerializationCallbackReceiver
 {
-
+    [Inject]
+    public SPlayerInfo sPlayerInfo { get; set;}
     //List<int> _keys = new List<int>();
     //List<int> _values = new List<int>();
 
-    //public int gameid;
-    public int gametype;
+    public int creator_id;
+    public string game_name;
+    public int gametype_id;
     public int current_turn = 0;
-    public int creatorid;
+
     //public List<int> playercount_in_group=new List<int>();
     //public List<int> npccount_in_group=new List<int>();
 
@@ -22,7 +24,8 @@ public class GameInfo//  : ISerializationCallbackReceiver
     public MapInfo map_info=new MapInfo();
     //public GamePlayerInfo uplayer;//=new GamePlayerInfo();
     public Dictionary<int, PlayerInfo> allplayers_dic = new Dictionary<int, PlayerInfo>();
-    public Dictionary<int, RoleInfo> role_dic = new Dictionary<int, RoleInfo>();
+    public Dictionary<string, RoleInfo> role_dic = new Dictionary<string, RoleInfo>();
+    public Dictionary<string,BuildingInfo> building_dic = new Dictionary<string, BuildingInfo>();
     //public List<PlayerInfo> allplayers_list=new List<PlayerInfo>();
 
     
@@ -40,27 +43,44 @@ public class GameInfo//  : ISerializationCallbackReceiver
         //this.curr_direction_list = gameInfo.curr_direction_list;
     }
 
-    public void InitFromJson(JsonObject jsonobj, SPlayerInfo sPlayerInfo)
+    public void InitFromJson(JsonObject jsonobj)
     {
-        this.gametype = int.Parse(jsonobj["gametype"].ToString());
-        this.current_turn = int.Parse(jsonobj["current_turn"].ToString());
-        this.creatorid = int.Parse(jsonobj["creatorid"].ToString());
-        this.map_info = SimpleJson.SimpleJson.DeserializeObject<MapInfo>(jsonobj["mapinfo"].ToString());
+        JsonObject gameObj = jsonobj["game"] as JsonObject;
+        JsonObject mapObj = jsonobj["map"] as JsonObject;
+        JsonObject playersObj = jsonobj["players"] as JsonObject;
+        JsonObject rolesObj = jsonobj["roles"] as JsonObject;
+        JsonObject buildingsObj = jsonobj["buildings"] as JsonObject;
+
+
+        creator_id = int.Parse(gameObj["creator_id"].ToString());
+        game_name = gameObj["game_name"].ToString();
+        gametype_id = int.Parse(gameObj["gametype_id"].ToString());
+        current_turn = int.Parse(gameObj["current_turn"].ToString());
+
+        map_info = SimpleJson.SimpleJson.DeserializeObject<MapInfo>(mapObj.ToString());
 
         allplayers_dic.Clear();
-        foreach (string key in (jsonobj["allplayers_dic"] as JsonObject).Keys)
+        foreach (string key in playersObj.Keys)
         {
             PlayerInfo playerInfo=new PlayerInfo();
-            playerInfo.InitFromJson((jsonobj["allplayers_dic"] as JsonObject)[key] as JsonObject);
-            allplayers_dic.Add(int.Parse(key), playerInfo);
+            playerInfo.InitFromJson(playersObj[key] as JsonObject);
+            allplayers_dic.Add(playerInfo.uid, playerInfo);
         }
 
         role_dic.Clear();
-        foreach (string key in (jsonobj["role_dic"] as JsonObject).Keys)
+        foreach (string key in rolesObj.Keys)
         {
             RoleInfo roleInfo = new RoleInfo();
-            roleInfo.InitFromJson((jsonobj["role_dic"] as JsonObject)[key] as JsonObject);
-            role_dic.Add(roleInfo.roleid, roleInfo);
+            roleInfo.InitFromJson(rolesObj[key] as JsonObject,this);
+            role_dic.Add(roleInfo.role_id, roleInfo);
+        }
+
+        building_dic.Clear();
+        foreach (string key in buildingsObj.Keys)
+        {
+            BuildingInfo buildingInfo = SimpleJson.SimpleJson.DeserializeObject<BuildingInfo>(buildingsObj[key].ToString());
+//            buildingInfo.InitFromJson(buildingsObj[key] as JsonObject);
+            building_dic.Add(buildingInfo.building_id, buildingInfo);
         }
     }
 

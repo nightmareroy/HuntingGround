@@ -10,11 +10,12 @@ public class PlayerInfo
 {
 
     public int uid=0;
-    
+    public string name;
     //public bool is_splayer = false;
-    public int groupid;
+    public int group_id;
     //public PlayerDRoleSkillInfo playerDRoleSkillInfo = new PlayerDRoleSkillInfo();
     //public Dictionary<int, Dictionary<int, DSkill>> roledid_skill_dic = new Dictionary<int, Dictionary<int, DSkill>>();
+    public float banana=-1;
     public int direction_turn;
 
     //key是角色静态id
@@ -24,7 +25,7 @@ public class PlayerInfo
     {
         this.uid = id;
         //this.is_splayer = is_splayer;
-        this.groupid = groupid;
+        this.group_id = groupid;
         
     }
 
@@ -36,8 +37,14 @@ public class PlayerInfo
     public void InitFromJson(JsonObject jsonobj)//, SPlayerInfo sPlayerInfo)
     {
         uid = int.Parse(jsonobj["uid"].ToString());
-        groupid = int.Parse(jsonobj["groupid"].ToString());
+        name=jsonobj["name"].ToString();
+        group_id = int.Parse(jsonobj["group_id"].ToString());
         direction_turn = int.Parse(jsonobj["direction_turn"].ToString());
+
+        if (jsonobj.ContainsKey("banana"))
+        {
+            banana=int.Parse(jsonobj["banana"].ToString());
+        }
         //role_dic.Clear();
         //foreach (string key in (jsonobj["role_dic"] as JsonObject).Keys)
         //{

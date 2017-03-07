@@ -8,18 +8,18 @@ using UnityEngine;
 public class SaveService
 {
     [Inject]
-    public StaticFileIOService staticFileIOService { get; set; }
+    public FileIOService defaultDataIOService { get; set; }
 
     //GameInfo gameInfo;
 
     public GameInfo Load(string saveName)
     {
-        return JsonUtility.FromJson<GameInfo>(staticFileIOService.ReadAllText("/Save/" + saveName + ".txt"));
+        return JsonUtility.FromJson<GameInfo>(defaultDataIOService.ReadAllText("/Save/" + saveName + ".txt"));
     }
 
     public void Save(GameInfo gameInfo,string saveName)
     {
-        staticFileIOService.WriteAllTxt(JsonUtility.ToJson(gameInfo),"/Save/"+saveName+".txt");
+        defaultDataIOService.WriteAllTxt(JsonUtility.ToJson(gameInfo),"/Save/"+saveName+".txt");
     }
 }
 

@@ -6,36 +6,137 @@ using SimpleJson;
 
 public class RoleInfo
 {
-    public int roleid;
-    public int roledid;
+//    [Inject]
+//    public GameInfo gameInfo{ get; set;}
+    public GameInfo gameInfo;
+
+
+    public string role_id;
+    public int role_did;
     public int uid;
     public int pos_id;
-    public int health;
-    public bool retreating;
-    public int fighting_last_turn;
-    public int left_progress;
+
+    //base
+    public string name{get;set;}
+    public int blood_sugar { get; set;}
+    public int blood_sugar_max { get; set;}
+    public int muscle { get; set;}
+    public int fat { get; set;}
+    public int amino_acid{ get; set;}
+    public int breath { get; set;}
+    public int digest { get; set;}
+    public int courage { get; set;}
+    public int far_sight { get; set;}
+    public int see_through { get; set;}
+//    public int alive { get; set;}
+
+    //advance
+    public float health
+    {
+        get { return (float)blood_sugar / (float)blood_sugar_max; }
+    }
+    public int weight
+    {
+        get { return muscle+fat; }
+    }
+//    public int attack
+//    {
+//        get { return muscle*(1+health); }
+//    }
+//    public int defence
+//    {
+//        get { return fat*(1+health); }
+//    }
+
+
+//    public int speed_lv
+//    {
+//        get
+//        {
+//            return (int)Math.Ceiling(2f*(float)health*(float)muscle/(float)weight)-1;
+//        }
+//    }
+
+//    public int current_speed_lv
+//    {
+//        get
+//        {
+//            int temp_lv = speed_lv;
+//            if (gameInfo.map_info.landform[pos_id] == 2)
+//            {
+//                temp_lv--;
+//            }
+//            if (temp_lv < 0)
+//            {
+//                temp_lv = 0;
+//            }
+//            return temp_lv;
+//        }
+//    }
+
+    public float max_move
+    {
+        get
+        {
+//            return (int)Math.Pow(2,speed_lv);
+            return 3f*health*(float)muscle/(float)weight;
+        }
+    }
+        
+    public float basal_metabolism
+    {
+        get { return (float)Math.Floor((float)muscle*0.3f+(float)fat*0.1f); }
+    }
+
+
+
+
+    public List<int> skill_did_list;
+
+//    public bool retreating;
+//    public int fighting_last_turn;
+//    public int left_progress;
     //public Dictionary<int, DSkill> roleid_skill_dic = new Dictionary<int, DSkill>();
     //public List<int> add_skill_list = new List<int>();
-    public int direction_id;
-    public List<int> direction_path;
+    public int direction_did;
+    public List<int> direction_param;
     //public DirectionInfo directionInfo = null;
 
     public RoleInfo()
     {
     }
-    public void InitFromJson(JsonObject jsonobj)
+    public void InitFromJson(JsonObject jsonobj,GameInfo gameInfo)
     {
-        roleid = int.Parse(jsonobj["roleid"].ToString());
-        roledid = int.Parse(jsonobj["roledid"].ToString());
+        this.gameInfo = gameInfo;
+
+
+        role_id = jsonobj["role_id"].ToString();
+        role_did = int.Parse(jsonobj["role_did"].ToString());
         uid = int.Parse(jsonobj["uid"].ToString());
         pos_id = int.Parse(jsonobj["pos_id"].ToString());
-        health = int.Parse(jsonobj["health"].ToString());
-        retreating = bool.Parse(jsonobj["retreating"].ToString());
-        fighting_last_turn = int.Parse(jsonobj["fighting_last_turn"].ToString());
+
+        name = jsonobj["name"].ToString();
+        blood_sugar = int.Parse(jsonobj["blood_sugar"].ToString());
+        blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
+        muscle = int.Parse(jsonobj["muscle"].ToString());
+        fat = int.Parse(jsonobj["fat"].ToString());
+        amino_acid = int.Parse(jsonobj["amino_acid"].ToString());
+        breath = int.Parse(jsonobj["breath"].ToString());
+        digest = int.Parse(jsonobj["digest"].ToString());
+
+        courage = int.Parse(jsonobj["courage"].ToString());
+        far_sight = int.Parse(jsonobj["far_sight"].ToString());
+        see_through = int.Parse(jsonobj["see_through"].ToString());
+//        alive = int.Parse(jsonobj["alive"].ToString());
+        skill_did_list=SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["skill_did_list"].ToString());
+
+//        retreating = bool.Parse(jsonobj["retreating"].ToString());
+//        fighting_last_turn = int.Parse(jsonobj["fighting_last_turn"].ToString());
         //left_progress = int.Parse(jsonobj["left_progress"].ToString());
 
-        direction_id = int.Parse(jsonobj["direction_id"].ToString());
-        direction_path = SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["direction_path"].ToString());
+        direction_did = int.Parse(jsonobj["direction_did"].ToString());
+//        Debug.Log(jsonobj["direction_param"].ToString());
+        direction_param = SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["direction_param"].ToString());
     }
 
 
@@ -49,5 +150,10 @@ public class RoleInfo
     //    this.pos_id = pos_id;
     //    this.left_progress = left_progress;
     //}
+
+    public void GetDirections(int role_id)
+    {
+        
+    }
 }
 

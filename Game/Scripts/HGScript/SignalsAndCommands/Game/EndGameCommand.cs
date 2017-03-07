@@ -5,9 +5,16 @@ using strange.extensions.command.impl;
 
 public class EndGameCommand : Command
 {
+    [Inject]
+    public AsyncSceneService asyncSceneService { get; set; }
+
+
     public override void Execute()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene("Login");
+        asyncSceneService.LoadScene("Login", () =>
+            {
+            }
+        );
     }
 
 }

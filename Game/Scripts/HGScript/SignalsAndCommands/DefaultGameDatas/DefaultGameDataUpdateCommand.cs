@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using strange.extensions.command.impl;
 using UnityEngine;
+using SimpleJson;
 
 public class DefaultGameDataUpdateCommand:Command
 {
@@ -9,60 +10,62 @@ public class DefaultGameDataUpdateCommand:Command
     public DGameDataCollection dGameDataCollection { get; set; }
 
     [Inject]
-    public StaticFileIOService staticFileIOService { get; set; }
+    public FileIOService fileIOService { get; set; }
 
     [Inject]
     public Action callback { get; set; }
 
+    [Inject]
+    public NetService netService{ get; set;}
+
+    [Inject]
+    public NetDataUpdateService netDataUpdateService{ get; set;}
+
     public override void Execute()
     {
         
+        netDataUpdateService.StartUpdate(()=>{
+            //roles
+            dGameDataCollection.dRoleCollection = new DRoleCollection();
+            dGameDataCollection.dRoleCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DRole.txt"));
 
-        //roles
-        dGameDataCollection.dRoleCollection = JsonUtility.FromJson<DRoleCollection>(staticFileIOService.ReadAllText("/DRole.txt"));
-        foreach (DRole drole in dGameDataCollection.dRoleCollection.dRoleList)
-        {
-            dGameDataCollection.dRoleCollection.dRoleDic.Add(drole.id,drole);
-        }
+            dGameDataCollection.dSkillCollection = new DSkillCollection();
+            dGameDataCollection.dSkillCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DSkill.txt"));
 
-        dGameDataCollection.dSkillCollection = JsonUtility.FromJson<DSkillCollection>(staticFileIOService.ReadAllText("/DSkill.txt"));
-        foreach (DSkill dskill in dGameDataCollection.dSkillCollection.dSkillList)
-        {
-            dGameDataCollection.dSkillCollection.dSkillDic.Add(dskill.id,dskill);
-        }
-        dGameDataCollection.dDirectionCollection = JsonUtility.FromJson<DDirectionCollection>(staticFileIOService.ReadAllText("/DDirection.txt"));
-        foreach (DDirection ddirection in dGameDataCollection.dDirectionCollection.dDirectionList)
-        {
-            dGameDataCollection.dDirectionCollection.dDirectionDic.Add(ddirection.id, ddirection);
-        }
+            dGameDataCollection.dDirectionCollection = new DDirectionCollection();
+            dGameDataCollection.dDirectionCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DDirection.txt"));
 
-        //map
-        dGameDataCollection.dDetectiveStatusCollection = JsonUtility.FromJson<DExploreStatusCollection>(staticFileIOService.ReadAllText("/DDetectiveStatus.txt"));
-        foreach (DExploreStatus ddetectivestatus in dGameDataCollection.dDetectiveStatusCollection.dExploreStatusList)
-        {
-            dGameDataCollection.dDetectiveStatusCollection.dDetectiveStatusDic.Add(ddetectivestatus.id, ddetectivestatus);
-        }
 
-        dGameDataCollection.dLandformCollection = JsonUtility.FromJson<DLandformCollection>(staticFileIOService.ReadAllText("/DLandform.txt"));
-        foreach (DLandform dlandform in dGameDataCollection.dLandformCollection.dLandformList)
-        {
-            dGameDataCollection.dLandformCollection.dLandformDic.Add(dlandform.id, dlandform);
-        }
+            //building
+            dGameDataCollection.dBuildingCollection=new DBuildingCollection();
+            dGameDataCollection.dBuildingCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DBuilding.txt"));
 
-        dGameDataCollection.dResourceCollection = JsonUtility.FromJson<DResourceCollection>(staticFileIOService.ReadAllText("/DResource.txt"));
-        foreach (DResource dresource in dGameDataCollection.dResourceCollection.dResourceList)
-        {
-            dGameDataCollection.dResourceCollection.dResourceDic.Add(dresource.id, dresource);
-        }
+//            dGameDataCollection.dBuildingDirectionCollection=new DBuildingDirectionCollection();
+//            dGameDataCollection.dBuildingDirectionCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DBuildingDirection.txt"));
 
-        //buildings
-        dGameDataCollection.dBuildingTypeCollection = JsonUtility.FromJson<DBuildingTypeCollection>(staticFileIOService.ReadAllText("/DBuildingType.txt"));
-        foreach (DBuildingType dbuildingtype in dGameDataCollection.dBuildingTypeCollection.dBuildingTypeList)
-        {
-            dGameDataCollection.dBuildingTypeCollection.dBuildingTypeDic.Add(dbuildingtype.id, dbuildingtype);
-        }
+            //map
+            dGameDataCollection.dLandformCollection = new DLandformCollection();
+            dGameDataCollection.dLandformCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DLandform.txt"));
 
-        callback();
+            dGameDataCollection.dResourceCollection = new DResourceCollection();
+            dGameDataCollection.dResourceCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DResource.txt"));
+
+            //gametype
+            dGameDataCollection.dGameTypeCollection=new DGameTypeCollection();
+            dGameDataCollection.dGameTypeCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DGameType.txt"));
+
+            //banana value
+            dGameDataCollection.dBananaValueCollection=new DBananaValueCollection();
+            dGameDataCollection.dBananaValueCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DBananaValue.txt"));
+
+            //single game info
+            dGameDataCollection.dSingleGameInfoCollection=new DSingleGameInfoCollection();
+            dGameDataCollection.dSingleGameInfoCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DSingleGameInfo.txt"));
+
+            callback();
+        });
+
+
     }
 }
 

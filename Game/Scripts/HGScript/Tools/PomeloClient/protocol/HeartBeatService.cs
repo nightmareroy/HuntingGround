@@ -1,5 +1,6 @@
 using System;
 using System.Timers;
+using UnityEngine;
 
 namespace Pomelo.DotNetClient
 {
@@ -30,8 +31,13 @@ namespace Pomelo.DotNetClient
             timeout = (int)span.TotalMilliseconds;
 
             //check timeout
-            if (timeout > interval * 2)
+            if (timeout > 60000)
             {
+//                Debug.LogError("now:"+DateTime.Now);
+//                Debug.LogError("last:"+lastTime);
+//                Debug.LogError("time out:"+timeout);
+//                Debug.LogError("interval"+interval);
+
                 protocol.getPomeloClient().Disconnect();
                 //stop();
                 return;

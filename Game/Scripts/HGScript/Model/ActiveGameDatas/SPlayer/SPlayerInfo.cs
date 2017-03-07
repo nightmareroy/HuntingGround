@@ -10,7 +10,8 @@ public class SPlayerInfo
     //public int current_game_id;
     public int win_count;
     public int failure_count;
-    //public string name="";
+    public string name="";      
+    public int single_game_progress=1;
 
     public void UpdateSplayer(SPlayerInfo sPlayerInfo)
     {
@@ -18,6 +19,8 @@ public class SPlayerInfo
         this.account = sPlayerInfo.account;
         this.win_count = sPlayerInfo.win_count;
         this.failure_count = sPlayerInfo.failure_count;
+        this.name = sPlayerInfo.name;
+        this.single_game_progress = sPlayerInfo.single_game_progress;
     }
 
     //public SPlayerInfo(int id,string name)

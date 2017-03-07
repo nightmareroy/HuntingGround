@@ -28,25 +28,26 @@ public class RoleMediator:Mediator
     public DGameDataCollection dGameDataCollection { get; set; }
 
     [Inject]
-    public GameDataService gameDataService { get; set; }
+    public ActiveGameDataService activeGameDataService { get; set; }
 
-    [Inject]
-    public DirectionClickSignal directionClickSignal { get; set; }
-
-    [Inject]
-    public DirectionClickCallbackSignal directionClickCallbackSignal { get; set; }
+//    [Inject]
+//    public DirectionClickSignal directionClickSignal { get; set; }
+//
+//    [Inject]
+//    public DirectionClickCallbackSignal directionClickCallbackSignal { get; set; }
 
     [Inject]
     public MapNodeSelectSignal mapNodeSelectSignal { get; set; }
 
     [Inject]
-    public UpdateDirectionPathCallbackSignal updateDirectionPathCallbackSignal { get; set; }
+    public UpdateRoleDirectionSignal updateRoleDirectionSignal { get; set; }
+
 
     [Inject]
     public SPlayerInfo sPlayerInfo { get; set; }
 
     [Inject]
-    public DoActionAnimSignal doActionAnimSignal { get; set; }
+    public DoRoleActionAnimSignal doActionAnimSignal { get; set; }
 
     [Inject]
     public ActionAnimStartSignal actionAnimStartSignal { get; set; }
@@ -58,53 +59,25 @@ public class RoleMediator:Mediator
     RoleUIView roleUIView;
 
     //int currentDirectionId;
+    string role_id;
 
     public override void OnRegister()
     {
         Debug.Log(roleView.gameObject.name);
         string[] ids = roleView.gameObject.name.Split('_');
         roleView.Init();
-        //int uid=int.Parse(ids[1]);
-        int roleid = int.Parse(ids[1]);
+        role_id = ids[1];
 
-        roleInfo = gameInfo.role_dic[roleid];
+        roleInfo = gameInfo.role_dic[role_id];
 
         mapRootMediator = mainContext.mapRootMediator;
-        //Debug.Log("addlistener");
-
-        //SetRolePosSignal.Param setRolePosParam = new SetRolePosSignal.Param();
-        //setRolePosParam.playerid = playerid;
-        //setRolePosParam.roleid = roleid;
-        //setRolePosParam.pos_x = 5;
-        //setRolePosParam.pos_y = 10;
-        //setRolePosParam.callback = UpdateRolePos;
-        //setRolePosSignal.Dispatch(setRolePosParam);
-        //setRolePosSignal.Dispatch();
-        //roleSelectSignal.AddListener(OnRoleSelectSignal);
-        updateDirectionPathCallbackSignal.AddListener(OnUpdateDirectionPathCallbackSignal);
+        updateRoleDirectionSignal.AddListener(OnUpdateRoleDirectionSignal);
         mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
 
         UpdateRolePos();
 
-        //directionClickSignal.AddListener((int directionid) => {
-        //    currentDirectionId = directionid;
-        //});
-
         roleUIView = resourceService.Spawn("roleui/roleui").GetComponent<RoleUIView>();
-        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, roleid, gameDataService, resourceService, directionClickSignal, directionClickCallbackSignal, mapNodeSelectSignal, actionAnimStartSignal);
-        //roleUIView.cancelPathSelectCallback += () =>
-        //{
-        //    //取消选区路径，仍然发送一个路径选取完成的signal，参数为0长列表
-        //    pathSetFinishedSignal.Dispatch(roleInfo,currentDirectionId,new List<MapNavNode>());
-        //    //Debug.Log("send");
-        //};
-        //pathSetFinishedSignal.AddListener((roleInfo, currentDirectionId,selectedNodeList) =>
-        //{
-        //    roleUIView.cancelPathSelect.SetActive(false);
-        //});
-
-
-
+        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal,doActionAnimSignal);
         doActionAnimSignal.AddListener(OnDoActionAnimSignal);
         
     }
@@ -129,67 +102,79 @@ public class RoleMediator:Mediator
     //    //roleSelectSignal.RemoveListener(OnRoleSelectSignal);
     //}
 
-    void OnUpdateDirectionPathCallbackSignal(UpdateDirectionPathSignal.Param param)
+    void OnUpdateRoleDirectionSignal(string updated_role_id)
     {
         //Debug.Log(roleid);
-        if (param.roleid != roleInfo.roleid)
+        if (updated_role_id != roleInfo.role_id)
             return;
-        int direction_id = gameInfo.role_dic[param.roleid].direction_id;
-        List<int> direction_path = gameInfo.role_dic[param.roleid].direction_path;
+        int direction_did = gameInfo.role_dic[updated_role_id].direction_did;
+        List<int> direction_path = gameInfo.role_dic[updated_role_id].direction_param;
         //Debug.Log(directionInfo.path.Count);
         //MapRootMediator mapRootMediator = mainContext.mapRootMediator;
-        
-        roleView.ClearAllDirectionNode();
+
+//        roleView.ClearAllDirectionNode();
         if (direction_path.Count == 0)
         {
+            roleView.ClearArrow();
             return;
         }
         //Debug.Log(directionInfo.path.Count);
-        List<int> tempList = new List<int>();
-        tempList.Add(gameInfo.role_dic[param.roleid].pos_id);
-        tempList.AddRange(direction_path);
-        for (int i = 0; i < tempList.Count; i++)
+        Vector3[] tempList =new Vector3[direction_path.Count+1];
+        tempList[direction_path.Count] = mapRootMediator.mapRootView.GetNodeObj(gameInfo.role_dic[updated_role_id].pos_id).transform.position;
+        for (int i = 0; i <direction_path.Count ; i++)
         {
-            int nodeid = tempList[i];
-            int lastnodeid;
-            int nextnodeid;
-            if(i==0)
-            {
-                lastnodeid=0;
-                nextnodeid = tempList[i + 1];
-                
-            }
-            else if (i == tempList.Count - 1)
-            {
-                lastnodeid = tempList[i - 1];
-                nextnodeid=0;
-            }
-            else
-            {
-                lastnodeid = tempList[i - 1];
-                nextnodeid = tempList[i + 1];
-            }
-            //Debug.Log(directionInfo.path.Count);
-            roleView.GenerateADirectionNode(lastnodeid,nextnodeid,nodeid, direction_id);
+            tempList[direction_path.Count-1-i]=(mapRootMediator.mapRootView.GetNodeObj(direction_path[i]).transform.position);
         }
+        Vector3 newFirst= new Vector3(tempList[0].x*0.7f+tempList[1].x*0.3f,0,tempList[0].z*0.7f+tempList[1].z*0.3f);
+//        Vector3 newLast = new Vector3(tempList[tempList.Length-2].x*0.3f+tempList[tempList.Length-1].x*0.7f,0,tempList[tempList.Length-2].z*0.3f+tempList[tempList.Length-1].z*0.7f);
+        tempList[0] = newFirst;
+//        tempList[tempList.Length - 1] = newLast;
+
+//        for (int i = 0; i <tempList.Length ; i++)
+//        {
+//            tempList[i].y = 2.5f;
+//        }
+
+        roleView.GenerateArrow(tempList);
+//        tempList.AddRange(direction_path);
+//        for (int i = 0; i < tempList.Count; i++)
+//        {
+//            int nodeid = tempList[i];
+//            int lastnodeid;
+//            int nextnodeid;
+//            if(i==0)
+//            {
+//                lastnodeid=0;
+//                nextnodeid = tempList[i + 1];
+//                
+//            }
+//            else if (i == tempList.Count - 1)
+//            {
+//                lastnodeid = tempList[i - 1];
+//                nextnodeid=0;
+//            }
+//            else
+//            {
+//                lastnodeid = tempList[i - 1];
+//                nextnodeid = tempList[i + 1];
+//            }
+            //Debug.Log(directionInfo.path.Count);
+//            roleView.GenerateADirectionNode(lastnodeid,nextnodeid,nodeid, direction_id);
+//        }
 
     }
 
+
+
     void OnMapNodeSelectSignal(MapNavNode mapNavNode)
     {
-        if (gameDataService.GetRoleInMap(mapNavNode.idx) == null)
-        {
-            //SetAllUIVisible(false);
-            roleView.SetPathVisible(false);
-        }
-        else if (gameDataService.GetRoleInMap(mapNavNode.idx).roleid == roleInfo.roleid)
-        {
-            roleView.SetPathVisible(true);
-        }
-        else
-        {
-            roleView.SetPathVisible(false);
-        }
+//        if (mapNavNode == null)
+//            return;
+//        RoleInfo r=activeGameDataService.GetRoleInMap(mapNavNode.idx);
+//        if (r != null)
+//        {
+//            List<int> l = activeGameDataService.GetAllDirectionDids(r.role_id);
+//        }
     }
 
     //public void OnRoleSelectSignal(RoleInfo selectedRole)
@@ -206,40 +191,51 @@ public class RoleMediator:Mediator
 
     public void OnDestroy()
     {
+        Debug.Log("destroy role " + role_id);
         //setRolePosCallbackSignal.RemoveListener(UpdateRolePos);
         //roleSelectSignal.AddListener(OnRoleSelectSignal);
-        updateDirectionPathCallbackSignal.RemoveListener(OnUpdateDirectionPathCallbackSignal);
+        updateRoleDirectionSignal.RemoveListener(OnUpdateRoleDirectionSignal);
         mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
         doActionAnimSignal.RemoveListener(OnDoActionAnimSignal);
     }
 
-    void OnDoActionAnimSignal(DoActionAnimSignal.Param param)
+    void OnDoActionAnimSignal(DoRoleActionAnimSignal.Param param)
     {
-        switch (param.type)
+        if(param.role_id==roleInfo.role_id)
         {
-            //移动
-            case 0:
-                //int roleid=int.Parse(param.param["roleid"].ToString());
-                //int pos_id=int.Parse(param.param["pos_id"].ToString());
+            switch (param.type)
+            {
 
-                if(param.roleid==roleInfo.roleid)
-                {
+                //移动
+                case 0:
+                    //int roleid=int.Parse(param.param["roleid"].ToString());
+                    //int pos_id=int.Parse(param.param["pos_id"].ToString());
+
+
                     //Vector3 source_pos = gameObject.transform.position;
                     Vector3 target_pos = mapRootMediator.mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id).position+new Vector3(0,6,0);
                     //gameObject.transform.LookAt(target_pos, new Vector3(0,1,0));
-                    iTween.MoveTo(gameObject, iTween.Hash("position", target_pos, "easeType", "linear","time",1));
-                }
+                    iTween.MoveTo(gameObject, iTween.Hash("position", target_pos, "easeType", "linear","time",0.5));
 
-                break;
-            //攻击
-            case 3:
-                break;
-            //防御
-            case 4:
-                break;
-            default:
-                break;
+                    break;
+//                //出现
+//                case 1:
+//                    break;
+                //消失
+                case 2:
+                    Destroy(gameObject);
+                    break;
+                //攻击
+                case 3:
+                    break;
+                //防御
+                case 4:
+                    break;
+                default:
+                    break;
+            }
         }
+
     }
 }
 

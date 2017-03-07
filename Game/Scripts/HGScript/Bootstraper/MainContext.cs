@@ -8,7 +8,9 @@ using strange.extensions.dispatcher.eventdispatcher.api;
 using strange.extensions.dispatcher.eventdispatcher.impl;
 using strange.extensions.command.api;
 using strange.extensions.command.impl;
-
+using System.IO;
+using System.Threading;
+using Vectrosity;
 
 public class MainContext : MVCSContext {
 
@@ -71,8 +73,6 @@ public class MainContext : MVCSContext {
 
     void bindServices()
     {
-        //静态文件读写
-        injectionBinder.Bind<StaticFileIOService>().ToSingleton();
 
         //资源
         injectionBinder.Bind<ResourceService>().ToSingleton();
@@ -80,17 +80,27 @@ public class MainContext : MVCSContext {
         //场景
         injectionBinder.Bind<AsyncSceneService>().ToSingleton();
 
-        //静态数据
-        injectionBinder.Bind<DefaultDataIOService>().ToSingleton();
+        //txt读写
+        injectionBinder.Bind<FileIOService>().ToSingleton();
 
-        //游戏数据
-        injectionBinder.Bind<GameDataService>().ToSingleton();
+        //游戏动态数据
+        injectionBinder.Bind<ActiveGameDataService>().ToSingleton();
 
         //网络
         injectionBinder.Bind<NetService>().ToSingleton();
 
         //单机存档
         injectionBinder.Bind<SaveService>().ToSingleton();
+
+        //网络数据更新
+        injectionBinder.Bind<NetDataUpdateService>().ToSingleton();
+
+        //网络推送触发signal服务
+        injectionBinder.Bind<NetPushSignalSerivice>().ToSingleton();
+
+
+
+
 
     }
 
@@ -104,10 +114,12 @@ public class MainContext : MVCSContext {
         //动态数据
         //splayerinfo
         injectionBinder.Bind<SPlayerInfo>().ToSingleton();
-        //单人游戏数据
+        //游戏数据
         GameInfo gameInfo = new GameInfo();
         injectionBinder.Bind<GameInfo>().ToValue(gameInfo);
-        //Debug.Log(JsonUtility.ToJson(gameInfo));
+
+        //游戏中途退出的玩家队列
+        injectionBinder.Bind<PlayerFailQueue>().ToSingleton();
 
         
 
@@ -116,8 +128,6 @@ public class MainContext : MVCSContext {
 
     void bindSignalsAndCommands()
     {
-        //test
-        commandBinder.Bind<TestSignal>().To<TestCommand>();
 
         //app
         commandBinder.Bind<StartAppSignal>().To<StartAppCommand>().Once();
@@ -153,18 +163,32 @@ public class MainContext : MVCSContext {
         //injectionBinder.Bind<SetRolePosCallbackSignal>().ToSingleton();
 
         //direction
-        commandBinder.Bind<DirectionClickSignal>().To<DirectionClickCommand>();
-        injectionBinder.Bind<DirectionClickCallbackSignal>().ToSingleton();
-        commandBinder.Bind<UpdateDirectionPathSignal>().To<UpdateDirectionPathCommand>();
-        injectionBinder.Bind<UpdateDirectionPathCallbackSignal>().ToSingleton();
+//        commandBinder.Bind<DirectionClickSignal>().To<DirectionClickCommand>();
+//        injectionBinder.Bind<DirectionClickCallbackSignal>().ToSingleton();
+        injectionBinder.Bind<UpdateRoleDirectionSignal>().ToSingleton();
 
         //turn
         commandBinder.Bind<NextturnSignal>().To<NextturnCommand>();
         commandBinder.Bind<BroadcastActionSignal>().To<BroadcastActionCommand>();
-        injectionBinder.Bind<DoActionAnimSignal>().ToSingleton();
+        injectionBinder.Bind<DoRoleActionAnimSignal>().ToSingleton();
+        injectionBinder.Bind<DoBuildingActionAnimSignal>().ToSingleton();
+        injectionBinder.Bind<PlayerFailPushSignal>().ToSingleton();
         injectionBinder.Bind<DoMapUpdateSignal>().ToSingleton();
         injectionBinder.Bind<ActionAnimStartSignal>().ToSingleton();
         injectionBinder.Bind<ActionAnimFinishSignal>().ToSingleton();
+        injectionBinder.Bind<DoBananaUpdateSignal>().ToSingleton();
+        injectionBinder.Bind<DoSightzoonUpdateSignal>().ToSingleton();
+
+        //gamehall push
+        injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
+        injectionBinder.Bind<CancelMultiGamePushSignal>().ToSingleton();
+        injectionBinder.Bind<JoinMultiGamePushSignal>().ToSingleton();
+        injectionBinder.Bind<LeaveMultiGamePushSignal>().ToSingleton();
+
+        //game push
+        injectionBinder.Bind<MultiGameStartPushSignal>().ToSingleton();
+        injectionBinder.Bind<NextTurnPushSignal>().ToSingleton();
+
         
 
     }
@@ -184,9 +208,17 @@ public class MainContext : MVCSContext {
         mediationBinder.Bind<LoginView>().To<LoginMediator>();
         mediationBinder.Bind<MapRootView>().To<MapRootMediator>();
         mediationBinder.Bind<RoleView>().To<RoleMediator>();
+        mediationBinder.Bind<BuildingView>().To<BuildingMediator>();
         mediationBinder.Bind<LoadingView>().To<LoadingMediator>();
         //mediationBinder.Bind<RoleUIView>().To<RoleUIMediator>();
         mediationBinder.Bind<NextturnView>().To<NextturnMediator>();
+        mediationBinder.Bind<GameUIView>().To<GameUIMediator>();
+
+        mediationBinder.Bind<PropertyPanelView>().To<PropertyPanelMediator>();
+        mediationBinder.Bind<TopPanelView>().To<TopPanelMediator>();
+
+        mediationBinder.Bind<MyRoleListPanelView>().To<MyRoleListPanelMediator>();
+        mediationBinder.Bind<AllPlayerListPanelView>().To<AllPlayerListPanelMediator>();
     }
 
     public override IContext Start()
@@ -195,7 +227,10 @@ public class MainContext : MVCSContext {
 
         test();
 
-
+        Texture2D arrowStart=Resources.Load("arrow/Textures/VectorTextures/arrowStart") as Texture2D;
+        Texture2D arrowEnd=Resources.Load("arrow/Textures/VectorTextures/arrowEnd") as Texture2D;
+        Material lineMaterial=Resources.Load("arrow/ThickLine") as Material;
+        VectorLine.SetEndCap("Arrow",EndCap.Front,lineMaterial,arrowStart,arrowEnd);
 
         //读取静态数据到内存
         injectionBinder.GetInstance<DefaultGameDataUpdateSignal>().Dispatch(() => 
@@ -211,6 +246,7 @@ public class MainContext : MVCSContext {
 
     void test()
     {
+        
         //injectionBinder.GetInstance<StaticFileIOService>().WriteAllTxt("12344444", "/123.txt", "/1/2/3");
         //string str = injectionBinder.GetInstance<StaticFileIOService>().ReadAllText("/123.txt", "/1/2/3");
         //Debug.Log(str);
@@ -224,7 +260,17 @@ public class MainContext : MVCSContext {
         //injectionBinder.GetInstance<StaticFileIOService>().WriteAllTxt("123","123.txt");
         //Debug.Log(injectionBinder.GetInstance<StaticFileIOService>().ReadAllText("123.txt"));
         //Debug.Log(Application.streamingAssetsPath);
-        ;
+
+//        injectionBinder.GetInstance<BootstrapView>().StartCoroutine(dl());
+    }
+
+    IEnumerator dl()
+    {
+        WWW www=new WWW("127.0.0.1:10001/turtle.png");
+        yield return www;
+        Texture2D tt = www.texture;
+        byte[] bytes = tt.EncodeToPNG();
+        File.WriteAllBytes(Application.persistentDataPath+"/test",bytes);
     }
 
     void test2()

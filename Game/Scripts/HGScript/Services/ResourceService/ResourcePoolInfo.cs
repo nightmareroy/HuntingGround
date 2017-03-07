@@ -24,9 +24,20 @@ public class ResourcePoolInfo{
     static ResourcePoolInfo()
     {
         //添加resourcePool成员
+
+        //role
         ResourcePool.Add("role/0", new ResourcePoolInfo("role/0", 15));
         ResourcePool.Add("role/1", new ResourcePoolInfo("role/1/goku", 15));
+        ResourcePool.Add("role/2", new ResourcePoolInfo("role/2/chimpanzee", 20));
+
+        //building
+        ResourcePool.Add("building/1", new ResourcePoolInfo("building/1/home", 20));
+        ResourcePool.Add("building/3", new ResourcePoolInfo("building/3/monkey", 30));
+
+        //roleui
         ResourcePool.Add("roleui/roleui",new ResourcePoolInfo("roleui/roleui",15));
+
+        //map
         ResourcePool.Add("map/HexNode/HexNode", new ResourcePoolInfo("map/HexNode/HexNode",40));
     }
 }

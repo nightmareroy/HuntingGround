@@ -22,55 +22,70 @@ public class NetService
     [Inject]
     public LoadingSignal loadingSignal { get; set; }
 
+
+
     [Inject]
-    public BroadcastActionSignal broadcastActionSignal { get; set; }
+    public NetPushSignalSerivice netPushSignalSerivice{ get; set;}
 
 
     //sessionid
     public string sessionid;
 
     //服务器ip
-    string host_gate = "127.0.0.1";//"127.0.0.1:8088/huntingground/";
+    string host_gate = "192.168.0.106";//"127.0.0.1";//"127.0.0.1:8088/huntingground/";
     int port_gate = 3014;
 
     Connection pclient = new Connection();
 
+    //default data list
+    public const string defaultDataUrl="192.168.0.106:8080";//"127.0.0.1:8080";
+
     //test
-    public string test = "test/test.php";
+    public const string test = "test/test.php";
 
     ///user
     //
-    public string gateRoute = "gate.gateHandler.queryEntry";
+    public const string gateRoute = "gate.gateHandler.queryEntry";
 
-    public string connectRoute = "connector.entryHandler.connect";
+    public const string connectRoute = "connector.entryHandler.connect";
 
 
     //account,password
-    public string loginRoute = "connector.entryHandler.login";
+    public const string loginRoute = "connector.entryHandler.login";
     
     //account,password
-    public string registerRoute = "connector.entryHandler.register";
+    public const string registerRoute = "connector.entryHandler.register";
 
     ///game
     //
-    public string isingame = "game.gameHandler.isingame";
+    public const string isingame = "game.gameHandler.isingame";
     //
-    public string nextturn = "game.gameHandler.nextturn";
+    public const string NextTurn = "game.gameHandler.NextTurn";
     //
-    public string createnewgame = "game.gameHandler.createnewgame";
+    public const string create_single_game="game.gameHandler.SingleGameStart";
     //
-    public string startgame = "game.gameHandler.startgame";
+    public const string create_multi_game = "gamelist.gamelistHandler.CreateMultiGame";
     //
-    public string loadgame = "game.gameHandler.loadgame";
+    public const string cancel_or_leave_multi_game="gamelist.gamelistHandler.CancelOrLeaveMultiGame";
     //
-    public string updategameinfo = "game.gameHandler.updategameinfo";
+    public const string join_multi_game="gamelist.gamelistHandler.JoinMultiGame";
     //
-    public string getgameinfo = "game.gameHandler.getgameinfo";
+    public const string multi_game_start = "game.gameHandler.MultiGameStart";
+    //
+    public const string LoadGame = "game.gameHandler.LoadGame";
+    //
+    public const string updategameinfo = "game.gameHandler.updategameinfo";
+    //
+    public const string getgameinfo = "game.gameHandler.getgameinfo";
+    //
+    public const string fail = "game.gameHandler.fail";
 
     //
-    public string doAction = "doAction";
+//    public const string doAction = "doAction";
 
-
+    //game hall
+    public const string enterGameHall="gamelist.gamelistHandler.EnterGameHall";
+    public const string leaveGameHall="gamelist.gamelistHandler.LeaveGameHall";
 
 
 
@@ -174,11 +189,9 @@ public class NetService
             Debug.logger.Log("Error, reason: " + msg.jsonObj["reason"]);
         });
 
-        pclient.on(doAction, (msg) => {
-            Debug.Log((msg.data as JsonArray).ToString());
-            broadcastActionSignal.Dispatch(msg.data as JsonArray);
-            
-        });
+
+
+        netPushSignalSerivice.Init(pclient);
 
         //GetServerList((serverlist) => { Debug.Log("333"); });
     }
@@ -195,20 +208,20 @@ public class NetService
             loadingSignal.Dispatch(true);
             pclient.InitClient(host_gate, port_gate, (message) =>
             {
-                Debug.Log("init callback");
+//                Debug.Log("init callback");
                 try
                 {
                     
                     pclient.connect(null, (jsonObject) =>
                     {
-                        Debug.Log("connect callback");
+//                        Debug.Log("connect callback");
                         JsonObject msg = new JsonObject();
                         msg["uid"] = "";
                         try
                         {
                             pclient.request(gateRoute, msg,(message2) =>
                             {
-                                Debug.Log("getroute callback");
+//                                Debug.Log("getroute callback");
                                 //Debug.Log("2");
                                 //Debug.Log("queryEntry" + message2.id);
                                 //NetData netData = new NetData(message2);
@@ -293,6 +306,11 @@ public class NetService
         });
     }
 
+    public NetWorkState GetConnectStatus()
+    {
+        return pclient.netWorkState;
+    }
+
 
     //public void Login(string account, string pwd, Action<bool> callback)
     //{
@@ -374,69 +392,54 @@ public class NetService
         );
 
     }
+        
 
 
+    IEnumerator WWWPost(string url, Action<WWW> callback, WWWForm form,WWW www, bool enableLoading)
+    {
+        if (enableLoading)
+            loadingSignal.Dispatch(true);
 
+        www = new WWW(url, form);
+        yield return www;
 
+        if (www.error != null)
+        {
+            Debug.LogError(www.error);
+//            throw new Exception(www.error);
+        }
 
+        callback(www);
 
-    //IEnumerator Post(string url, Action<NetData> callback, WWWForm form, bool islogin, bool enableLoading)
-    //{
-    //    if (enableLoading)
-    //        loadingSignal.Dispatch(true);
-    //    if (!islogin)
-    //        form.AddField("sessionid", sessionid);
-    //    WWW www = new WWW(host + url, form);
-    //    yield return www;
-    //    Debug.LogWarning(www.text);
-    //    Debug.LogWarning(serverRoot + url);
-    //    NetData netData = null;
-    //    try
-    //    {
-    //        netData = JsonUtility.FromJson<NetData>(www.text);
-    //        if (islogin)
-    //            sessionid = netData.sessionid;
-    //        callback(netData);
-    //    }
-    //    catch
-    //    {
-    //        Debug.LogError("json error!\nurl:" + host + url + "\ntext:" + www.text);
-    //    }
+        if (enableLoading)
+            loadingSignal.Dispatch(false);
+    }
 
-    //    if (enableLoading)
-    //        loadingSignal.Dispatch(false);
-    //}
+    IEnumerator WWWGet(string url, Action<WWW> callback,WWW www, bool enableLoading)
+    {
+        if (enableLoading)
+            loadingSignal.Dispatch(true);
+        www = new WWW(url);
+        yield return www;
 
-    //IEnumerator Get(string url, Action<NetData> callback, bool enableLoading = true)
-    //{
-    //    if (enableLoading)
-    //        loadingSignal.Dispatch(true);
-    //    WWW www = new WWW(serverRoot+url);
-    //    yield return www;
-    //    NetData netData=null;
-    //    //Debug.Log(www.text);
-    //    try
-    //    {
-    //        netData = JsonUtility.FromJson<NetData>(www.text);
-    //        callback(netData);
-            
-    //    }
-    //    catch
-    //    {
-    //        Debug.LogError("json error,url:" + serverRoot + url + "\ntext:" + www.text);
-    //    }
+        if (www.error != null)
+        {
+            Debug.LogError(www.error);
+//            throw new Exception(www.error);
+        }
 
-    //    if (enableLoading)
-    //        loadingSignal.Dispatch(false);
-    //}
+        callback(www);
 
-    //public void Request(string url, Action<NetData> callback, WWWForm form = null, bool islogin=false, bool enableLoading=true)
-    //{
-    //    if(form!=null)
-    //        bootstrapView.StartCoroutine(Post(url,callback,form,islogin,enableLoading));
-    //    else
-    //        //bootstrapView.StartCoroutine(Get(url, callback));
-    //        bootstrapView.StartCoroutine(Post(url, callback, new WWWForm(), islogin, enableLoading));
-    //}
+        if (enableLoading)
+            loadingSignal.Dispatch(false);
+    }
+
+    public void WWWRequest(string url, Action<WWW> callback, WWWForm form = null, WWW www=null,bool enableLoading=true)
+    {
+        if(form!=null)
+            bootstrapView.StartCoroutine(WWWPost(url,callback,form,www,enableLoading));
+        else
+            bootstrapView.StartCoroutine(WWWGet(url, callback,www,enableLoading));
+    }
 }
 

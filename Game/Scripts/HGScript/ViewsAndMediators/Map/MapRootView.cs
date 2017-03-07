@@ -1,29 +1,39 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using MapNavKit;
 using strange.extensions.context.api;
 using strange.extensions.context.impl;
 using strange.extensions.mediation.api;
 using strange.extensions.mediation.impl;
+using Priority_Queue;
+//using 
 
 public class MapRootView : MapNavHexa,IView {
     public GameObject nodeObj;
     TerrainData mainTerrainData;
     public Terrain mainTerrain;
     public Camera gameCamera;
+    public Camera uiCamera;
     public GameObject gameAndUICamerasRoot;
     public Camera overviewCamera;
 
     public Material stoneMat;
     public Material forestMat;
 
-    
+    public UnityEngine.UI.GraphicRaycaster graphicRaycaster;
+    public UnityEngine.EventSystems.EventSystem eventSystem;
 
-    bool isPressed = false;
+
+
+    bool isDraggingCam = false;
+    bool isDraggingPath =false;
 
     //两者意义不同，并不严格相反，当isDraggingCameraMode刚刚变为false时，isDraggingPath仍然为false，因为尚未开始拖拽
-    bool isDraggingCameraMode = true;
-    bool isDraggingPath = false;
+//    bool isDraggingCameraMode = true;
+//    bool isDraggingPath = false;
 
     float MovingSpeed = 25;
 
@@ -43,10 +53,28 @@ public class MapRootView : MapNavHexa,IView {
     [Inject]
     public DoMapUpdateSignal doMapUpdateSignal { get; set; }
 
+    [Inject]
+    public ActiveGameDataService activeGameDataService{ get; set;}
+
+    [Inject]
+    public DGameDataCollection dGameDataCollection{ get; set;}
+
+    [Inject]
+    public DoSightzoonUpdateSignal doSightzoonUpdateSignal{ get; set;}
+
+    [Inject]
+    public ActionAnimStartSignal actionAnimStartSignal{ get; set;}
+
+    [Inject]
+    public ActionAnimFinishSignal actionAnimFinishSignal{ get; set;}
+
     //[Inject]
     //public PathSetFinishedSignal pathSetFinishedSignal { get; set; }
 
     public System.Action pathSetFinishCallback;
+
+
+    List<int> unmovablePosIdList=new List<int>();
 
     MapNavNode lastEnteredNode = null;
 
@@ -64,6 +92,37 @@ public class MapRootView : MapNavHexa,IView {
     Vector3 thisHit2 = Vector3.zero;
     //Vector3 startCamPos2 = Vector3.zero;
 
+    int[,][,] sightSys = new int[,][,]
+        {
+            {
+                new int[,]
+                {
+                    {1,1},{1,0},{0,-1},{-1,0},{-1,1},{0,1}
+                },
+                new int[,]
+                {
+                    {2,1},{2,0},{2,-1},{1,-1},{0,-2},{-1,-1},{-2,-1},{-2,0},{-2,1},{-1,2},{0,2},{1,2}
+                },
+                new int[,]
+                {
+                    {3,2},{3,1},{3,0},{3,-1},{2,-2},{1,-2},{0,-3},{-1,-2},{-2,-2},{-3,-1},{-3,0},{-3,1},{-3,2},{-2,2},{-1,3},{0,3},{1,3},{2,2}
+                }
+            },
+            {
+                new int[,]
+                {
+                    {1,0},{1,-1},{0,-1},{-1,-1},{-1,0},{0,1}
+                },
+                new int[,]
+                {
+                    {2,1},{2,0},{2,-1},{1,-2},{0,-2},{-1,-2},{-2,-1},{-2,0},{-2,1},{-1,1},{0,2},{1,1}
+                },
+                new int[,]
+                {
+                    {3,1},{3,0},{3,-1},{3,-2},{2,-2},{1,-3},{0,-3},{1,-3},{-2,-2},{-3,-2},{-3,-1},{-3,0},{-3,1},{-2,2},{-1,2},{0,3},{1,2},{2,2}
+                }
+            }
+        };
 
     
     float width, length, hori, vert;//, offs;
@@ -73,7 +132,10 @@ public class MapRootView : MapNavHexa,IView {
     float[,] mountainHeightData_12;
 
     float heightMapPointDist;
-    
+
+    int selected_pos_id=-1;
+
+    bool isActing=false;
 
     public void Init(GameInfo gameInfo)
     {
@@ -81,8 +143,8 @@ public class MapRootView : MapNavHexa,IView {
 
         //Debug.Log(gameInfo.mapInfo.width);
 
-        mapHorizontalSize = gameInfo.map_info.width;
-        mapVerticalSize = gameInfo.map_info.height;
+        mapHorizontalSize = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameInfo.gametype_id].width;
+        mapVerticalSize = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameInfo.gametype_id].height;
         coordSystem = CoordinateSystem.EvenOffset;
         gridOrientation = GridOrientation.FlatTop;
 
@@ -162,141 +224,471 @@ public class MapRootView : MapNavHexa,IView {
         SetNodeView();
 
         doMapUpdateSignal.AddListener(OnDoMapUpdate);
+        mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
+        doSightzoonUpdateSignal.AddListener(OnDoSightzoonUpdateSignal);
+
+        actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
+        actionAnimFinishSignal.AddListener(OnActionAnimFinishSignal);
         //GenMountToHeightMap();
         
     }
 
+    public void ClearUnmovableZoon()
+    {
+        SetMoveMarker(unmovablePosIdList,false);
+        unmovablePosIdList.Clear();
+    }
+
+    public void SetUnmovableZoon(int pos_id, float move)
+    {
+        int center_x = pos_id % mapHorizontalSize;
+
+//        int[][][] sightSystem = sightSys[center_x & 1];
+        List<int> list = new List<int>();
+        list.Add(pos_id);
+//        for (int j = 0; j < Math.Floor( move); j++)
+//        {
+//            
+//            for (int i = 0; i < sightSys[center_x & 1,j].GetLength(0); i++)
+//            {
+//                
+//                int pos_id_n = pos_id+sightSys[center_x & 1,j][i,0] + sightSys[center_x & 1,j][i,1] * mapHorizontalSize;
+//                list.Add(pos_id_n);
+//            }
+//        }
+
+
+        List<MapNavNode> l= NodesAround<MapNavNode>(NodeAt<MapNavNode>(pos_id),move,NodeCostCallback);
+        foreach (MapNavNode n in l)
+        {
+            list.Add(n.idx);
+        }
+
+
+        SetMoveMarker(unmovablePosIdList,false);
+        unmovablePosIdList = list;
+        SetMoveMarker(unmovablePosIdList,true);
+    }
+        
+    bool GetNodeInDragCamZoon(MapNavNode mapNavNode)
+    {
+        if (mapNavNode == null)
+            return true;
+        if (unmovablePosIdList.IndexOf(mapNavNode.idx) == -1)
+            return true;
+        else
+            return false;
+    }
+
+//    bool GetPathWithinMaxMoveDistance(MapNavNode mapNavNode)
+//    {
+//
+//        RoleInfo roleInfo=activeGameDataService.GetRoleInMap(selected_pos_id);
+//        if (roleInfo == null)
+//        {
+//            return false;
+//        }
+//        int path_length = roleInfo.direction_param.Count;
+//        int move = roleInfo.move;
+//        return path_length < move;
+//
+//    }
 
     protected void LateUpdate()
     {
-        //if (Input.touchCount == 0)
-        //{
-        //    return;
-        //}
-
-        //如果鼠标或者手势在ui元素上方，则不处理
-        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-        {
-            return;
-        }
-
+        
 
         //查找鼠标射线与terrain的碰撞点处的node
         RaycastHit hit;
-        //Ray r = gameCamera.ScreenPointToRay(Input.GetTouch(0).position);//(Input.mousePosition);
-        Ray r = gameCamera.ScreenPointToRay(Input.mousePosition);   
-        if (Physics.Raycast(r, out hit,100f,1<<LayerMask.NameToLayer("Terrain")))
+        Ray r = gameCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(r, out hit, 100f, 1 << LayerMask.NameToLayer("Terrain")|LayerMask.NameToLayer("UI")))
         {
             thisHit = hit.point;
-            //if (Input.GetTouch(0).phase == TouchPhase.Began)//Input.GetMouseButtonDown(0))
-            if (Input.GetMouseButtonDown(0))
+//            Debug.Log(hit.transform.gameObject.layer);
+//            if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+//            {
+//                
+//                Debug.Log("1");
+//            }
+            if (hit.transform.gameObject.layer != LayerMask.NameToLayer("Terrain"))
             {
-                isPressed = true;
-                startHit = hit.point;
-                startCamPos = gameAndUICamerasRoot.transform.position;
+                Debug.Log("null");
+                return;
+            }
 
-            }
-            //if (Input.GetTouch(0).phase == TouchPhase.Ended)//(Input.GetMouseButtonUp(0))
-            if (Input.GetMouseButtonUp(0))
-            {
-                isPressed = false;
-            }
-            Vector3 delta = thisHit - startHit;              
             MapNavNode n = NodeAtWorldPosition<MapNavNode>(hit.point);
-
-            //拖拽移动摄像机模式
-            if (isDraggingCameraMode)
+            if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonUp(0))
             {
-                if (isPressed)
+                if (!isDraggingCam)
                 {
-                    gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x - delta.x, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z - delta.z);
-
-                }
-                if (Input.GetMouseButtonUp(0))
-                {
-                    Vector3 camTrans = gameAndUICamerasRoot.transform.position - startCamPos;
-                    if (camTrans.x * camTrans.x + camTrans.z * camTrans.z < clickBoundWithinMove)
-                    {
-                        mapNodeSelectSignal.Dispatch(n);
-                    }
-                }
-            }
-            //拖拽设置路径模式
-            else
-            {
-                ////如果鼠标或者手势在ui元素上方，则不处理
-                //if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
-                //{
-                //    return;
-                //}
-                //if (Input.GetTouch(0).phase == TouchPhase.Began)
-                if (Input.GetMouseButtonDown(0))
-                {
-                    //if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+                    //如果鼠标或者手势在ui元素上方，则不处理
                     if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
                     {
-                        return;
+                        UnityEngine.EventSystems.PointerEventData eventData = new UnityEngine.EventSystems.PointerEventData(eventSystem);
+                        eventData.pressPosition = Input.mousePosition;
+                        eventData.position = Input.mousePosition;
+                        List<UnityEngine.EventSystems.RaycastResult> list = new List<UnityEngine.EventSystems.RaycastResult>();
+                        graphicRaycaster.Raycast(eventData, list);
+                        if (list.Count != 0)
+                        {
+                            UnityEngine.EventSystems.RaycastResult result = list[0];
+                            if (result.gameObject.layer == LayerMask.NameToLayer("UI"))
+                            {
+                                return;
+                            }
+                        }
+
+
                     }
                 }
-                //if (Input.GetTouch(0).phase == TouchPhase.Move)
-                if (Input.GetMouseButton(0))
-                {
-                    isDraggingPath = true;
 
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (GetNodeInDragCamZoon(n))
+                    {
+                        isDraggingCam = true;
+                        startHit = hit.point;
+                        startCamPos = gameAndUICamerasRoot.transform.position;
+                    }
+                    else
+                    {
+                        isDraggingPath = true;
+                    }
+
+
+                }
+
+                if (Input.GetMouseButtonUp(0))
+                {
+                    if (isDraggingCam == true)
+                    {
+                        isDraggingCam = false;
+
+                        Vector3 camTrans = gameAndUICamerasRoot.transform.position - startCamPos;
+                        if (camTrans.x * camTrans.x + camTrans.z * camTrans.z < clickBoundWithinMove)
+                        {
+//                            SetNodeSelect(selected_pos_id,false);
+//                            selected_pos_id = n.idx;
+//                            SetNodeSelect(selected_pos_id,true);
+                            if (isActing == false)
+                            {
+                                mapNodeSelectSignal.Dispatch(n);
+                            }
+                        }
+                    }
+
+                    if (isDraggingPath == true)
+                    {
+                        isDraggingPath = false;
+//                        SetNodeSelect(selected_pos_id,false);
+                        if (isActing == false)
+                        {
+                            mapNodeSelectSignal.Dispatch(null);
+                        }
+                    }
+
+
+
+
+                }
+            }
+
+
+            if (Input.GetMouseButton(0))
+            {
+                
+
+                if (isDraggingPath)
+                {
                     MapNavNode enteredNode = n;
+
                     if (lastEnteredNode != enteredNode)
                     {
-                        //Debug.Log("enter:" + enteredNode.q + "," + enteredNode.r);
-                        if (OnMouseEnter != null)
+//                        if (GetPathWithinMaxMoveDistance(n))
+                        if(!GetNodeInDragCamZoon(n))
                         {
-                            OnMouseEnter(lastEnteredNode,enteredNode);
-
-                        }
-                        lastEnteredNode = enteredNode;
-                    }
-
-                    //第二个手指此时可以拖动摄像机
-                    if (Input.touchCount > 1)// && Input.GetTouch(1).phase == TouchPhase.Moved)
-                    {
-                        RaycastHit hit2;
-                        Ray r2 = gameCamera.ScreenPointToRay(Input.GetTouch(1).position);
-
-                        if (Physics.Raycast(r2, out hit2, 100f, 1 << LayerMask.NameToLayer("Terrain")))
-                        {
-                            thisHit2 = hit2.point;
-                            if (Input.GetTouch(1).phase == TouchPhase.Began)
+                            if (OnMouseEnter != null)
                             {
-                                startHit2 = hit2.point;
-                            }
-                            if (Input.GetTouch(1).phase == TouchPhase.Moved)
-                            {
-                                Vector3 delta2 = thisHit2 - startHit2;
-                                gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x - delta2.x, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z - delta2.z);
+                                OnMouseEnter(lastEnteredNode, enteredNode);
 
                             }
+                            lastEnteredNode = enteredNode;
                         }
-                    }
+                        else
+                        {
+//                            if (pathSetFinishCallback != null)
+//                                pathSetFinishCallback();
+                            isDraggingPath = false;
+                            if (isActing == false)
+                            {
+                                mapNodeSelectSignal.Dispatch(null);
+                            }
+                        }
 
+                    }
                 }
-                else
-                {
-                    lastEnteredNode = null;
-                }
-                if (isDraggingPath&&Input.GetMouseButtonUp(0))
-                {
-                    if (pathSetFinishCallback != null)
-                        pathSetFinishCallback();
-                    isDraggingPath = false;
-                }
+
+
+            }
+            else
+            {
+                lastEnteredNode = null;
+            }
+                
+
+
+
+            Vector3 delta = thisHit - startHit;
+            if (isDraggingCam)
+            {
+                gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x - delta.x, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z - delta.z);
+
             }
         }
     }
 
-    public void SetDraggingCameraMode(bool isDraggingCameraMode)
+    void OnMapNodeSelectSignal(MapNavNode n)
     {
-        this.isDraggingCameraMode = isDraggingCameraMode;
-        isDraggingPath = isDraggingCameraMode;
+        Hashtable args = new Hashtable();
+        args.Add("from", gameCamera.orthographicSize);
+        args.Add("time", 0.1f);
+        args.Add("onupdate", "OnITweenUpdate");
+
+        if (n != null)
+        {
+            RoleInfo roleInfo = activeGameDataService.GetRoleInMap(n.idx);
+            if (roleInfo != null)
+            {
+                float sourceY = gameAndUICamerasRoot.transform.position.y;
+                float toValue = 3.5f;
+                switch ((int)Math.Floor( roleInfo.max_move))
+                {
+                    case 1:
+                        toValue = 3.5f;
+                        break;
+                    case 2:
+                        toValue = 5f;
+                        break;
+                }
+
+
+
+                args.Add("to", toValue);
+                iTween.ValueTo(gameObject, args);
+
+                iTween.MoveTo(gameAndUICamerasRoot, new Vector3(n.position.x, sourceY, n.position.z), 0.3f);
+            }
+            else
+            {
+                
+                args.Add("to",3.5f);
+                iTween.ValueTo(gameObject,args);
+            }
+
+            SetNodeSelect(n.idx);
+        }
+        else
+        {
+            SetNodeSelect(-1);
+
+            args.Add("to",3.5f);
+            iTween.ValueTo(gameObject,args);
+        }
     }
+
+    void OnITweenUpdate(object value)
+    {
+        float v = (float)value;
+        gameCamera.orthographicSize = v;
+        uiCamera.orthographicSize = v;
+    }
+
+    void OnActionAnimStartSignal()
+    {
+        isActing = true;
+    }
+
+    void OnActionAnimFinishSignal()
+    {
+        isActing = false;
+    }
+        
+
+//    protected void LateUpdateOld()
+//    {
+//        //if (Input.touchCount == 0)
+//        //{
+//        //    return;
+//        //}
+//
+//        //如果鼠标或者手势在ui元素上方，则不处理
+////        if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+////        {
+////            return;
+////        }
+//
+//
+//        //查找鼠标射线与terrain的碰撞点处的node
+//        RaycastHit hit;
+//        //Ray r = gameCamera.ScreenPointToRay(Input.GetTouch(0).position);//(Input.mousePosition);
+//        Ray r = gameCamera.ScreenPointToRay(Input.mousePosition);
+//        if (Physics.Raycast(r, out hit,100f,1<<LayerMask.NameToLayer("Terrain")))
+//        {
+//
+//            thisHit = hit.point;
+//            //if (Input.GetTouch(0).phase == TouchPhase.Began)//Input.GetMouseButtonDown(0))
+//            if (Input.GetMouseButtonDown(0))
+//            {
+//                isDraggingCam = true;
+//                startHit = hit.point;
+//                startCamPos = gameAndUICamerasRoot.transform.position;
+//
+//            }
+//            //if (Input.GetTouch(0).phase == TouchPhase.Ended)//(Input.GetMouseButtonUp(0))
+//            if (Input.GetMouseButtonUp(0))
+//            {
+//                isDraggingCam = false;
+//            }
+//            Vector3 delta = thisHit - startHit;              
+//            MapNavNode n = NodeAtWorldPosition<MapNavNode>(hit.point);
+//
+//            //拖拽移动摄像机模式
+//            if (isDraggingCam)
+//            {
+//                if (isDraggingCam)
+//                {
+//                    gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x - delta.x, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z - delta.z);
+//
+//                }
+//                if (Input.GetMouseButtonUp(0))
+//                {
+//                    Vector3 camTrans = gameAndUICamerasRoot.transform.position - startCamPos;
+//                    if (camTrans.x * camTrans.x + camTrans.z * camTrans.z < clickBoundWithinMove)
+//                    {
+//                        mapNodeSelectSignal.Dispatch(n);
+//                    }
+//                }
+//            }
+//            //拖拽设置路径模式
+//            else
+//            {
+//                ////如果鼠标或者手势在ui元素上方，则不处理
+//                //if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+//                //{
+//                //    return;
+//                //}
+//                //if (Input.GetTouch(0).phase == TouchPhase.Began)
+//                if (Input.GetMouseButtonDown(0))
+//                {
+//                    //if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+//                    if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+//                    {
+//                        return;
+//                    }
+//                }
+//                //if (Input.GetTouch(0).phase == TouchPhase.Move)
+//                if (Input.GetMouseButton(0))
+//                {
+//                    isDraggingPath = true;
+//
+//                    MapNavNode enteredNode = n;
+//                    if (lastEnteredNode != enteredNode)
+//                    {
+//                        //Debug.Log("enter:" + enteredNode.q + "," + enteredNode.r);
+//                        if (OnMouseEnter != null)
+//                        {
+//                            OnMouseEnter(lastEnteredNode,enteredNode);
+//
+//                        }
+//                        lastEnteredNode = enteredNode;
+//                    }
+//
+//                    //第二个手指此时可以拖动摄像机
+//                    if (Input.touchCount > 1)// && Input.GetTouch(1).phase == TouchPhase.Moved)
+//                    {
+//                        RaycastHit hit2;
+//                        Ray r2 = gameCamera.ScreenPointToRay(Input.GetTouch(1).position);
+//
+//                        if (Physics.Raycast(r2, out hit2, 100f, 1 << LayerMask.NameToLayer("Terrain")))
+//                        {
+//                            thisHit2 = hit2.point;
+//                            if (Input.GetTouch(1).phase == TouchPhase.Began)
+//                            {
+//                                startHit2 = hit2.point;
+//                            }
+//                            if (Input.GetTouch(1).phase == TouchPhase.Moved)
+//                            {
+//                                Vector3 delta2 = thisHit2 - startHit2;
+//                                gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x - delta2.x, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z - delta2.z);
+//
+//                            }
+//                        }
+//                    }
+//
+//                }
+//                else
+//                {
+//                    lastEnteredNode = null;
+//                }
+//                if (isDraggingPath&&Input.GetMouseButtonUp(0))
+//                {
+//                    if (pathSetFinishCallback != null)
+//                        pathSetFinishCallback();
+//                    isDraggingPath = false;
+//                }
+//            }
+//        }
+//    } 
+
+//    void UpdateMoveMarkers()
+//    {
+//        // do not bother to do anything if the unit got no moves left
+////        if (activeUnit.movesLeft == 0) return;
+//
+//        // first find out which nodes the unit could move to and keep that 
+//        // list around to later use when checking what tile the player click
+//        List<MapNavNode> validMoveNodes = NodesAround<Sample4Tile>(activeUnit.tile, activeUnit.movesLeft, OnNodeCostCallback);
+//
+//        // In this example I will show a border to indicate the valid movement area
+//        // I need to pass a list of the valid node to GetBroderNodes() and it will give back
+//        // a list of those nodes that are neighbouring invalid nodes
+//
+//        // I suggest you have a look at the GetBorderNodes() function and simply copy its
+//        // code and create your own variation that can instantiate the borders in the same loop
+//        // that the border node is discovered since the code below will basically copy the inner
+//        // loop of the function. (for a little optimization of this)
+//        List<Sample4Tile> borderNodes = map.GetBorderNodes<Sample4Tile>(validMoveNodes, CheckIfValidNode);
+//
+//        // now create the border objects. might be better to use a object cache solution
+//        // with this or you might even want to mesh combine the result if needed
+//        for (int i = 0; i < borderNodes.Count; i++)
+//        {
+//            // I run through all the border nodes and then check the neighbours for each to find out
+//            // in what direction the placed border object should be rotated to create the correct border
+//            // Each hexa node has 6 neighbours. An invalid neighbour will be marked as null
+//            List<Sample4Tile> neighbours = map.NodesAround<Sample4Tile>(borderNodes[i], true, false, CheckIfValidNode);
+//            for (int j = 0; j < neighbours.Count; j++)
+//            {
+//                // each hexa node has 6 neighbours.
+//                // an invalid neighbour will be null or not in the list of valid nodes.
+//                // also check that the node is not the one the active unit is on that
+//                // a border is not drawn around the selected unit's tile
+//                if (neighbours[j] != activeUnit.tile && (neighbours[j] == null || false == validMoveNodes.Contains(neighbours[j])))
+//                {
+//                    GameObject go = (GameObject)Instantiate(borderFab);
+//                    go.transform.position = borderNodes[i].position + new Vector3(0f, 0.1f, 0f);
+//                    go.transform.rotation = Quaternion.Euler(0f, BorderRotations[j], 0f);
+//                    go.transform.parent = bordersContainer;
+//                }
+//            }
+//        }
+//    }
+
+//    public void SetDraggingCameraMode(bool isDraggingCam)
+//    {
+//        this.isDraggingCam = isDraggingCam;
+//        isDraggingPath = isDraggingCam;
+//    }
 
     public GameObject GetNodeObj(int idx)
     {
@@ -334,13 +726,13 @@ public class MapRootView : MapNavHexa,IView {
 
     void GenMountToHeightMap()
     {
-        for(int i=0;i<gameInfo.map_info.landform_map.Count;i++)
+        for(int i=0;i<gameInfo.map_info.landform.Count;i++)
         {
-            int x = i % gameInfo.map_info.width;
-            int y = i / gameInfo.map_info.width;
+            int x = i % mapHorizontalSize;
+            int y = i / mapVerticalSize;
 
             //将山地与山林的地形抬高
-            if (gameInfo.map_info.landform_map[i] == 2 || gameInfo.map_info.landform_map[i] == 4)
+            if (gameInfo.map_info.landform[i] == 2 || gameInfo.map_info.landform[i] == 4)
             {
                 BumpNodeMountToHeightMap(x,y);
             }
@@ -351,14 +743,15 @@ public class MapRootView : MapNavHexa,IView {
 
     void SetNodeView()
     {
-        for (int i = 0; i < gameInfo.map_info.landform_map.Count; i++)
+        for (int i = 0; i < gameInfo.map_info.landform.Count; i++)
         {
             GameObject nodeObj = GetNodeObj(i);
-            Transform hillT=nodeObj.transform.Find("Hill");
-            Transform resourceT = nodeObj.transform.Find("Resource");
-            Transform shadowT = nodeObj.transform.Find("Shadow");
+            Transform hillT=nodeObj.transform.FindChild("Hill");
+            Transform resourceT = nodeObj.transform.FindChild("Resource");
+            Transform shadowT = nodeObj.transform.FindChild("Shadow");
+            Transform outsightMask = nodeObj.transform.FindChild("OutsightMask");
 
-            switch (gameInfo.map_info.landform_map[i])
+            switch (gameInfo.map_info.landform[i])
             {
                 case 0:
                     shadowT.gameObject.SetActive(true);
@@ -374,7 +767,7 @@ public class MapRootView : MapNavHexa,IView {
             }
 
             //resource_map长度和landform_map相同，此处直接使用
-            switch (gameInfo.map_info.resource_map[i])
+            switch (gameInfo.map_info.resource[i])
             {
                 case 1:
                     resourceT.gameObject.SetActive(false);
@@ -389,8 +782,19 @@ public class MapRootView : MapNavHexa,IView {
                     break;
             }
 
+            if (gameInfo.map_info.sightzoon.IndexOf(i) == -1)
+            {
+                outsightMask.gameObject.SetActive(true);
+            }
+            else
+            {
+                outsightMask.gameObject.SetActive(false);
+            }
+
         }
     }
+
+
 
     void OnDoMapUpdate(DoMapUpdateSignal.Param param)
     {
@@ -398,7 +802,6 @@ public class MapRootView : MapNavHexa,IView {
         {
             GameObject nodeObj = GetNodeObj(pos_id);
             Transform hillT = nodeObj.transform.Find("Hill");
-            Transform resourceT = nodeObj.transform.Find("Resource");
             Transform shadowT = nodeObj.transform.Find("Shadow");
 
             switch (param.landformList[pos_id])
@@ -415,8 +818,15 @@ public class MapRootView : MapNavHexa,IView {
                     hillT.gameObject.SetActive(true);
                     break;
             }
+                    
 
-            //resource_map长度、key和landform_map相同，此处直接使用
+        }
+
+        foreach (int pos_id in param.resourceList.Keys)
+        {
+
+            GameObject nodeObj = GetNodeObj(pos_id);
+            Transform resourceT = nodeObj.transform.Find("Resource");
             switch (param.resourceList[pos_id])
             {
                 case 1:
@@ -431,6 +841,66 @@ public class MapRootView : MapNavHexa,IView {
                     resourceT.GetComponent<MeshRenderer>().material = stoneMat;
                     break;
             }
+        }
+    }
+
+    void OnDoSightzoonUpdateSignal(Dictionary<int,int> landform_map)
+    {
+        ClearSightzoon();
+        gameInfo.map_info.sightzoon.Clear();
+        foreach (int pos_id in landform_map.Keys)
+        {
+            gameInfo.map_info.sightzoon.Add(pos_id);
+        }
+        SetSightzoon();
+    }
+
+    void ClearSightzoon()
+    {
+        foreach (int pos_id in gameInfo.map_info.sightzoon)
+        {
+            GameObject outsightMaskObj = GetNodeObj(pos_id).transform.FindChild("OutsightMask").gameObject;
+            outsightMaskObj.SetActive(true);
+        }
+    }
+
+    void SetSightzoon()
+    {
+        foreach (int pos_id in gameInfo.map_info.sightzoon)
+        {
+            GameObject outsightMaskObj = GetNodeObj(pos_id).transform.FindChild("OutsightMask").gameObject;
+            outsightMaskObj.SetActive(false);
+        }
+    }
+
+    void SetMoveMarker(List<int> pos_id_list,bool visible)
+    {
+        foreach (int pos_id in pos_id_list)
+        {
+            GameObject nodeObj = GetNodeObj(pos_id);
+            Transform moveMarker = nodeObj.transform.FindChild("MoveMarker");
+            moveMarker.gameObject.SetActive(visible);
+        }
+    }
+
+    void SetNodeSelect(int pos_id)//,bool visible)
+    {
+        if (selected_pos_id != -1)
+        {
+            GameObject nodeObj = GetNodeObj(selected_pos_id);
+            Transform selectBorder = nodeObj.transform.FindChild("SelectBorder");
+            selectBorder.gameObject.SetActive(false);
+        }
+
+        
+        selected_pos_id = pos_id;
+
+
+        if (selected_pos_id != -1)
+        {
+            GameObject nodeObj = GetNodeObj(selected_pos_id);
+            Transform selectBorder = nodeObj.transform.FindChild("SelectBorder");
+            selectBorder.gameObject.SetActive(true);
         }
     }
 
@@ -458,6 +928,11 @@ public class MapRootView : MapNavHexa,IView {
     void OnDistroy()
     {
         doMapUpdateSignal.RemoveListener(OnDoMapUpdate);
+        mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
+        doSightzoonUpdateSignal.RemoveListener(OnDoSightzoonUpdateSignal);
+
+        actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
+        actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);
     }
 
     
@@ -482,11 +957,11 @@ public class MapRootView : MapNavHexa,IView {
             {
                 if (Application.isPlaying)
                 {	// was called at runtime
-                    Object.Destroy(parent.GetChild(i).gameObject);
+                    Destroy(parent.GetChild(i).gameObject);
                 }
                 else
                 {	// was called from editor
-                    Object.DestroyImmediate(parent.GetChild(i).gameObject);
+                    DestroyImmediate(parent.GetChild(i).gameObject);
                 }
             }
 
@@ -630,6 +1105,203 @@ public class MapRootView : MapNavHexa,IView {
         }
     }
 
+
+
+
+    /// <summary> Returns a list of nodes that represents a path from one node to another. An A* algorithm is used
+    /// to calculate the path. Return an empty list on error or if the destination node can't be reached. </summary>
+    /// <param name="start">    The node where the path should start. </param>
+    /// <param name="end">      The node to reach. </param>
+    /// <param name="callback"> An optional callback that can return an integer value to indicate the 
+    ///                         cost of moving onto the specified node. This callback should return 1
+    ///                         for normal nodes and 2+ for higher cost to move onto the node and 0
+    ///                         if the node can't be moved onto; for example when the node is occupied. </param>
+    /// <returns> Return an empty list on error or if the destination node can't be reached. </returns>
+    public override List<T> Path<T>(MapNavNode start, MapNavNode end, NodeCostCallback callback)
+//        where T : MapNavNode
+    {
+        if (start == null || end == null) return new List<T>(0);
+        if (start.idx == end.idx) return new List<T>(0);
+
+        List<T> path = new List<T>();
+        int current = -1;
+        int next = -1;
+        float new_cost = 0;
+        float next_cost = 0;
+        double priority = 0;
+
+        // first check if not direct neighbour and get out early
+        List<int> neighbors = PathNodeIndicesAround(start.idx); // NodeIndicesAround(start.idx, false, false, null);
+        if (neighbors != null)
+        {
+            if (neighbors.Contains(end.idx))
+            {
+                if (callback != null)
+                {
+                    next_cost = callback(start, end);
+                    if (next_cost >= 1) path.Add((T)end);
+                }
+                return path;
+            }
+        }
+
+        HeapPriorityQueue<PriorityQueueNode> frontier = new HeapPriorityQueue<PriorityQueueNode>(grid.Length);
+        frontier.Enqueue(new PriorityQueueNode() { idx = start.idx }, 0);
+        Dictionary<int, int> came_from = new Dictionary<int, int>(); // <for_idx, came_from_idx>
+        Dictionary<int, float> cost_so_far = new Dictionary<int, float>(); // <idx, cost>
+        came_from.Add(start.idx, -1);
+        cost_so_far.Add(start.idx, 0);
+
+        while (frontier.Count > 0)
+        {
+            current = frontier.Dequeue().idx;
+            if (current == end.idx) break;
+
+            neighbors = PathNodeIndicesAround(current); //NodeIndicesAround(current, false, false, null);
+            if (neighbors != null)
+            {
+                for (int i = 0; i < neighbors.Count; i++)
+                {
+                    next = neighbors[i];
+                    if (callback != null) next_cost = callback(grid[current], grid[next]);
+                    if (next_cost <= 0.0f) continue;
+
+                    new_cost = cost_so_far[current] + next_cost;
+                    if (false == cost_so_far.ContainsKey(next)) cost_so_far.Add(next, new_cost + 1);
+                    if (new_cost < cost_so_far[next])
+                    {
+                        cost_so_far[next] = new_cost;
+                        priority = new_cost + Heuristic(start.idx, end.idx, next);
+                        frontier.Enqueue(new PriorityQueueNode() { idx = next }, priority);
+                        if (false == came_from.ContainsKey(next)) came_from.Add(next, current);
+                        else came_from[next] = current;
+                    }
+                }
+            }
+        }
+
+        // build path
+        next = end.idx;
+        while (came_from.ContainsKey(next))
+        {
+            if (came_from[next] == -1) break;
+            if (came_from[next] == start.idx) break;
+            path.Add((T)grid[came_from[next]]);
+            next = came_from[next];
+        }
+
+        if (path.Count > 0)
+        {
+            path.Reverse();
+            path.Add((T)end);
+        }
+
+        return path;
+    }
+
+
+    /// <summary> This returns a list of nodes around the given node, using the notion of "movement costs" to determine
+    /// if a node should be included in the returned list or not. The callback can be used to specify the "cost" to 
+    /// reach the specified node, making this useful to select the nodes that a unit might be able to move to. </summary>
+    /// <param name="node"> The central node. </param>
+    /// <param name="radius"> The maximum area around the node to select nodes from. </param>
+    /// <param name="callback"> An optional callback (pass null to not use it) that can be used to indicate the cost of
+    /// moving from one node to another. By default it will "cost" 1 to move from one node to another. By returning 0 in 
+    /// this callback you can indicate that the target node can't be moved to (for example when the tile is occupied).
+    /// Return a value higher than one (like 2 or 3) if moving to the target node would cost more and potentially
+    /// exclude the node from the returned list of nodes (when cost to reach it would be bigger than "radius"). </param>
+    /// <returns> Returns a list of nodes that can be used with grid[]. Returns empty list (not null) if there was an error. </returns>
+    public virtual List<T> NodesAround<T>(MapNavNode node, float radius, NodeCostCallback callback)
+        where T : MapNavNode
+    {
+        List<int> accepted = NodeIndicesAround(node.idx, radius, callback);
+        if (accepted.Count > 0)
+        {
+            List<T> res = new List<T>();
+            for (int i = 0; i < accepted.Count; i++) res.Add((T)grid[accepted[i]]);
+            return res;
+        }
+        return new List<T>(0);
+    }
+
+
+    /// <summary> This returns a list of nodes around the given node, using the notion of "movement costs" to determine
+    /// if a node should be included in the returned list or not. The callback can be used to specify the "cost" to 
+    /// reach the specified node, making this useful to select the nodes that a unit might be able to move to. </summary>
+    /// <param name="nodeIdx"> The central node's index. </param>
+    /// <param name="radius"> The maximum area around the node to select nodes from. </param>
+    /// <param name="callback"> An optional callback (pass null to not use it) that can be used to indicate the cost of
+    /// moving from one node to another. By default it will "cost" 1 to move from one node to another. By returning 0 in 
+    /// this callback you can indicate that the target node can't be moved to (for example when the tile is occupied).
+    /// Return a value higher than one (like 2 or 3) if moving to the target node would cost more and potentially
+    /// exclude the node from the returned list of nodes (when cost to reach it would be bigger than "radius"). </param>
+    /// <returns> Returns a list of node indices that can be used with grid[]. Returns empty list (not null) if there was an error. </returns>
+    public virtual List<int> NodeIndicesAround(int nodeIdx, float radius, NodeCostCallback callback)
+    {
+        List<int> accepted = new List<int>(); // accepted nodes
+        Dictionary<int, float> costs = new Dictionary<int, float>(); // <idx, cost> - used to track which nodes have been checked
+        CheckNodesRecursive(nodeIdx, radius, callback, -1, 0, ref accepted, ref costs);
+        return accepted;
+    }
+
+
+
+
+    /// <summary> This is a Helper for NodeIndicesAround(int idx, int radius, bool includeCentralNode, ValidationCallback callback) </summary>
+    protected virtual void CheckNodesRecursive(int idx, float radius, NodeCostCallback callback, int cameFrom, float currDepth, ref List<int> accepted, ref Dictionary<int, float> costs)
+    {
+        List<int> ids = _neighbours(idx);
+        for (int i = 0; i < ids.Count; i++)
+        {
+            // skip if came into this function from this node. no point in testing
+            // against the node that caused this one to be called for checking
+            if (cameFrom == ids[i]) continue;
+
+            // get cost to move to the node
+            float res = callback == null ? 1f : callback(grid[idx], grid[ids[i]]);
+
+            // can move to node?
+            if (res <= 0.0f) continue;
+
+            // how much would it cost in total?
+            float d = currDepth + res;
+
+            // too much to reach node?
+            if (d > radius) continue;
+
+            // this neighbour node can be moved to, add it to the accepted list if not yet present
+            if (false == accepted.Contains(ids[i])) accepted.Add(ids[i]);
+
+            // do not bother to check the node's neighbours if already reached the max 
+            if (d == radius) continue;
+
+            // check if should look into the neighbours of this node
+            if (costs.ContainsKey(ids[i]))
+            {
+                // if the new total cost is higher than previously checked then skip this neighbour 
+                // since testing with the higher costs will not change any results when checking 
+                // the neighbours of this neighbour node
+                if (costs[ids[i]] <= d) continue;
+            }
+            else costs.Add(ids[i], d);
+
+            // update the cost to move to this node
+            costs[ids[i]] = d;
+
+            // and test its neighbours for possible valid nodes
+            CheckNodesRecursive(ids[i], radius, callback, idx, d, ref accepted, ref costs);
+        }
+    }
+
+
+    public float NodeCostCallback(MapNavNode fromNode, MapNavNode toNode)
+    {
+        Dictionary<int,DLandform> dLandformDic=dGameDataCollection.dLandformCollection.dLandformDic;
+
+        return dLandformDic[gameInfo.map_info.landform[fromNode.idx]].cost+dLandformDic[gameInfo.map_info.landform[toNode.idx]].cost;
+
+//        return 1f;
+    }
     #endregion
 
 }
