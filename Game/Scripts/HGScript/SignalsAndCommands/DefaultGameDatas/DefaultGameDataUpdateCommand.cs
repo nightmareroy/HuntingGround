@@ -26,8 +26,8 @@ public class DefaultGameDataUpdateCommand:Command
         
         netDataUpdateService.StartUpdate(()=>{
             //roles
-            dGameDataCollection.dRoleCollection = new DRoleCollection();
-            dGameDataCollection.dRoleCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DRole.txt"));
+//            dGameDataCollection.dRoleCollection = new DRoleCollection();
+//            dGameDataCollection.dRoleCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DRole.txt"));
 
             dGameDataCollection.dSkillCollection = new DSkillCollection();
             dGameDataCollection.dSkillCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DSkill.txt"));

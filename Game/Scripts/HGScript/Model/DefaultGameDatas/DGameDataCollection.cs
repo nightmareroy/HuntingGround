@@ -9,7 +9,6 @@ public class DGameDataCollection
 //    public SaveService dSave=new SaveService();
 
     //roles
-    public DRoleCollection dRoleCollection;// = new DRoleCollection();
     public DSkillCollection dSkillCollection;// = new DSkillCollection();
     public DDirectionCollection dDirectionCollection;// = new DDirectionCollection();
 

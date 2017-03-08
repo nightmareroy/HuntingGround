@@ -236,7 +236,7 @@ public class RoleUIView:View
     public void UpdateName()
     {
         //roleName.text = dGameDataCollection.dRoleCollection.dRoleDic[gameInfo.allplayers[playerid].role_dic[roleid].did].name;
-        roleName.text = dGameDataCollection.dRoleCollection.dRoleDic[gameInfo.role_dic[role_id].role_did].name;//roleid.ToString();
+        roleName.text = gameInfo.role_dic[role_id].name;
         blood.value=gameInfo.role_dic[role_id].health;
     }
 
