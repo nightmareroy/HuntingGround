@@ -273,7 +273,7 @@ public class LoginView : View {
     {
         string game_name = gameHallGame.game_name;
         int creator_id = gameHallGame.creator_id;
-        string creator_name = gameHallGame.players_info[creator_id].player_name;
+        string creator_name = gameHallGame.players_info[creator_id].name;
         int gametype_id = gameHallGame.gametype_id;
         int player_count = gameHallGame.players_info.Count;
 
@@ -359,8 +359,8 @@ public class LoginView : View {
 
         GameObject playerItem = GameObject.Instantiate(multiGameSettingPlayerTemplate as UnityEngine.Object) as GameObject;
 
-        playerItem.name = gameHallPlayer.player_id.ToString();
-        playerItem.GetComponent<Text>().text = gameHallPlayer.player_name;
+        playerItem.name = gameHallPlayer.uid.ToString();
+        playerItem.GetComponent<Text>().text = gameHallPlayer.name;
         playerItem.transform.SetParent(groupItem.transform.FindChild("PlayerList"));
         playerItem.transform.localPosition = Vector3.zero;
         playerItem.transform.localScale = Vector3.one;

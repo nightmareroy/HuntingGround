@@ -35,8 +35,8 @@ public class GameHallGame
 
 public class GameHallPlayer
 {
-    public int player_id;
-    public string player_name;
+    public int uid;
+    public string name;
     public int group_id;
 
 //    public void InitFromJson(JsonObject playerJO)

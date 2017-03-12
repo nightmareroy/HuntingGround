@@ -20,7 +20,10 @@ public class MapRootView : MapNavHexa,IView {
     public GameObject gameAndUICamerasRoot;
     public Camera overviewCamera;
 
-    public Material stoneMat;
+    public Material hillMat;
+    public Material mountainMat;
+
+    public Material grassMat;
     public Material forestMat;
 
     public UnityEngine.UI.GraphicRaycaster graphicRaycaster;
@@ -746,7 +749,7 @@ public class MapRootView : MapNavHexa,IView {
         for (int i = 0; i < gameInfo.map_info.landform.Count; i++)
         {
             GameObject nodeObj = GetNodeObj(i);
-            Transform hillT=nodeObj.transform.FindChild("Hill");
+            Transform landformT=nodeObj.transform.FindChild("Landform");
             Transform resourceT = nodeObj.transform.FindChild("Resource");
             Transform shadowT = nodeObj.transform.FindChild("Shadow");
             Transform outsightMask = nodeObj.transform.FindChild("OutsightMask");
@@ -758,11 +761,17 @@ public class MapRootView : MapNavHexa,IView {
                     break;
                 case 1:
                     shadowT.gameObject.SetActive(false);
-                    hillT.gameObject.SetActive(false);
+                    landformT.gameObject.SetActive(false);
                     break;
                 case 2:
                     shadowT.gameObject.SetActive(false);
-                    hillT.gameObject.SetActive(true);
+                    landformT.gameObject.SetActive(true);
+                    landformT.GetComponent<MeshRenderer>().material = hillMat;
+                    break;
+                case 3:
+                    shadowT.gameObject.SetActive(false);
+                    landformT.gameObject.SetActive(true);
+                    landformT.GetComponent<MeshRenderer>().material = mountainMat;
                     break;
             }
 
@@ -778,7 +787,7 @@ public class MapRootView : MapNavHexa,IView {
                     break;
                 case 3:
                     resourceT.gameObject.SetActive(true);
-                    resourceT.GetComponent<MeshRenderer>().material = stoneMat;
+                    resourceT.GetComponent<MeshRenderer>().material = grassMat;
                     break;
             }
 
@@ -801,21 +810,27 @@ public class MapRootView : MapNavHexa,IView {
         foreach (int pos_id in param.landformList.Keys)
         {
             GameObject nodeObj = GetNodeObj(pos_id);
-            Transform hillT = nodeObj.transform.Find("Hill");
+            Transform landformT = nodeObj.transform.FindChild("Landform");
             Transform shadowT = nodeObj.transform.Find("Shadow");
 
             switch (param.landformList[pos_id])
             {
-                case 0:
-                    shadowT.gameObject.SetActive(true);
-                    break;
+                //case 0:
+                //    shadowT.gameObject.SetActive(true);
+                //    break;
                 case 1:
                     shadowT.gameObject.SetActive(false);
-                    hillT.gameObject.SetActive(false);
+                    landformT.gameObject.SetActive(false);
                     break;
                 case 2:
                     shadowT.gameObject.SetActive(false);
-                    hillT.gameObject.SetActive(true);
+                    landformT.gameObject.SetActive(true);
+                    landformT.GetComponent<MeshRenderer>().material = hillMat;
+                    break;
+                case 3:
+                    shadowT.gameObject.SetActive(false);
+                    landformT.gameObject.SetActive(true);
+                    landformT.GetComponent<MeshRenderer>().material = mountainMat;
                     break;
             }
                     
@@ -838,7 +853,7 @@ public class MapRootView : MapNavHexa,IView {
                     break;
                 case 3:
                     resourceT.gameObject.SetActive(true);
-                    resourceT.GetComponent<MeshRenderer>().material = stoneMat;
+                    resourceT.GetComponent<MeshRenderer>().material = grassMat;
                     break;
             }
         }
@@ -935,8 +950,8 @@ public class MapRootView : MapNavHexa,IView {
         actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);
     }
 
-    
 
+    #region nav map overrides
 
     public override void OnGridChanged(bool created)
     {
@@ -995,119 +1010,6 @@ public class MapRootView : MapNavHexa,IView {
         }
     }
 
-    #region strange view impl
-    /// Leave this value true most of the time. If for some reason you want
-    /// a view to exist outside a context you can set it to false. The only
-    /// difference is whether an error gets generated.
-    private bool _requiresContext = true;
-    public bool requiresContext
-    {
-        get
-        {
-            return _requiresContext;
-        }
-        set
-        {
-            _requiresContext = value;
-        }
-    }
-
-    /// A flag for allowing the View to register with the Context
-    /// In general you can ignore this. But some developers have asked for a way of disabling
-    ///  View registration with a checkbox from Unity, so here it is.
-    /// If you want to expose this capability either
-    /// (1) uncomment the commented-out line immediately below, or
-    /// (2) subclass View and override the autoRegisterWithContext method using your own custom (public) field.
-    //[SerializeField]
-    protected bool registerWithContext = true;
-    virtual public bool autoRegisterWithContext
-    {
-        get { return registerWithContext; }
-        set { registerWithContext = value; }
-    }
-
-    public bool registeredWithContext { get; set; }
-
-    /// A MonoBehaviour Awake handler.
-    /// The View will attempt to connect to the Context at this moment.
-    protected virtual void Awake()
-    {
-        if (autoRegisterWithContext && !registeredWithContext)
-            bubbleToContext(this, true, false);
-    }
-
-    /// A MonoBehaviour Start handler
-    /// If the View is not yet registered with the Context, it will 
-    /// attempt to connect again at this moment.
-    protected virtual void Start()
-    {
-        if (autoRegisterWithContext && !registeredWithContext)
-            bubbleToContext(this, true, true);
-    }
-
-    /// A MonoBehaviour OnDestroy handler
-    /// The View will inform the Context that it is about to be
-    /// destroyed.
-    protected virtual void OnDestroy()
-    {
-        bubbleToContext(this, false, false);
-    }
-
-    /// Recurses through Transform.parent to find the GameObject to which ContextView is attached
-    /// Has a loop limit of 100 levels.
-    /// By default, raises an Exception if no Context is found.
-    virtual protected void bubbleToContext(MonoBehaviour view, bool toAdd, bool finalTry)
-    {
-        const int LOOP_MAX = 100;
-        int loopLimiter = 0;
-        Transform trans = view.gameObject.transform;
-        while (trans.parent != null && loopLimiter < LOOP_MAX)
-        {
-            loopLimiter++;
-            trans = trans.parent;
-            if (trans.gameObject.GetComponent<ContextView>() != null)
-            {
-                ContextView contextView = trans.gameObject.GetComponent<ContextView>() as ContextView;
-                if (contextView.context != null)
-                {
-                    IContext context = contextView.context;
-                    if (toAdd)
-                    {
-                        context.AddView(view);
-                        registeredWithContext = true;
-                        return;
-                    }
-                    else
-                    {
-                        context.RemoveView(view);
-                        return;
-                    }
-                }
-            }
-        }
-        if (requiresContext && finalTry)
-        {
-            //last ditch. If there's a Context anywhere, we'll use it!
-            if (Context.firstContext != null)
-            {
-                Context.firstContext.AddView(view);
-                registeredWithContext = true;
-                return;
-            }
-
-
-            string msg = (loopLimiter == LOOP_MAX) ?
-                msg = "A view couldn't find a context. Loop limit reached." :
-                    msg = "A view was added with no context. Views must be added into the hierarchy of their ContextView lest all hell break loose.";
-            msg += "\nView: " + view.ToString();
-            throw new MediationException(msg,
-                MediationExceptionType.NO_CONTEXT);
-        }
-    }
-
-
-
-
     /// <summary> Returns a list of nodes that represents a path from one node to another. An A* algorithm is used
     /// to calculate the path. Return an empty list on error or if the destination node can't be reached. </summary>
     /// <param name="start">    The node where the path should start. </param>
@@ -1118,7 +1020,7 @@ public class MapRootView : MapNavHexa,IView {
     ///                         if the node can't be moved onto; for example when the node is occupied. </param>
     /// <returns> Return an empty list on error or if the destination node can't be reached. </returns>
     public override List<T> Path<T>(MapNavNode start, MapNavNode end, NodeCostCallback callback)
-//        where T : MapNavNode
+    //        where T : MapNavNode
     {
         if (start == null || end == null) return new List<T>(0);
         if (start.idx == end.idx) return new List<T>(0);
@@ -1296,12 +1198,139 @@ public class MapRootView : MapNavHexa,IView {
 
     public float NodeCostCallback(MapNavNode fromNode, MapNavNode toNode)
     {
-        Dictionary<int,DLandform> dLandformDic=dGameDataCollection.dLandformCollection.dLandformDic;
+        Dictionary<int, DLandform> dLandformDic = dGameDataCollection.dLandformCollection.dLandformDic;
 
-        return dLandformDic[gameInfo.map_info.landform[fromNode.idx]].cost+dLandformDic[gameInfo.map_info.landform[toNode.idx]].cost;
+        float fromCost=dLandformDic[gameInfo.map_info.landform[fromNode.idx]].cost;
+        float toCost = dLandformDic[gameInfo.map_info.landform[toNode.idx]].cost;
 
-//        return 1f;
+        if(toCost==0f)
+        {
+            return 0f;
+        }
+        else
+        {
+            return fromCost + toCost ;
+        }
+
+        //        return 1f;
     }
+
+    #endregion
+
+    #region strange view impl
+    /// Leave this value true most of the time. If for some reason you want
+    /// a view to exist outside a context you can set it to false. The only
+    /// difference is whether an error gets generated.
+    private bool _requiresContext = true;
+    public bool requiresContext
+    {
+        get
+        {
+            return _requiresContext;
+        }
+        set
+        {
+            _requiresContext = value;
+        }
+    }
+
+    /// A flag for allowing the View to register with the Context
+    /// In general you can ignore this. But some developers have asked for a way of disabling
+    ///  View registration with a checkbox from Unity, so here it is.
+    /// If you want to expose this capability either
+    /// (1) uncomment the commented-out line immediately below, or
+    /// (2) subclass View and override the autoRegisterWithContext method using your own custom (public) field.
+    //[SerializeField]
+    protected bool registerWithContext = true;
+    virtual public bool autoRegisterWithContext
+    {
+        get { return registerWithContext; }
+        set { registerWithContext = value; }
+    }
+
+    public bool registeredWithContext { get; set; }
+
+    /// A MonoBehaviour Awake handler.
+    /// The View will attempt to connect to the Context at this moment.
+    protected virtual void Awake()
+    {
+        if (autoRegisterWithContext && !registeredWithContext)
+            bubbleToContext(this, true, false);
+    }
+
+    /// A MonoBehaviour Start handler
+    /// If the View is not yet registered with the Context, it will 
+    /// attempt to connect again at this moment.
+    protected virtual void Start()
+    {
+        if (autoRegisterWithContext && !registeredWithContext)
+            bubbleToContext(this, true, true);
+    }
+
+    /// A MonoBehaviour OnDestroy handler
+    /// The View will inform the Context that it is about to be
+    /// destroyed.
+    protected virtual void OnDestroy()
+    {
+        bubbleToContext(this, false, false);
+    }
+
+    /// Recurses through Transform.parent to find the GameObject to which ContextView is attached
+    /// Has a loop limit of 100 levels.
+    /// By default, raises an Exception if no Context is found.
+    virtual protected void bubbleToContext(MonoBehaviour view, bool toAdd, bool finalTry)
+    {
+        const int LOOP_MAX = 100;
+        int loopLimiter = 0;
+        Transform trans = view.gameObject.transform;
+        while (trans.parent != null && loopLimiter < LOOP_MAX)
+        {
+            loopLimiter++;
+            trans = trans.parent;
+            if (trans.gameObject.GetComponent<ContextView>() != null)
+            {
+                ContextView contextView = trans.gameObject.GetComponent<ContextView>() as ContextView;
+                if (contextView.context != null)
+                {
+                    IContext context = contextView.context;
+                    if (toAdd)
+                    {
+                        context.AddView(view);
+                        registeredWithContext = true;
+                        return;
+                    }
+                    else
+                    {
+                        context.RemoveView(view);
+                        return;
+                    }
+                }
+            }
+        }
+        if (requiresContext && finalTry)
+        {
+            //last ditch. If there's a Context anywhere, we'll use it!
+            if (Context.firstContext != null)
+            {
+                Context.firstContext.AddView(view);
+                registeredWithContext = true;
+                return;
+            }
+
+
+            string msg = (loopLimiter == LOOP_MAX) ?
+                msg = "A view couldn't find a context. Loop limit reached." :
+                    msg = "A view was added with no context. Views must be added into the hierarchy of their ContextView lest all hell break loose.";
+            msg += "\nView: " + view.ToString();
+            throw new MediationException(msg,
+                MediationExceptionType.NO_CONTEXT);
+        }
+    }
+
+
+
+
+   
     #endregion
 
 }

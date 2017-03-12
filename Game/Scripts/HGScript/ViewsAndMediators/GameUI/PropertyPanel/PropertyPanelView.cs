@@ -102,36 +102,39 @@ public class PropertyPanelView :View
 
     public void SetNodePanel(int pos_id)
     {
-        switch (gameInfo.map_info.landform[pos_id])
-        {
-            case 0:
-                landform.text = "未探索";
-                break;
-            case 1:
-                landform.text = "平原";
-                break;
-            case 2:
-                landform.text = "山地";
-                break;
+        landform.text = dGameDataCollection.dLandformCollection.dLandformDic[gameInfo.map_info.landform[pos_id]].desc;
+        resource.text = dGameDataCollection.dResourceCollection.dResourceDic[gameInfo.map_info.resource[pos_id]].desc;
+
+        //switch (gameInfo.map_info.landform[pos_id])
+        //{
+        //    case 0:
+        //        landform.text = "未探索";
+        //        break;
+        //    case 1:
+        //        landform.text = "平原";
+        //        break;
+        //    case 2:
+        //        landform.text = "山地";
+        //        break;
                 
-        }
+        //}
 
-        switch (gameInfo.map_info.resource[pos_id])
-        {
-            case 0:
-                resource.text = "未探索";
-                break;
-            case 1:
-                resource.text = "无";
-                break;
-            case 2:
-                resource.text = "香蕉树";
-                break;
-            case 3:
-                resource.text = "香蕉";
-                break;
+        //switch (gameInfo.map_info.resource[pos_id])
+        //{
+        //    case 0:
+        //        resource.text = "未探索";
+        //        break;
+        //    case 1:
+        //        resource.text = "无";
+        //        break;
+        //    case 2:
+        //        resource.text = "香蕉树";
+        //        break;
+        //    case 3:
+        //        resource.text = "香蕉";
+        //        break;
 
-        }
+        //}
     }
 
     public void SetRoleDirections(string role_id)

@@ -106,8 +106,10 @@ public class BroadcastActionCommand:Command
 
         for (int step = 0; step < actionListJS.Count; step++)
         {
-            Debug.Log(step);
+            
             JsonObject stepJS = actionListJS[step] as JsonObject;
+            Debug.Log(step);
+            //Debug.Log(stepJS);
             switch (step)
             {
                 case 0:
@@ -115,82 +117,26 @@ public class BroadcastActionCommand:Command
                     break;
                 //移动
                 case 1:
-                case 2:
-                
-                //角色死亡
-                case 4:
-                //撤退
-                case 5:
-                //特殊指令中的角色、建筑、视野变化
-                case 7:
-                    DoSightModefiedAction(stepJS);
-//                    int index;
-//                    if (step != 4)
-//                        index = step;
-//                    else
-//                        index = 3;
-//                    foreach (string role_id in roleActionList.addRolesList[index].Keys)
-//                    {
-//                        gameInfo.role_dic.Add(role_id, roleActionList.addRolesList[index][role_id]);
-//
-//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-//                        doActionAnimSignalParam.type = 1;
-//                        doActionAnimSignalParam.role_id = role_id;
-//                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
-//
-//                        GameObject roleobj = resourceService.Spawn("role/" + gameInfo.role_dic[role_id].role_did);
-//                        roleobj.name = "role_" + role_id;
-//                    }
-//
-//                    foreach (string role_id in roleActionList.deleteRolesList[index])
-//                    {
-//                        gameInfo.role_dic.Remove(role_id);
-//
-//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-//                        doActionAnimSignalParam.type = 2;
-//                        doActionAnimSignalParam.role_id = role_id;
-//                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
-//                    }
-//
-//                    foreach (string role_id in roleActionList.moveList[index].Keys)
-//                    {
-//                        gameInfo.role_dic[role_id].pos_id = roleActionList.moveList[index][role_id];
-//
-//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-//                        doActionAnimSignalParam.type = 0;
-//                        doActionAnimSignalParam.role_id = role_id;
-//                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
-//                    }
-//
-//                    foreach (int pos_id in roleActionList.landformList[index].Keys)
-//                    {
-//                        gameInfo.map_info.landform[pos_id] = roleActionList.landformList[index][pos_id];
-//                    }
-//
-//                    foreach (int pos_id in roleActionList.resourceList[index].Keys)
-//                    {
-//                        gameInfo.map_info.resource[pos_id] = roleActionList.resourceList[index][pos_id];
-//                    }
-//
-//                    DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
-//                    doMapUpdateSignalParam.landformList = roleActionList.landformList[index];
-//                    doMapUpdateSignalParam.resourceList = roleActionList.resourceList[index];
-//                    doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
-//
-//                    doSightzoonUpdateSignal.Dispatch(roleActionList.landformList[index]);
-////                    Debug.Log("map dispatch!");
-//                    if (roleActionList.moveList[index].Count == 0)
-//                    {
-//                        yield return new WaitForSeconds(0);
-//                    }
-//                    else
-//                    {
-//                        yield return new WaitForSeconds(step_time);
-//                    }
+                    JsonArray modifiesAR=stepJS["modifies"] as JsonArray;
+                    foreach (object modifyObj in modifiesAR)
+                    {
+                        JsonObject modifyJS = modifyObj as JsonObject;
+                        DoSightModefiedAction(modifyJS);
                         yield return new WaitForSeconds(step_time);
+                    }
+
+                    break;
+                //角色死亡
+                case 3:
+                //特殊指令中的角色、建筑、视野变化
+                case 5:
+                    
+                    DoSightModefiedAction(stepJS);
+
+                    yield return new WaitForSeconds(step_time);
                     break;
                 //掉血
-                case 3:
+                case 2:
                     JsonObject damageJS=stepJS["damage"] as JsonObject;
                     foreach (string role_id in damageJS.Keys)
                     {
@@ -206,7 +152,7 @@ public class BroadcastActionCommand:Command
                     yield return new WaitForSeconds(step_time);
                     break;
                 //回血
-                case 6:
+                case 4:
                     JsonObject recoveryJS=stepJS["recovery"] as JsonObject;
                     foreach (string role_id in recoveryJS.Keys)
                     {
@@ -222,7 +168,7 @@ public class BroadcastActionCommand:Command
                     yield return new WaitForSeconds(step_time);
                     break;
                 //不造成角色、建筑、视野变化的指令
-                case 8:
+                case 6:
                     foreach (string role_id in (stepJS["action"] as JsonObject).Keys)
                     {
                         JsonObject turnActionJS = (stepJS["action"] as JsonObject)[role_id] as JsonObject;

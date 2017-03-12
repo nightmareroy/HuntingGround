@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using strange.extensions.mediation.impl;
 using UnityEngine;
@@ -77,9 +78,20 @@ public class RoleView:View
         animator.SetBool("isWalking", false);
     }
 
-    public void DoAttack()
+    public void DoAttack(int des_pos_id)
     {
-        animator.SetTrigger("attack");
+        float y = transform.position.y;
+        //animator.SetTrigger("attack");
+        //Vector3 src_p = mapRootMediator.mapRootView.GetNodeObj(src_pos_id).transform.position;
+        Vector3 des_p = mapRootMediator.mapRootView.GetNodeObj(des_pos_id).transform.position;
+
+        Hashtable args = new Hashtable();
+        args.Add("time",0.5f);
+        args.Add("x",des_p.x);
+        args.Add("y",y);
+        args.Add("z", des_p.z);
+        args.Add("loopType","pingPong");
+        iTween.MoveTo(gameObject,args);
     }
 
     public void DoDefend()

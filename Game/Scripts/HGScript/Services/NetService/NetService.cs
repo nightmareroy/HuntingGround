@@ -32,13 +32,13 @@ public class NetService
     public string sessionid;
 
     //服务器ip
-    string host_gate = "192.168.0.106";//"127.0.0.1";//"127.0.0.1:8088/huntingground/";
+    string host_gate = "192.168.0.100";//"127.0.0.1";//"127.0.0.1:8088/huntingground/";
     int port_gate = 3014;
 
     Connection pclient = new Connection();
 
     //default data list
-    public const string defaultDataUrl="192.168.0.106:8080";//"127.0.0.1:8080";
+    public const string defaultDataUrl="192.168.0.100:8080";//"127.0.0.1:8080";
 
     //test
     public const string test = "test/test.php";
