@@ -94,9 +94,9 @@ public class RoleView:View
         iTween.MoveTo(gameObject,args);
     }
 
-    public void DoDefend()
+    public void DoRoll()
     {
-        animator.SetTrigger("defend");
+        animator.SetTrigger("roll");
     }
 
 

@@ -124,8 +124,8 @@ public class BroadcastActionCommand:Command
                         DoSightModefiedAction(modifyJS);
                         yield return new WaitForSeconds(step_time);
                     }
-
                     break;
+
                 //角色死亡
                 case 3:
                 //特殊指令中的角色、建筑、视野变化
@@ -135,8 +135,35 @@ public class BroadcastActionCommand:Command
 
                     yield return new WaitForSeconds(step_time);
                     break;
-                //掉血
+                //攻击+掉血
                 case 2:
+                    JsonObject attackJS = stepJS["attack"] as JsonObject;
+                    
+                    foreach (string role_id in attackJS.Keys)
+                    {
+                        int type = int.Parse(attackJS["type"].ToString());
+                        int enemy_id=int.Parse(attackJS["enemy_id"].ToString());
+
+                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        switch (type)
+                        {
+                            case 1:
+                            case 2:
+                                doActionAnimSignalParam.type = 5;
+                                doActionAnimSignalParam.role_id = role_id;
+                                doActionAnimSignalParam.value = (float)enemy_id;
+                                doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                                break;
+                            case 3:
+                                
+                                doActionAnimSignalParam.type = 6;
+                                doActionAnimSignalParam.role_id = role_id;
+                                doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                                break;
+                        }
+
+                    }
+                    yield return new WaitForSeconds(step_time);
                     JsonObject damageJS=stepJS["damage"] as JsonObject;
                     foreach (string role_id in damageJS.Keys)
                     {
@@ -149,7 +176,7 @@ public class BroadcastActionCommand:Command
                         doActionAnimSignalParam.value = damage;
                         doActionAnimSignal.Dispatch(doActionAnimSignalParam);
                     }
-                    yield return new WaitForSeconds(step_time);
+                    //yield return new WaitForSeconds(step_time);
                     break;
                 //回血
                 case 4:

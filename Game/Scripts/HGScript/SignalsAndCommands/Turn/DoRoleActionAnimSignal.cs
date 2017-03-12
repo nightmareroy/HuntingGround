@@ -7,7 +7,7 @@ public class DoRoleActionAnimSignal:Signal<DoRoleActionAnimSignal.Param>
 {
     public class Param
     {
-        //0:移动  1:出现 2:消失 3:掉血 4：回血
+        //0:移动  1:出现 2:消失 3:掉血 4:回血 5:攻击 6:转圈
         public int type;
 
         public string role_id;

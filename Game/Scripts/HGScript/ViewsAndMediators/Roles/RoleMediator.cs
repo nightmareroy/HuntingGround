@@ -225,14 +225,22 @@ public class RoleMediator:Mediator
                 case 2:
                     Destroy(gameObject);
                     break;
-                //攻击
+                //掉血（在ui处理）
                 case 3:
+                    
                     break;
-                //防御
+                //回血（ui处理）
                 case 4:
                     break;
-                default:
+                //攻击
+                case 5:
+                    int pos_id = (int)param.value;
+                    roleView.DoAttack(pos_id);
                     break;
+                //转圈
+                case 6:
+                    break;
+
             }
         }
 
