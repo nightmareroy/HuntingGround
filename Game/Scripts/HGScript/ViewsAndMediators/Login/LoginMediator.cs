@@ -494,7 +494,7 @@ public class LoginMediator : Mediator {
         GameHallPlayer gameHallPlayer = new GameHallPlayer();
         gameHallPlayer.uid = uid;
         gameHallPlayer.group_id = int.Parse(jo["group_id"].ToString());
-        gameHallPlayer.name = jo["player_name"].ToString();
+        gameHallPlayer.name = jo["name"].ToString();
 
 
         gameHallDic.gameHallDic[creator_id].players_info.Add(uid,gameHallPlayer);
