@@ -226,7 +226,6 @@ public class MyRoleListPanelView : View
 
     void OnActionAnimFinishSignal()
     {
-        
         assignedRoleList.Clear();
         foreach (string role_id in gameInfo.role_dic.Keys)
         {

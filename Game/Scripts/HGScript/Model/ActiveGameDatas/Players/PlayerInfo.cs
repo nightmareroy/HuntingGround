@@ -17,6 +17,7 @@ public class PlayerInfo
     //public Dictionary<int, Dictionary<int, DSkill>> roledid_skill_dic = new Dictionary<int, Dictionary<int, DSkill>>();
     public float banana=-1;
     public int direction_turn;
+    //public bool ready = false;
 
     //key是角色静态id
     //public Dictionary<int, List<int>> country_skill_dic = new Dictionary<int, List<int>>();
@@ -40,6 +41,7 @@ public class PlayerInfo
         name=jsonobj["name"].ToString();
         group_id = int.Parse(jsonobj["group_id"].ToString());
         direction_turn = int.Parse(jsonobj["direction_turn"].ToString());
+        //ready = bool.Parse(jsonobj["ready"].ToString());
 
         if (jsonobj.ContainsKey("banana"))
         {

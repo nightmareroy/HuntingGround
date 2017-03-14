@@ -22,11 +22,14 @@ public class NextturnCommand:Command
     public ActionAnimStartSignal actionAnimStartSignal{ get; set;}
 
     [Inject]
+    public ActionAnimFinishSignal actionAnimFinishSignal { get; set; }
+
+    [Inject]
     public MapNodeSelectSignal mapNodeSelectSignal{ get; set;}
 
     public override void Execute()
     {
-
+        //gameInfo.anim_lock++;
         actionAnimStartSignal.Dispatch();
 
         mapNodeSelectSignal.Dispatch(null);
@@ -51,8 +54,11 @@ public class NextturnCommand:Command
 
         user.Add("current_turn", gameInfo.current_turn);
 
+
         netService.Request(NetService.NextTurn, user, (msg) => {
 //            Debug.Log(msg.rawString);
+            //gameInfo.anim_lock--;
+            //actionAnimFinishSignal.Dispatch();
             callback((bool)msg.data);
         });
     }

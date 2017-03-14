@@ -28,6 +28,7 @@ public class GameInfo//  : ISerializationCallbackReceiver
     public Dictionary<string,BuildingInfo> building_dic = new Dictionary<string, BuildingInfo>();
     //public List<PlayerInfo> allplayers_list=new List<PlayerInfo>();
 
+    //public int anim_lock = 0;
     
     //public Dictionary<int, DirectionInfo> curr_direction_dic = new Dictionary<int, DirectionInfo>(); 
     //public List<DirectionInfo> curr_direction_list=new List<DirectionInfo>();

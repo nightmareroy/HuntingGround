@@ -27,16 +27,21 @@ public class NextturnMediator:Mediator
     [Inject]
     public ActionAnimFinishSignal actionAnimFinishSignal { get; set; }
 
+    [Inject]
+    public UpdateDirectionTurnSignal updateDirectionTurnSignal { get; set; }
+
     public override void OnRegister()
     {
         nextturnView.nextturndelegate += OnNextturnClicked;
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.AddListener(OnActionAnimFinishSignal);
+        updateDirectionTurnSignal.AddListener(OnUpdateDirectionTurnSignal);
     }
 
     public void OnNextturnClicked()
     {
         nextturnSignal.Dispatch(OnNextturnCallback);
+        nextturnView.setBtnInteractable(false);
     }
 
     public void OnNextturnCallback(bool result)
@@ -54,11 +59,17 @@ public class NextturnMediator:Mediator
         nextturnView.setBtnInteractable(true);
     }
 
+    public void OnUpdateDirectionTurnSignal(int uid, int direction_turn)
+    {
+        nextturnView.setBtnInteractable(true);
+    }
+
     public void OnDestroy()
     {
         nextturnView.nextturndelegate -= OnNextturnClicked;
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);
+        updateDirectionTurnSignal.RemoveListener(OnUpdateDirectionTurnSignal);
     }
 }
 

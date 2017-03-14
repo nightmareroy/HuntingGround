@@ -71,6 +71,12 @@ public class MapRootView : MapNavHexa,IView {
     [Inject]
     public ActionAnimFinishSignal actionAnimFinishSignal{ get; set;}
 
+    [Inject]
+    public NextturnSignal nextturnSignal { get;set; }
+
+    [Inject]
+    public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
+
     //[Inject]
     //public PathSetFinishedSignal pathSetFinishedSignal { get; set; }
 
@@ -232,6 +238,8 @@ public class MapRootView : MapNavHexa,IView {
 
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.AddListener(OnActionAnimFinishSignal);
+        nextturnSignal.AddListener(OnNextturnSignal);
+        updateDirectionTurnSignal.AddListener(OnUpdateDirectionTurnSignal);
         //GenMountToHeightMap();
         
     }
@@ -512,6 +520,16 @@ public class MapRootView : MapNavHexa,IView {
     }
 
     void OnActionAnimFinishSignal()
+    {
+        isActing = false;
+    }
+
+    void OnNextturnSignal(Action<bool> callback)
+    {
+        isActing = true;
+    }
+
+    void OnUpdateDirectionTurnSignal(int uid, int direction_turn)
     {
         isActing = false;
     }
@@ -948,6 +966,8 @@ public class MapRootView : MapNavHexa,IView {
 
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);
+        nextturnSignal.RemoveListener(OnNextturnSignal);
+        updateDirectionTurnSignal.RemoveListener(OnUpdateDirectionTurnSignal);
     }
 
 

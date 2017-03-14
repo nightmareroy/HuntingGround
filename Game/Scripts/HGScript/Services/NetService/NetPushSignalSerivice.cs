@@ -18,6 +18,7 @@ public class NetPushSignalSerivice
     public const string MultiGameStart="MultiGameStart";
     public const string NextTurn="NextTurn";
     public const string DoAction="DoAction";
+    public const string UpdateDirectionTurn = "UpdateDirectionTurn";
     public const string PlayerFail="PlayerFail";
 
     //signal
@@ -40,6 +41,8 @@ public class NetPushSignalSerivice
     public BroadcastActionSignal broadcastActionSignal { get; set; }
     [Inject]
     public PlayerFailPushSignal playerFailPushSignal{ get; set;}
+    [Inject]
+    public UpdateDirectionTurnSignal updateDirectionTurnSignal { get; set; }
 
 
 
@@ -87,6 +90,12 @@ public class NetPushSignalSerivice
             int fail_uid=int.Parse((msg.data as JsonObject)["uid"].ToString());
             playerFailQueue.fail_id_queue.Enqueue(fail_uid);
             playerFailPushSignal.Dispatch(fail_uid);
+        });
+        pclient.on(UpdateDirectionTurn, (msg) =>
+        {
+            int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
+            int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
+            updateDirectionTurnSignal.Dispatch(uid,direction_turn);
         });
     }
 

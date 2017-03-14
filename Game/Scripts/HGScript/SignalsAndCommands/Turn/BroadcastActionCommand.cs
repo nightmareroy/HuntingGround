@@ -303,6 +303,7 @@ public class BroadcastActionCommand:Command
         }
 
         ResetAllRoleDirection();
+        //gameInfo.anim_lock--;
         actionAnimFinishSignal.Dispatch();
 
         //Debug.Log("ActionAnimFinishSignal");

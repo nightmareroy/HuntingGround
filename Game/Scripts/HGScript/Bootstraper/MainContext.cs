@@ -188,6 +188,7 @@ public class MainContext : MVCSContext {
         //game push
         injectionBinder.Bind<MultiGameStartPushSignal>().ToSingleton();
         injectionBinder.Bind<NextTurnPushSignal>().ToSingleton();
+        injectionBinder.Bind<UpdateDirectionTurnSignal>().ToSingleton();
 
         
 
