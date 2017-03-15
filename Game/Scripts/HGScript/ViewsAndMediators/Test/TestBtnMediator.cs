@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using strange.extensions.mediation.impl;
 using UnityEngine;
@@ -20,7 +21,15 @@ public class TestBtnMediator:Mediator
         //form.AddField("test","test");
         testBtnView.callback = () =>
         {
-            GameObject.Find("role_5_1").GetComponent<RoleView>().DoWalking();
+            Vector3 pos = transform.position;
+            Hashtable args = new Hashtable();
+            args.Add("time", 3f);
+            args.Add("x", pos.x+0.1f);
+            args.Add("y", pos.y);
+            args.Add("z", pos.z);
+            args.Add("loopType", iTween.LoopType.none);
+            args.Add("easyType", iTween.EaseType.punch);
+            iTween.MoveTo(gameObject, args);
         };
     }
 }

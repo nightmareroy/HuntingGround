@@ -28,6 +28,9 @@ public class MyRoleListPanelView : View
     [Inject]
     public ActionAnimFinishSignal actionAnimFinishSignal{ get; set;}
 
+    [Inject]
+    public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
+
     public GameObject contentRootObj;
     public GameObject roleItemTpl;
     public ToggleGroup toggleGroup;
@@ -52,9 +55,15 @@ public class MyRoleListPanelView : View
 
         actionAnimFinishSignal.AddListener(OnActionAnimFinishSignal);
 
+        updateDirectionTurnSignal.AddListener(OnUpdateDirectionTurnSignal);
+
         foreach (string role_id in gameInfo.role_dic.Keys)
         {
-            assignedRoleList.Add(role_id);
+            RoleInfo roleInfo = gameInfo.role_dic[role_id];
+            if (roleInfo.uid == sPlayerInfo.uid)
+            {
+                assignedRoleList.Add(role_id);
+            }
         }
 
         UpdateRoles();
@@ -147,27 +156,30 @@ public class MyRoleListPanelView : View
             //选中有角色节点,激活toggle
             if(roleInfo!=null)
             {
-                Toggle toggle = null;
-                for (int i = 0; i < contentRootObj.transform.childCount; i++)
+                if (roleInfo.uid == sPlayerInfo.uid)
                 {
-                    Transform roleT = contentRootObj.transform.GetChild(i);
-                    if (roleT.name == roleInfo.role_id)
+                    Toggle toggle = null;
+                    for (int i = 0; i < contentRootObj.transform.childCount; i++)
                     {
-                        toggle = roleT.GetComponent<Toggle>();
-                        break;
+                        Transform roleT = contentRootObj.transform.GetChild(i);
+                        if (roleT.name == roleInfo.role_id)
+                        {
+                            toggle = roleT.GetComponent<Toggle>();
+                            break;
+                        }
                     }
-                }
-                if (toggle == null)
-                {
+                    if (toggle == null)
+                    {
+                        return;
+                    }
+                    if (!toggle.isOn)
+                    {
+                        allToggleChangedListenerEnable = false;
+                        toggle.isOn = true;
+                        allToggleChangedListenerEnable = true;
+                    }
                     return;
                 }
-                if (!toggle.isOn)
-                {
-                    allToggleChangedListenerEnable = false;
-                    toggle.isOn = true;
-                    allToggleChangedListenerEnable = true;
-                }
-                return;
             }
 
         }
@@ -217,6 +229,7 @@ public class MyRoleListPanelView : View
     void OnUpdateRoleDirectionSignal(string role_id)
     {
         assignedRoleList.Remove(role_id);
+        
     }
 
     void OnActionAnimStartSignal()
@@ -229,9 +242,18 @@ public class MyRoleListPanelView : View
         assignedRoleList.Clear();
         foreach (string role_id in gameInfo.role_dic.Keys)
         {
-            assignedRoleList.Add(role_id);
+            RoleInfo roleInfo = gameInfo.role_dic[role_id];
+            if (roleInfo.uid == sPlayerInfo.uid)
+            {
+                assignedRoleList.Add(role_id);
+            }
         }
 
+        findBtn.interactable = true;
+    }
+
+    void OnUpdateDirectionTurnSignal(int uid)
+    {
         findBtn.interactable = true;
     }
 
@@ -244,5 +266,7 @@ public class MyRoleListPanelView : View
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
 
         actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);
+
+        updateDirectionTurnSignal.RemoveListener(OnUpdateDirectionTurnSignal);
     }
 }

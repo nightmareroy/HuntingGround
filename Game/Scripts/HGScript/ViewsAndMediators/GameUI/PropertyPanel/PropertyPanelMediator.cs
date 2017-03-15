@@ -18,6 +18,9 @@ public class PropertyPanelMediator : Mediator
     [Inject]
     public GameInfo gameInfo{ get; set;}
 
+    [Inject]
+    public SPlayerInfo sPlayerInfo{get;set;}
+
 
     [Inject]
     public UpdateRoleDirectionSignal updateRoleDirectionSignal{get;set;}
@@ -66,7 +69,14 @@ public class PropertyPanelMediator : Mediator
         //role direction list
         if (currentSelectedRole != null)
         {
-            propertyPanelView.SetRoleDirections(currentSelectedRole.role_id);
+            if (currentSelectedRole.uid == sPlayerInfo.uid)
+            {
+                propertyPanelView.SetRoleDirections(currentSelectedRole.role_id);
+            }
+            else
+            {
+                propertyPanelView.ClearRoleDirections();
+            }
         }
 
         //building

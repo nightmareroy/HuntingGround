@@ -59,7 +59,7 @@ public class NextturnMediator:Mediator
         nextturnView.setBtnInteractable(true);
     }
 
-    public void OnUpdateDirectionTurnSignal(int uid, int direction_turn)
+    public void OnUpdateDirectionTurnSignal(int uid)
     {
         nextturnView.setBtnInteractable(true);
     }

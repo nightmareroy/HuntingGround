@@ -215,7 +215,7 @@ public class RoleMediator:Mediator
                     //Vector3 source_pos = gameObject.transform.position;
                     Vector3 target_pos = mapRootMediator.mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id).position+new Vector3(0,6,0);
                     //gameObject.transform.LookAt(target_pos, new Vector3(0,1,0));
-                    iTween.MoveTo(gameObject, iTween.Hash("position", target_pos, "easeType", "linear","time",0.5));
+                    iTween.MoveTo(gameObject, iTween.Hash("position", target_pos, "easeType", "linear", "time", 0.5));
 
                     break;
 //                //出现
@@ -235,7 +235,7 @@ public class RoleMediator:Mediator
                 //攻击
                 case 5:
                     int pos_id = (int)param.value;
-                    roleView.DoAttack(pos_id);
+                    roleView.DoAttack(roleInfo.pos_id ,pos_id);
                     break;
                 //转圈
                 case 6:
@@ -245,5 +245,11 @@ public class RoleMediator:Mediator
         }
 
     }
+
+    void OnMoveAnimComplete()
+    {
+        iTween.Stop(gameObject);
+    }
+
 }
 

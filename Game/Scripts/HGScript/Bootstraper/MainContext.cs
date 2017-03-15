@@ -189,6 +189,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<MultiGameStartPushSignal>().ToSingleton();
         injectionBinder.Bind<NextTurnPushSignal>().ToSingleton();
         injectionBinder.Bind<UpdateDirectionTurnSignal>().ToSingleton();
+        injectionBinder.Bind<UserLeaveSignal>().ToSingleton();
 
         
 

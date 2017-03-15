@@ -94,8 +94,8 @@ public class NetPushSignalSerivice
         pclient.on(UpdateDirectionTurn, (msg) =>
         {
             int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
-            int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
-            updateDirectionTurnSignal.Dispatch(uid,direction_turn);
+            //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
+            updateDirectionTurnSignal.Dispatch(uid);
         });
     }
 

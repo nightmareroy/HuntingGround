@@ -51,6 +51,9 @@ public class BroadcastActionCommand:Command
     [Inject]
     public DGameDataCollection dGameDataCollection{ get; set;}
 
+    [Inject]
+    public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
+
 
     //回合动画时间
     float step_time=0.5f;
@@ -58,6 +61,7 @@ public class BroadcastActionCommand:Command
 
     public override void Execute()
     {
+        updateDirectionTurnSignal.Dispatch(-1);
         bootstrapView.StartCoroutine(updateDataAndBroadcaseAction());
 
 
@@ -141,8 +145,9 @@ public class BroadcastActionCommand:Command
                     
                     foreach (string role_id in attackJS.Keys)
                     {
-                        int type = int.Parse(attackJS["type"].ToString());
-                        int enemy_id=int.Parse(attackJS["enemy_id"].ToString());
+                        JsonObject attackInfoJS = attackJS[role_id] as JsonObject;
+                        int type = int.Parse(attackInfoJS["type"].ToString());
+                        float pos_id = float.Parse( attackInfoJS["enemy_id"].ToString());
 
                         DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                         switch (type)
@@ -151,7 +156,7 @@ public class BroadcastActionCommand:Command
                             case 2:
                                 doActionAnimSignalParam.type = 5;
                                 doActionAnimSignalParam.role_id = role_id;
-                                doActionAnimSignalParam.value = (float)enemy_id;
+                                doActionAnimSignalParam.value = (float)pos_id;
                                 doActionAnimSignal.Dispatch(doActionAnimSignalParam);
                                 break;
                             case 3:

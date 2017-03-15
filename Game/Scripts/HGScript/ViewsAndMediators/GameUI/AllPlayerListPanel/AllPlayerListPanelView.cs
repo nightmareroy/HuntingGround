@@ -41,4 +41,27 @@ public class AllPlayerListPanelView : View
         }
     }
 
+    public void SetPlayerReady(int uid, bool ready)
+    {
+        Transform playerItemT = listT.FindChild(uid.ToString());
+        Transform readyT = playerItemT.FindChild("Ready");
+        readyT.gameObject.SetActive(ready);
+    }
+
+    public void ResetAllPlayerReady()
+    {
+        for (int i = 0; i < listT.childCount; i++)
+        {
+            Transform playerItemT = listT.GetChild(i);
+            Transform readyT = playerItemT.FindChild("Ready");
+            readyT.gameObject.SetActive(false);
+        }
+    }
+
+    public void RemovePlayer(int uid)
+    {
+        Transform playerItemT = listT.FindChild(uid.ToString());
+        Tools.Destroy(playerItemT);
+    }
+
 }

@@ -33,7 +33,7 @@ public class MyRoleListPanelMediator : Mediator
 
     IEnumerator Init()
     {
-        //这里等待1帧，因为content size fitter组件必须等一帧才能生效，优化方案http://www.xuanyusong.com/archives/4234，http://www.tuicool.com/articles/AnQv2yB，有时间再来优化
+        //这里等待1帧，因为content size fitter组件必须等一帧才能生效，优化方案 http://www.xuanyusong.com/archives/4234    http://www.tuicool.com/articles/AnQv2yB ，有时间再来优化
         yield return null;
         myRoleListPannelView.Init();
 
@@ -42,6 +42,11 @@ public class MyRoleListPanelMediator : Mediator
 
     void OnDoRoleActionAnimSignal(DoRoleActionAnimSignal.Param param)
     {
+        RoleInfo roleInfo = gameInfo.role_dic[param.role_id];
+        if (roleInfo.uid != sPlayerInfo.uid)
+        {
+            return;
+        }
         switch (param.type)
         {
             //移动

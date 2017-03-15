@@ -77,6 +77,9 @@ public class MapRootView : MapNavHexa,IView {
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
 
+    [Inject]
+    public SPlayerInfo sPlayerInfo { get;set; }
+
     //[Inject]
     //public PathSetFinishedSignal pathSetFinishedSignal { get; set; }
 
@@ -381,6 +384,7 @@ public class MapRootView : MapNavHexa,IView {
 //                            SetNodeSelect(selected_pos_id,false);
 //                            selected_pos_id = n.idx;
 //                            SetNodeSelect(selected_pos_id,true);
+                            //Debug.Log(isActing);
                             if (isActing == false)
                             {
                                 mapNodeSelectSignal.Dispatch(n);
@@ -468,7 +472,7 @@ public class MapRootView : MapNavHexa,IView {
         if (n != null)
         {
             RoleInfo roleInfo = activeGameDataService.GetRoleInMap(n.idx);
-            if (roleInfo != null)
+            if (roleInfo != null && gameInfo.allplayers_dic[roleInfo.uid].group_id == gameInfo.allplayers_dic[sPlayerInfo.uid].group_id)
             {
                 float sourceY = gameAndUICamerasRoot.transform.position.y;
                 float toValue = 3.5f;
@@ -529,7 +533,7 @@ public class MapRootView : MapNavHexa,IView {
         isActing = true;
     }
 
-    void OnUpdateDirectionTurnSignal(int uid, int direction_turn)
+    void OnUpdateDirectionTurnSignal(int uid)
     {
         isActing = false;
     }

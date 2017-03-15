@@ -40,6 +40,10 @@ public class RoleView:View
 
     bool isWalking = false;
 
+    Vector3 attack_pos1;
+    Vector3 attack_pos2;
+    Vector3 attack_pos3;
+
     public void Init()
     {
         mapRootMediator = mainContext.mapRootMediator;
@@ -78,20 +82,60 @@ public class RoleView:View
         animator.SetBool("isWalking", false);
     }
 
-    public void DoAttack(int des_pos_id)
+    public void DoAttack(int src_pos_id,int des_pos_id)
     {
         float y = transform.position.y;
         //animator.SetTrigger("attack");
-        //Vector3 src_p = mapRootMediator.mapRootView.GetNodeObj(src_pos_id).transform.position;
+        Vector3 src_p = mapRootMediator.mapRootView.GetNodeObj(src_pos_id).transform.position;
         Vector3 des_p = mapRootMediator.mapRootView.GetNodeObj(des_pos_id).transform.position;
 
+        attack_pos1.x = src_p.x * 1.1f - des_p.x * 0.1f;
+        attack_pos1.y = y;
+        attack_pos1.z = src_p.z * 1.1f - des_p.z * 0.1f;
+
+        attack_pos2.x = src_p.x * 0.7f + des_p.x * 0.3f;
+        attack_pos2.y = y;
+        attack_pos2.z = src_p.z * 0.7f + des_p.z * 0.3f;
+
+        attack_pos3.x = src_p.x ;
+        attack_pos3.y = y;
+        attack_pos3.z = src_p.z ;
+
         Hashtable args = new Hashtable();
-        args.Add("time",0.5f);
-        args.Add("x",des_p.x);
-        args.Add("y",y);
-        args.Add("z", des_p.z);
-        args.Add("loopType","pingPong");
+        args.Add("time",0.1f);
+        args.Add("x", attack_pos1.x);
+        args.Add("y", attack_pos1.y);
+        args.Add("z", attack_pos1.z);
+        args.Add("loopType", iTween.LoopType.none);
+        args.Add("easyType", iTween.EaseType.linear);
+        args.Add("oncomplete", "OnAttackAnimComplete1");
         iTween.MoveTo(gameObject,args);
+    }
+
+    void OnAttackAnimComplete1()
+    {
+        Hashtable args = new Hashtable();
+        args.Add("time", 0.2f);
+        args.Add("x", attack_pos2.x);
+        args.Add("y", attack_pos2.y);
+        args.Add("z", attack_pos2.z);
+        args.Add("loopType", iTween.LoopType.none);
+        args.Add("easyType", iTween.EaseType.linear);
+        args.Add("oncomplete", "OnAttackAnimComplete2");
+        iTween.MoveTo(gameObject, args);
+    }
+
+    void OnAttackAnimComplete2()
+    {
+        Hashtable args = new Hashtable();
+        args.Add("time", 0.2f);
+        args.Add("x", attack_pos3.x);
+        args.Add("y", attack_pos3.y);
+        args.Add("z", attack_pos3.z);
+        args.Add("loopType", iTween.LoopType.none);
+        args.Add("easyType", iTween.EaseType.linear);
+        args.Add("oncomplete", "OnAttackAnimComplete3");
+        iTween.MoveTo(gameObject, args);
     }
 
     public void DoRoll()
