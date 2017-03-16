@@ -43,6 +43,7 @@ public class MyRoleListPanelMediator : Mediator
     void OnDoRoleActionAnimSignal(DoRoleActionAnimSignal.Param param)
     {
         RoleInfo roleInfo = gameInfo.role_dic[param.role_id];
+
         if (roleInfo.uid != sPlayerInfo.uid)
         {
             return;

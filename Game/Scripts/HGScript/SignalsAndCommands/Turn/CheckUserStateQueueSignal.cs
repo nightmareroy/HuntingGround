@@ -4,6 +4,6 @@ using System.Linq;
 using System.Text;
 using strange.extensions.signal.impl;
 
-public class UserLeaveSignal:Signal
+public class CheckUserStateQueueSignal:Signal
 {
 }

@@ -44,7 +44,7 @@ public class BroadcastActionCommand:Command
     public GameInfo gameInfo { get; set; }
 
     [Inject]
-    public PlayerFailQueue playerFailQueue{ get; set;}
+    public PlayerStateChangeQueue playerStateChangeQueue{ get; set;}
 
     [Inject]
     public SPlayerInfo sPlayerInfo{ get; set;}
@@ -53,6 +53,9 @@ public class BroadcastActionCommand:Command
 
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
+
+    [Inject]
+    public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
 
 
     //回合动画时间
@@ -102,7 +105,7 @@ public class BroadcastActionCommand:Command
 
     IEnumerator updateDataAndBroadcaseAction()
     {
-//        actionAnimStartSignal.Dispatch();
+        actionAnimStartSignal.Dispatch();
 
         gameInfo.current_turn++;
 
@@ -277,40 +280,47 @@ public class BroadcastActionCommand:Command
             
         }
 
-        while (playerFailQueue.fail_id_queue.Count > 0)
-        {
-            int fail_player_id = playerFailQueue.fail_id_queue.Dequeue();
+        
 
-            foreach (string role_id in gameInfo.role_dic.Keys)
-            {
-                RoleInfo roleInfo = gameInfo.role_dic[role_id];
-                if (roleInfo.uid == fail_player_id)
-                {
-                    DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                    doActionAnimSignalParam.type = 2;
-                    doActionAnimSignalParam.role_id = roleInfo.role_id;
-                    doActionAnimSignal.Dispatch(doActionAnimSignalParam);
-                }
-            }
+        //while (playerStateChangeQueue.player_id_queue.Count > 0)
+        //{
+        //    int uid = playerStateChangeQueue.player_id_queue.Dequeue();
+        //    int type = playerStateChangeQueue.change_type_queue.Dequeue();
 
-            foreach (string building_id in gameInfo.building_dic.Keys)
-            {
-                BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
-                if (buildingInfo.uid == fail_player_id)
-                {
-                    DoBuildingActionAnimSignal.Param doBuildingActionAnimSignalParam = new DoBuildingActionAnimSignal.Param();
-                    doBuildingActionAnimSignalParam.type = 1;
-                    doBuildingActionAnimSignalParam.building_id = buildingInfo.building_id;
-                    doBuildingActionAnimSignal.Dispatch(doBuildingActionAnimSignalParam);
-                }
-            }
-            yield return new WaitForSeconds(step_time);
-        }
+        //    //switch()
+
+        //    foreach (string role_id in gameInfo.role_dic.Keys)
+        //    {
+        //        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+        //        if (roleInfo.uid == uid)
+        //        {
+        //            DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+        //            doActionAnimSignalParam.type = 2;
+        //            doActionAnimSignalParam.role_id = roleInfo.role_id;
+        //            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+        //        }
+        //    }
+
+        //    foreach (string building_id in gameInfo.building_dic.Keys)
+        //    {
+        //        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+        //        if (buildingInfo.uid == uid)
+        //        {
+        //            DoBuildingActionAnimSignal.Param doBuildingActionAnimSignalParam = new DoBuildingActionAnimSignal.Param();
+        //            doBuildingActionAnimSignalParam.type = 1;
+        //            doBuildingActionAnimSignalParam.building_id = buildingInfo.building_id;
+        //            doBuildingActionAnimSignal.Dispatch(doBuildingActionAnimSignalParam);
+        //        }
+        //    }
+        //    userStateChangeSignal.Dispatch(uid,2);
+        //    yield return new WaitForSeconds(step_time);
+        //}
 
         ResetAllRoleDirection();
         //gameInfo.anim_lock--;
         actionAnimFinishSignal.Dispatch();
 
+        checkUserStateQueueSignal.Dispatch();
         //Debug.Log("ActionAnimFinishSignal");
     }
 
@@ -354,12 +364,14 @@ public class BroadcastActionCommand:Command
 
         foreach (string role_id in deleteRolesJS)
         {
-            gameInfo.role_dic.Remove(role_id);
+            
 
             DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
             doActionAnimSignalParam.type = 2;
             doActionAnimSignalParam.role_id = role_id;
             doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+
+            gameInfo.role_dic.Remove(role_id);
         }
 
 

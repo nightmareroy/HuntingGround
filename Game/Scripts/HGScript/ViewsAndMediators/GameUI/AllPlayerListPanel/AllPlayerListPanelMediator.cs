@@ -13,6 +13,9 @@ public class AllPlayerListPanelMediator : Mediator
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get; set; }
 
+    [Inject]
+    public UserStateChangeSignal userStateChangeSignal { get; set; }
+
 
 
 
@@ -20,6 +23,7 @@ public class AllPlayerListPanelMediator : Mediator
     {
         allPlayerListPanelView.UpdatePlayers();
         updateDirectionTurnSignal.AddListener(OnUpdateDirectionTurnSignal);
+        userStateChangeSignal.AddListener(OnUserStateChangeSignal);
     }
 
     void OnUpdateDirectionTurnSignal(int uid)
@@ -35,8 +39,23 @@ public class AllPlayerListPanelMediator : Mediator
         }
     }
 
+    void OnUserStateChangeSignal(int uid,int type)
+    {
+        switch (type)
+        {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                allPlayerListPanelView.RemovePlayer(uid);
+                break;
+        }
+    }
+
     void OnDestroy()
     {
         updateDirectionTurnSignal.RemoveListener(OnUpdateDirectionTurnSignal);
+        userStateChangeSignal.RemoveListener(OnUserStateChangeSignal);
     }
 }

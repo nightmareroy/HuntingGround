@@ -20,6 +20,8 @@ public class NetPushSignalSerivice
     public const string DoAction="DoAction";
     public const string UpdateDirectionTurn = "UpdateDirectionTurn";
     public const string PlayerFail="PlayerFail";
+    public const string UserEnter = "UserEnter";
+    public const string UserLeave = "UserLeave";
 
     //signal
     //game hall
@@ -39,12 +41,21 @@ public class NetPushSignalSerivice
     public NextTurnPushSignal nextTurnPushSignal { get; set; }
     [Inject]
     public BroadcastActionSignal broadcastActionSignal { get; set; }
-    [Inject]
-    public PlayerFailPushSignal playerFailPushSignal{ get; set;}
+    //[Inject]
+    //public PlayerFailPushSignal playerFailPushSignal { get; set; }
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get; set; }
+    [Inject]
+    public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
 
 
+
+
+    [Inject]
+    public ActionAnimStartSignal actionAnimStartSignal { get; set; }
+
+    [Inject]
+    public ActionAnimFinishSignal actionAnimFinishSignal { get; set; }
 
 
 
@@ -52,12 +63,21 @@ public class NetPushSignalSerivice
     [Inject]
     public GameInfo gameInfo{ get; set;}
     [Inject]
-    public PlayerFailQueue playerFailQueue{ get; set;}
+    public PlayerStateChangeQueue playerStateChangeQueue{ get; set;}
 
-
+    bool isAnimActing = false;
 
     public void Init(Connection pclient)
     {
+        actionAnimStartSignal.AddListener(() => {
+            isAnimActing = true;
+        });
+
+        actionAnimFinishSignal.AddListener(() => {
+            isAnimActing = false;
+        });
+
+
         //game hall
         pclient.on(CreateMultiGame,(msg)=>{
             createMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
@@ -87,9 +107,33 @@ public class NetPushSignalSerivice
 
         });
         pclient.on(PlayerFail,(msg)=>{
-            int fail_uid=int.Parse((msg.data as JsonObject)["uid"].ToString());
-            playerFailQueue.fail_id_queue.Enqueue(fail_uid);
-            playerFailPushSignal.Dispatch(fail_uid);
+            int uid=int.Parse((msg.data as JsonObject)["uid"].ToString());
+            playerStateChangeQueue.player_id_queue.Enqueue(uid);
+            playerStateChangeQueue.change_type_queue.Enqueue(3);
+            if (!isAnimActing)
+            {
+                checkUserStateQueueSignal.Dispatch();
+            }
+        });
+        pclient.on(UserEnter, (msg) =>
+        {
+            int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
+            playerStateChangeQueue.player_id_queue.Enqueue(uid);
+            playerStateChangeQueue.change_type_queue.Enqueue(0);
+            if (!isAnimActing)
+            {
+                checkUserStateQueueSignal.Dispatch();
+            }
+        });
+        pclient.on(UserLeave, (msg) =>
+        {
+            int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
+            playerStateChangeQueue.player_id_queue.Enqueue(uid);
+            playerStateChangeQueue.change_type_queue.Enqueue(1);
+            if (!isAnimActing)
+            {
+                checkUserStateQueueSignal.Dispatch();
+            }
         });
         pclient.on(UpdateDirectionTurn, (msg) =>
         {

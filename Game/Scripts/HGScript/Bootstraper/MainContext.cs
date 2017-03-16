@@ -119,7 +119,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<GameInfo>().ToValue(gameInfo);
 
         //游戏中途退出的玩家队列
-        injectionBinder.Bind<PlayerFailQueue>().ToSingleton();
+        injectionBinder.Bind<PlayerStateChangeQueue>().ToSingleton();
 
         
 
@@ -189,7 +189,8 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<MultiGameStartPushSignal>().ToSingleton();
         injectionBinder.Bind<NextTurnPushSignal>().ToSingleton();
         injectionBinder.Bind<UpdateDirectionTurnSignal>().ToSingleton();
-        injectionBinder.Bind<UserLeaveSignal>().ToSingleton();
+        commandBinder.Bind<CheckUserStateQueueSignal>().To<CheckUserStateQueueCommand>();
+        injectionBinder.Bind<UserStateChangeSignal>().ToSingleton();
 
         
 
