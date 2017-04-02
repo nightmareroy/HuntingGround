@@ -153,7 +153,7 @@ public class BroadcastActionCommand:Command
                     {
                         JsonObject attackInfoJS = attackJS[role_id] as JsonObject;
                         int type = int.Parse(attackInfoJS["type"].ToString());
-                        int pos_id = int.Parse( attackInfoJS["enemy_id"].ToString());
+                        int pos_id = int.Parse( attackInfoJS["enemy_pos_id"].ToString());
 
                         DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                         switch (type)
