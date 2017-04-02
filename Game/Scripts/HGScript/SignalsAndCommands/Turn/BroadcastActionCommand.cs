@@ -19,7 +19,7 @@ public class BroadcastActionCommand:Command
     public ResourceService resourceService{ get; set;}
 
     [Inject]
-    public DoRoleActionAnimSignal doActionAnimSignal { get; set; }
+    public DoRoleActionAnimSignal doRoleActionAnimSignal { get; set; }
 
     [Inject]
     public DoBuildingActionAnimSignal doBuildingActionAnimSignal { get; set; }
@@ -57,9 +57,12 @@ public class BroadcastActionCommand:Command
     [Inject]
     public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
 
+    
+
 
     //回合动画时间
     float step_time=0.5f;
+    float food_step_time = 0.2f;
 
 
     public override void Execute()
@@ -140,7 +143,7 @@ public class BroadcastActionCommand:Command
                     
                     DoSightModefiedAction(stepJS);
 
-                    yield return new WaitForSeconds(step_time);
+                    //yield return new WaitForSeconds(step_time);
                     break;
                 //攻击+掉血
                 case 2:
@@ -150,7 +153,7 @@ public class BroadcastActionCommand:Command
                     {
                         JsonObject attackInfoJS = attackJS[role_id] as JsonObject;
                         int type = int.Parse(attackInfoJS["type"].ToString());
-                        float pos_id = float.Parse( attackInfoJS["enemy_id"].ToString());
+                        int pos_id = int.Parse( attackInfoJS["enemy_id"].ToString());
 
                         DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                         switch (type)
@@ -159,14 +162,14 @@ public class BroadcastActionCommand:Command
                             case 2:
                                 doActionAnimSignalParam.type = 5;
                                 doActionAnimSignalParam.role_id = role_id;
-                                doActionAnimSignalParam.value = (float)pos_id;
-                                doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                                doActionAnimSignalParam.value = pos_id;
+                                doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
                                 break;
                             case 3:
                                 
                                 doActionAnimSignalParam.type = 6;
                                 doActionAnimSignalParam.role_id = role_id;
-                                doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                                doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
                                 break;
                         }
 
@@ -182,9 +185,9 @@ public class BroadcastActionCommand:Command
                         doActionAnimSignalParam.type = 3;
                         doActionAnimSignalParam.role_id = role_id;
                         doActionAnimSignalParam.value = damage;
-                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                        doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
                     }
-                    //yield return new WaitForSeconds(step_time);
+                    yield return new WaitForSeconds(step_time);
                     break;
                 //回血
                 case 4:
@@ -198,12 +201,24 @@ public class BroadcastActionCommand:Command
                         doActionAnimSignalParam.type = 4;
                         doActionAnimSignalParam.role_id = role_id;
                         doActionAnimSignalParam.value = recovery;
-                        doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                        doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
                     }
                     yield return new WaitForSeconds(step_time);
                     break;
-                //不造成角色、建筑、视野变化的指令
+                //更新猴子的与家距离
                 case 6:
+                    JsonObject distanceJS = stepJS["distance"] as JsonObject;
+                    foreach (string building_id in distanceJS.Keys)
+                    {
+                        int distance=int.Parse(distanceJS[building_id].ToString());
+                        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+                        buildingInfo.distance_from_home = distance;
+
+                    }
+                    //yield return new WaitForSeconds(step_time);
+                    break;
+                //不造成角色、建筑、视野变化的指令
+                case 7:
                     foreach (string role_id in (stepJS["action"] as JsonObject).Keys)
                     {
                         JsonObject turnActionJS = (stepJS["action"] as JsonObject)[role_id] as JsonObject;
@@ -217,19 +232,26 @@ public class BroadcastActionCommand:Command
                             //采集
                             case 3:
                                 int banana = int.Parse(param["cost"].ToString());
-                                gameInfo.map_info.resource[roleInfo.pos_id] = 2;
+                                //gameInfo.map_info.resource[roleInfo.pos_id] = 2;
 
                                 if (roleInfo.uid == sPlayerInfo.uid)
                                 {
                                     gameInfo.allplayers_dic[roleInfo.uid].banana += banana;
 //                                    doBananaUpdateSignal.Dispatch();
-                                }
 
-                                DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
-                                doMapUpdateSignalParam.landformList = new Dictionary<int, int>();
-                                doMapUpdateSignalParam.resourceList = new Dictionary<int, int>();
-                                doMapUpdateSignalParam.resourceList.Add(roleInfo.pos_id, 2);
-                                doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
+                                }
+                                DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                                doRoleActionAnimSignalParam.type = 7;
+                                doRoleActionAnimSignalParam.role_id = roleInfo.role_id;
+                                doRoleActionAnimSignalParam.value = banana;
+
+                                doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam);
+
+                                //DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
+                                //doMapUpdateSignalParam.landformList = new Dictionary<int, int>();
+                                //doMapUpdateSignalParam.resourceList = new Dictionary<int, int>();
+                                //doMapUpdateSignalParam.resourceList.Add(roleInfo.pos_id, 2);
+                                //doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
 
 
 
@@ -237,7 +259,7 @@ public class BroadcastActionCommand:Command
 
                             //招募猴子
                             case 5:
-                                float cost_5 = float.Parse(param["cost"].ToString());
+                                int cost_5 = int.Parse(param["cost"].ToString());
                                 if (roleInfo.uid == sPlayerInfo.uid)
                                 {
                                     gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_5;
@@ -250,36 +272,130 @@ public class BroadcastActionCommand:Command
                                 string building_id = param["cost"].ToString();
                                 gameInfo.building_dic[building_id].level++;
                                 break;
-                            //进食
-                            case 8:
-                                break;
+
                             //搭窝
                             case 9:
-                                float cost_9 = float.Parse(param["cost"].ToString());
+                                int cost_9 = int.Parse(param["cost"].ToString());
                                 if (roleInfo.uid == sPlayerInfo.uid)
                                 {
                                     gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_9;
                                     //                                    doBananaUpdateSignal.Dispatch();
                                 }
                                 break;
-                            //抢夺
+                            //哺育
                             case 11:
-                                
+                                int damage_11 = int.Parse(param["damage"].ToString());
+                                gameInfo.role_dic[role_id].blood_sugar -= damage_11;
+                                DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                                doActionAnimSignalParam.type = 3;
+                                doActionAnimSignalParam.role_id = role_id;
+                                doActionAnimSignalParam.value = damage_11;
+                                doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                                yield return new WaitForSeconds(step_time);
                                 break;
                         }
+
                     }
 
-                    //banana统一更新视图
-                    doBananaUpdateSignal.Dispatch();
+                
+
+                    
+                    yield return new WaitForSeconds(step_time);
+                    break;
+                //吃料理
+                case 8:
+                    JsonObject foodJS = stepJS["food"] as JsonObject;
+                    
+
+                    foreach (string role_id in foodJS.Keys)
+                    {
+                        JsonObject param = (foodJS[role_id] as JsonObject)["param"] as JsonObject;
+                        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+
+                        DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam_8 = new DoRoleActionAnimSignal.Param();
+                        
+                        doRoleActionAnimSignalParam_8.role_id = role_id;
+                        
+
+                        int blood_sugar = int.Parse(param["blood_sugar"].ToString());
+                        roleInfo.blood_sugar_max += blood_sugar;
+                        doRoleActionAnimSignalParam_8.type = 9;
+                        doRoleActionAnimSignalParam_8.value = blood_sugar;
+                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                        yield return new WaitForSeconds(food_step_time);
+
+                        int fat = int.Parse(param["fat"].ToString());
+                        roleInfo.fat += fat;
+                        doRoleActionAnimSignalParam_8.type = 10;
+                        doRoleActionAnimSignalParam_8.value = blood_sugar;
+                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                        yield return new WaitForSeconds(food_step_time);
+
+                        int inteligent = int.Parse(param["inteligent"].ToString());
+                        roleInfo.inteligent += inteligent;
+                        doRoleActionAnimSignalParam_8.type = 11;
+                        doRoleActionAnimSignalParam_8.value = inteligent;
+                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                        yield return new WaitForSeconds(food_step_time);
+
+                        int amino_acid = int.Parse(param["amino_acid"].ToString());
+                        roleInfo.amino_acid += amino_acid;
+                        doRoleActionAnimSignalParam_8.type = 12;
+                        doRoleActionAnimSignalParam_8.value = amino_acid;
+                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                        yield return new WaitForSeconds(food_step_time);
+
+                        int digest = int.Parse(param["digest"].ToString());
+                        roleInfo.digest += digest;
+                        doRoleActionAnimSignalParam_8.type = 13;
+                        doRoleActionAnimSignalParam_8.value = digest;
+                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                        yield return new WaitForSeconds(food_step_time);
+
+                        int skill_type = int.Parse(param["skill_type"].ToString());
+                        int skill_id = int.Parse(param["skill_id"].ToString());
+                        if (skill_type == 1)
+                        {
+                            roleInfo.skill_id_list.Add(skill_id);
+                            doRoleActionAnimSignalParam_8.type = 14;
+                            doRoleActionAnimSignalParam_8.value = skill_id;
+                        }
+                        else if (skill_type == 2)
+                        {
+                            roleInfo.cook_skill_id_list.Add(skill_id);
+                            doRoleActionAnimSignalParam_8.type = 15;
+                            doRoleActionAnimSignalParam_8.value = skill_id;
+                            doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                        }
+                        yield return new WaitForSeconds(food_step_time);
+                    }
+                    break;
+                //猴子收益
+                case 9:
+                    JsonObject bananaJS = stepJS["banana"] as JsonObject;
+                    foreach (string building_id in bananaJS.Keys)
+                    {
+                        int value = int.Parse(bananaJS[building_id].ToString());
+                        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+                        gameInfo.allplayers_dic[buildingInfo.uid].banana += value;
+                        DoBuildingActionAnimSignal.Param param=new DoBuildingActionAnimSignal.Param();
+                        param.type=2;
+                        param.building_id=building_id;
+                        param.banana=value;
+                        doBuildingActionAnimSignal.Dispatch(param);
+
+                    }
                     yield return new WaitForSeconds(step_time);
                     break;
             }
 
 
-
+            
             
         }
 
+        //banana统一更新视图
+        doBananaUpdateSignal.Dispatch();
         
 
         //while (playerStateChangeQueue.player_id_queue.Count > 0)
@@ -332,6 +448,7 @@ public class BroadcastActionCommand:Command
         JsonArray deleteRolesJS=jo["delete_roles"] as JsonArray;
         JsonObject landformJS = jo["landform_map"] as JsonObject;
         JsonObject resourceJS = jo["resource_map"] as JsonObject;
+        JsonObject meatJS = jo["meat_map"] as JsonObject;
         JsonObject addBuildingsJS=jo["add_buildings"] as JsonObject;
         JsonArray deleteBuildingsJS=jo["delete_buildings"] as JsonArray;
 
@@ -343,7 +460,7 @@ public class BroadcastActionCommand:Command
             DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
             doActionAnimSignalParam.type = 0;
             doActionAnimSignalParam.role_id = role_id;
-            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+            doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
         }
 
         foreach (string role_id in addRolesJS.Keys)
@@ -356,7 +473,7 @@ public class BroadcastActionCommand:Command
             DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
             doActionAnimSignalParam.type = 1;
             doActionAnimSignalParam.role_id = role_id;
-            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+            doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
 
             GameObject roleobj = resourceService.Spawn("role/" + gameInfo.role_dic[role_id].role_did);
             roleobj.name = "role_" + role_id;
@@ -369,7 +486,7 @@ public class BroadcastActionCommand:Command
             DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
             doActionAnimSignalParam.type = 2;
             doActionAnimSignalParam.role_id = role_id;
-            doActionAnimSignal.Dispatch(doActionAnimSignalParam);
+            doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
 
             gameInfo.role_dic.Remove(role_id);
         }
@@ -390,6 +507,12 @@ public class BroadcastActionCommand:Command
 
             GameObject buildingObj = resourceService.Spawn("building/" + buildingInfo.building_did);
             buildingObj.name = "building_" + buildingInfo.building_id;
+
+
+            if (buildingInfo.building_did == 1)
+            {
+
+            }
 
         }
 
@@ -419,8 +542,15 @@ public class BroadcastActionCommand:Command
             gameInfo.map_info.resource[pos_id] = value;
         }
 
+        foreach (string pos_id_s in meatJS.Keys)
+        {
+            int pos_id = int.Parse(pos_id_s);
+            int value = int.Parse(meatJS[pos_id_s].ToString());
+            gameInfo.map_info.meat[pos_id] = value;
+        }
+
         DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
-        doMapUpdateSignalParam.InitFromJson(landformJS, resourceJS);
+        doMapUpdateSignalParam.InitFromJson(landformJS, resourceJS,meatJS);
         doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
 
         doSightzoonUpdateSignal.Dispatch(doMapUpdateSignalParam.landformList);
@@ -437,4 +567,88 @@ public class BroadcastActionCommand:Command
             roleInfo.direction_param.Clear();
         }
     }
+
+    //void GetDistanceFromNearistHome(string building_id)
+    //{
+    //    BuildingInfo buildingInfo=gameInfo.building_dic[building_id];
+
+    //}
+
+    
+//int get_distance(int pos_id_a,int pos_id_b)
+//{
+//    // console.log(pos_id_a==pos_id_b)
+//    if(pos_id_a==pos_id_b)
+//    {
+//        return 0;
+//    }
+//    DGameType gametype=dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameInfo.gametype_id];
+//    int distance=0;
+
+//    int b_x=pos_id_b%gametype.width;
+//    int b_y=pos_id_b/gametype.width;
+
+//    int nearist_distance;
+//    int nearist_pos_id=pos_id_a;
+
+//    do{
+//        var neibourids=getneibourids(gametype.width,gametype.height,nearist_pos_id);
+//        // console.log(neibourids)
+//        for(i in neibourids)
+//        {
+//            var neibour_pos_id=neibourids[i];
+//            var neibour_x=neibour_pos_id%gametype.width;
+//            var neibour_y=Math.floor(neibour_pos_id/gametype.width);
+
+//            var temp_distance=Math.abs(b_x-neibour_x)+Math.abs(b_y-neibour_y);
+//            // console.log(temp_distance)
+//            if(nearist_distance==undefined)
+//            {
+//                nearist_distance=temp_distance;
+//                nearist_pos_id=neibour_pos_id;
+//            }
+//            else if(temp_distance<nearist_distance)
+//            {
+//                nearist_distance=temp_distance;
+//                nearist_pos_id=neibour_pos_id;
+//            }
+				
+
+//        }
+//        distance++;
+
+//    }while(nearist_distance>0)
+//    // console.log(distance)
+//    return distance;
+
+//}
+
+//exports.get_nearist_home_distance=function(gameinfo,uid,pos_id)
+//{
+//    var distance=-1;
+//    // console.log(gameinfo.buildings)
+//    for(building_id in gameinfo.buildings)
+//    {
+//        // console.log('e')
+//        var building=gameinfo.buildings[building_id];
+//        // console.log(building)
+//        if(building.building_did==1&&building.uid==uid)//树窝
+//        {
+//            var temp_distance=get_distance(gameinfo,pos_id,building.pos_id);
+			
+//            if(distance==-1)
+//            {
+//                distance=temp_distance;
+//            }
+//            else if(temp_distance<distance)
+//            {
+//                distance=temp_distance;
+//            }
+//        }
+//    }
+
+//    // console.log(distance)
+//    return distance;
+//}
+
 }

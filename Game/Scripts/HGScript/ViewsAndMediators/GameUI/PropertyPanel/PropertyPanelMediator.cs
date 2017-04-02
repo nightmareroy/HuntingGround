@@ -26,7 +26,14 @@ public class PropertyPanelMediator : Mediator
     public UpdateRoleDirectionSignal updateRoleDirectionSignal{get;set;}
 
 
+    [Inject]
+    public OpenFoodPanelSignal openFoodPanelSignal { get; set; }
 
+    [Inject]
+    public FindNodeSignal findNodeSignal { get; set; }
+
+    [Inject]
+    public MainContext mainContext { get; set; }
 
 
     RoleInfo currentSelectedRole;
@@ -87,12 +94,25 @@ public class PropertyPanelMediator : Mediator
 
     void OnDirectionClick(int direction_did)
     {
-        gameInfo.role_dic[currentSelectedRole.role_id].direction_did = direction_did;
-        gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
-//        directionChangeSignal.Dispatch(direction_did);
-        mapNodeSelectSignal.Dispatch(null);
+        if (direction_did == 8)
+        {
+            openFoodPanelSignal.Dispatch(currentSelectedRole.role_id);
+        }
+        else if (direction_did==1)
+        {
+            MapNavNode node = mainContext.mapRootMediator.mapRootView.NodeAt<MapNavNode>(currentSelectedRole.pos_id);
+            findNodeSignal.Dispatch(node, true);
+        }
+        else
+        {
 
-        updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
+
+            gameInfo.role_dic[currentSelectedRole.role_id].direction_did = direction_did;
+            gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
+            mapNodeSelectSignal.Dispatch(null);
+
+            updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
+        }
     }
 
 //    void OnBuildingDirectionClick(int building_direction_did)

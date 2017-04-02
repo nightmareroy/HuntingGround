@@ -15,7 +15,13 @@ public class PlayerInfo
     public int group_id;
     //public PlayerDRoleSkillInfo playerDRoleSkillInfo = new PlayerDRoleSkillInfo();
     //public Dictionary<int, Dictionary<int, DSkill>> roledid_skill_dic = new Dictionary<int, Dictionary<int, DSkill>>();
-    public float banana=-1;
+    public int banana=-1;
+    public int meat = -1;
+    public int score;
+    public bool failed;
+
+    public List<int> actived_food_ids;
+
     public int direction_turn;
     //public bool ready = false;
 
@@ -35,27 +41,20 @@ public class PlayerInfo
 
     }
 
-    public void InitFromJson(JsonObject jsonobj)//, SPlayerInfo sPlayerInfo)
-    {
-        uid = int.Parse(jsonobj["uid"].ToString());
-        name=jsonobj["name"].ToString();
-        group_id = int.Parse(jsonobj["group_id"].ToString());
-        direction_turn = int.Parse(jsonobj["direction_turn"].ToString());
-        //ready = bool.Parse(jsonobj["ready"].ToString());
+    //public void InitFromJson(JsonObject jsonobj)//, SPlayerInfo sPlayerInfo)
+    //{
+    //    uid = int.Parse(jsonobj["uid"].ToString());
+    //    name=jsonobj["name"].ToString();
+    //    group_id = int.Parse(jsonobj["group_id"].ToString());
+    //    direction_turn = int.Parse(jsonobj["direction_turn"].ToString());
+    //    //ready = bool.Parse(jsonobj["ready"].ToString());
 
-        if (jsonobj.ContainsKey("banana"))
-        {
-            banana=int.Parse(jsonobj["banana"].ToString());
-        }
-        //role_dic.Clear();
-        //foreach (string key in (jsonobj["role_dic"] as JsonObject).Keys)
-        //{
-        //    RoleInfo roleInfo=SimpleJson.SimpleJson.DeserializeObject<RoleInfo>((jsonobj["role_dic"] as JsonObject)[key].ToString());
-        //    role_dic.Add(int.Parse(key), roleInfo);
-            
+    //    if (jsonobj.ContainsKey("banana"))
+    //    {
+    //        banana=int.Parse(jsonobj["banana"].ToString());
+    //    }
 
-        //}
-    }
+    //}
 
     //角色技能一共有三种来源：1.某一类角色（同一个静态id）的技能；2.某一个角色（动态id）习得技能；3.某一个角色（动态id）装备的物品给予的技能（暂未实现）。
     //public List<DSkill> GetRoleAllSkillList(int roleid)

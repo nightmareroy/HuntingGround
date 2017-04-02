@@ -80,6 +80,9 @@ public class MapRootView : MapNavHexa,IView {
     [Inject]
     public SPlayerInfo sPlayerInfo { get;set; }
 
+    [Inject]
+    public FindNodeSignal findNodeSignal { get; set; }
+
     //[Inject]
     //public PathSetFinishedSignal pathSetFinishedSignal { get; set; }
 
@@ -236,7 +239,7 @@ public class MapRootView : MapNavHexa,IView {
         SetNodeView();
 
         doMapUpdateSignal.AddListener(OnDoMapUpdate);
-        mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
+        //mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
         doSightzoonUpdateSignal.AddListener(OnDoSightzoonUpdateSignal);
 
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
@@ -388,6 +391,7 @@ public class MapRootView : MapNavHexa,IView {
                             if (isActing == false)
                             {
                                 mapNodeSelectSignal.Dispatch(n);
+                                
                             }
                         }
                     }
@@ -399,6 +403,7 @@ public class MapRootView : MapNavHexa,IView {
                         if (isActing == false)
                         {
                             mapNodeSelectSignal.Dispatch(null);
+                            findNodeSignal.Dispatch(null, false);
                         }
                     }
 
@@ -411,8 +416,6 @@ public class MapRootView : MapNavHexa,IView {
 
             if (Input.GetMouseButton(0))
             {
-                
-
                 if (isDraggingPath)
                 {
                     MapNavNode enteredNode = n;
@@ -437,6 +440,7 @@ public class MapRootView : MapNavHexa,IView {
                             if (isActing == false)
                             {
                                 mapNodeSelectSignal.Dispatch(null);
+                                findNodeSignal.Dispatch(null, false);
                             }
                         }
 
@@ -462,7 +466,56 @@ public class MapRootView : MapNavHexa,IView {
         }
     }
 
-    void OnMapNodeSelectSignal(MapNavNode n)
+    //void OnMapNodeSelectSignal(MapNavNode n)
+    //{
+    //    Hashtable args = new Hashtable();
+    //    args.Add("from", gameCamera.orthographicSize);
+    //    args.Add("time", 0.1f);
+    //    args.Add("onupdate", "OnITweenUpdate");
+
+    //    if (n != null)
+    //    {
+    //        RoleInfo roleInfo = activeGameDataService.GetRoleInMap(n.idx);
+    //        if (roleInfo != null && gameInfo.allplayers_dic[roleInfo.uid].group_id == gameInfo.allplayers_dic[sPlayerInfo.uid].group_id)
+    //        {
+    //            float sourceY = gameAndUICamerasRoot.transform.position.y;
+    //            float toValue = 3.5f;
+    //            switch ((int)Math.Floor( roleInfo.max_move))
+    //            {
+    //                case 1:
+    //                    toValue = 3.5f;
+    //                    break;
+    //                case 2:
+    //                    toValue = 5f;
+    //                    break;
+    //            }
+
+
+
+    //            args.Add("to", toValue);
+    //            iTween.ValueTo(gameObject, args);
+
+    //            iTween.MoveTo(gameAndUICamerasRoot, new Vector3(n.position.x, sourceY, n.position.z), 0.3f);
+    //        }
+    //        else
+    //        {
+                
+    //            args.Add("to",3.5f);
+    //            iTween.ValueTo(gameObject,args);
+    //        }
+
+    //        SetNodeSelect(n.idx);
+    //    }
+    //    else
+    //    {
+    //        SetNodeSelect(-1);
+
+    //        args.Add("to",3.5f);
+    //        iTween.ValueTo(gameObject,args);
+    //    }
+    //}
+
+    public void CamConcentrate(MapNavNode n, bool enableSetPath)
     {
         Hashtable args = new Hashtable();
         args.Add("from", gameCamera.orthographicSize);
@@ -472,43 +525,53 @@ public class MapRootView : MapNavHexa,IView {
         if (n != null)
         {
             RoleInfo roleInfo = activeGameDataService.GetRoleInMap(n.idx);
+
             if (roleInfo != null && gameInfo.allplayers_dic[roleInfo.uid].group_id == gameInfo.allplayers_dic[sPlayerInfo.uid].group_id)
             {
                 float sourceY = gameAndUICamerasRoot.transform.position.y;
-                float toValue = 3.5f;
-                switch ((int)Math.Floor( roleInfo.max_move))
+                Vector3 node_pos = GetNodeObj(roleInfo.pos_id).transform.position;
+                iTween.MoveTo(gameAndUICamerasRoot, new Vector3(node_pos.x, sourceY, node_pos.z), 0.3f);
+
+                if (enableSetPath)
                 {
-                    case 1:
-                        toValue = 3.5f;
-                        break;
-                    case 2:
-                        toValue = 5f;
-                        break;
+                    float toValue = 3.5f;
+                    switch ((int)Math.Floor(roleInfo.max_move))
+                    {
+                        case 1:
+                            toValue = 3.5f;
+                            break;
+                        case 2:
+                            toValue = 5f;
+                            break;
+                    }
+                    args.Add("to", toValue);
+                    iTween.ValueTo(gameObject, args);
+
+                    SetUnmovableZoon(roleInfo.pos_id, roleInfo.max_move);
                 }
-
-
-
-                args.Add("to", toValue);
-                iTween.ValueTo(gameObject, args);
-
-                iTween.MoveTo(gameAndUICamerasRoot, new Vector3(n.position.x, sourceY, n.position.z), 0.3f);
             }
             else
             {
-                
-                args.Add("to",3.5f);
-                iTween.ValueTo(gameObject,args);
-            }
 
-            SetNodeSelect(n.idx);
+                args.Add("to", 3.5f);
+                iTween.ValueTo(gameObject, args);
+
+                ClearUnmovableZoon();
+            }
         }
         else
         {
-            SetNodeSelect(-1);
-
-            args.Add("to",3.5f);
-            iTween.ValueTo(gameObject,args);
+            args.Add("to", 3.5f);
+            iTween.ValueTo(gameObject, args);
+            ClearUnmovableZoon();
         }
+        
+
+        
+
+        //SetNodeSelect(n.idx);
+
+
     }
 
     void OnITweenUpdate(object value)
@@ -920,7 +983,7 @@ public class MapRootView : MapNavHexa,IView {
         }
     }
 
-    void SetNodeSelect(int pos_id)//,bool visible)
+    public void SetNodeSelect(int pos_id)//,bool visible)
     {
         if (selected_pos_id != -1)
         {
@@ -965,7 +1028,7 @@ public class MapRootView : MapNavHexa,IView {
     void OnDistroy()
     {
         doMapUpdateSignal.RemoveListener(OnDoMapUpdate);
-        mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
+        //mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
         doSightzoonUpdateSignal.RemoveListener(OnDoSightzoonUpdateSignal);
 
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);

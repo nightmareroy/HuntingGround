@@ -8,10 +8,10 @@ using MapNavKit;
 
 public class RoleUIView:View
 {
-    [Inject]
-    public SPlayerInfo sPlayerInfo { get; set;}
+    //[Inject]
+    //public SPlayerInfo sPlayerInfo { get; set;}
 
-
+    
 
     public MainContext mainContext;
     
@@ -21,7 +21,7 @@ public class RoleUIView:View
     public GameObject directionTpl;
     public GameObject cancelPathSelect;
 
-    public GameObject flow_up_er;
+    //public GameObject flow_up_er;
 
     
 
@@ -49,6 +49,7 @@ public class RoleUIView:View
     MapNodeSelectSignal mapNodeSelectSignal;
     ActionAnimStartSignal actionAnimStartSignal;
     DoRoleActionAnimSignal doActionAnimSignal;
+    FlowUpTipSignal flowUpTipSignal;
     //UpdateDirectionPathCallbackSignal updateDirectionPathCallbackSignal;
 
     //public Action cancelPathSelectCallback;
@@ -60,7 +61,7 @@ public class RoleUIView:View
     public void Init(MainContext mainContext, GameObject roleObj, GameInfo gameInfo, DGameDataCollection dGameDataCollection,
         string role_id, ActiveGameDataService activeGameDataService, ResourceService resourceService, 
          MapNodeSelectSignal mapNodeSelectSignal, ActionAnimStartSignal actionAnimStartSignal,
-        DoRoleActionAnimSignal doActionAnimSignal)
+        DoRoleActionAnimSignal doActionAnimSignal, FlowUpTipSignal flowUpTipSignal)
     {
         this.requiresContext = false;
         roleUIRectTransform = GetComponent<RectTransform>();
@@ -78,6 +79,7 @@ public class RoleUIView:View
         this.actionAnimStartSignal = actionAnimStartSignal;
         //this.updateDirectionPathCallbackSignal = updateDirectionPathCallbackSignal;
         this.doActionAnimSignal=doActionAnimSignal;
+        this.flowUpTipSignal = flowUpTipSignal;
 
         canvasScaler = mainContext.uiCanvas.GetComponent<CanvasScaler>();
 
@@ -89,7 +91,7 @@ public class RoleUIView:View
 
 //        this.mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
 //        this.directionClickCallbackSignal.AddListener(OnDirectionClickCallbackSignal);
-        this.actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
+        //this.actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
         //this.updateDirectionPathCallbackSignal.AddListener(OnUpdateDirectionPathCallbackSignal);
 
 
@@ -176,49 +178,94 @@ public class RoleUIView:View
 
 
 
-    void OnMapNodeSelectSignal(MapNavNode mapNavNode)
-    {
-//        Debug.Log("map");
-        if (mapNavNode != null)
-        {
-            if (activeGameDataService.GetRoleInMap(mapNavNode.idx) == null)
-            {
-                SetNormalUIVisible(false);
-            }
-            else if (activeGameDataService.GetRoleInMap(mapNavNode.idx).role_id == role_id)
-            {
-                SetNormalUIVisible(true);
-            }
-            else
-            {
-                SetNormalUIVisible(false);
-            }
-        }
-        else
-        {
-            SetNormalUIVisible(false);
-        }
-//        
-    }
+//    void OnMapNodeSelectSignal(MapNavNode mapNavNode)
+//    {
+////        Debug.Log("map");
+//        if (mapNavNode != null)
+//        {
+//            if (activeGameDataService.GetRoleInMap(mapNavNode.idx) == null)
+//            {
+//                SetNormalUIVisible(false);
+//            }
+//            else if (activeGameDataService.GetRoleInMap(mapNavNode.idx).role_id == role_id)
+//            {
+//                SetNormalUIVisible(true);
+//            }
+//            else
+//            {
+//                SetNormalUIVisible(false);
+//            }
+//        }
+//        else
+//        {
+//            SetNormalUIVisible(false);
+//        }
+////        
+//    }
 
     void OnDoActionAnimSignal(DoRoleActionAnimSignal.Param param)
     {
         if (param.role_id == role_id)
         {
+            FlowUpTipSignal.Param flowUpTipSignalParam;
+
             switch (param.type)
             {
                 case 2:
                     Destroy(gameObject);
                     break;
                 case 3:
-                    flow_up_er.GetComponent<Text>().text = param.value.ToString();
-                    flow_up_er.GetComponent<Animator>().SetTrigger("damage_trigger");
-                    blood.value=gameInfo.role_dic[role_id].health;
+                    //flow_up_er.GetComponent<Text>().text = param.value.ToString();
+                    //flow_up_er.GetComponent<Animator>().SetTrigger("damage_trigger");
+                    //
+
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,-1*param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    blood.value = gameInfo.role_dic[role_id].health;
                     break;
                 case 4:
-                    flow_up_er.GetComponent<Text>().text = param.value.ToString();
-                    flow_up_er.GetComponent<Animator>().SetTrigger("recovery_trigger");
+                    //flow_up_er.GetComponent<Text>().text = param.value.ToString();
+                    //flow_up_er.GetComponent<Animator>().SetTrigger("recovery_trigger");
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     blood.value=gameInfo.role_dic[role_id].health;
+                    break;
+
+                case 7:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.banana,param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+
+                case 8:
+                    break;
+
+                case 9:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood_max,param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 10:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.fat, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 11:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.inteligent, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 12:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.amino_acid, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 13:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.digest, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 14:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.skill, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 15:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.cook_skill, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
 
             }
@@ -245,7 +292,7 @@ public class RoleUIView:View
         base.OnDestroy();
 //        mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
 //        directionClickCallbackSignal.RemoveListener(OnDirectionClickCallbackSignal);
-        actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
+        //actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
 
         doActionAnimSignal.RemoveListener(OnDoActionAnimSignal);
     }

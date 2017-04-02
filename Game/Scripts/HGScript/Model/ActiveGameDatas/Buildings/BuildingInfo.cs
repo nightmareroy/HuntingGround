@@ -17,6 +17,7 @@ public class BuildingInfo
     public int far_sight;
     public int see_through;
     public int hide_when_outsight;
+    public int distance_from_home;
 
 //    public int building_direction_did;
 

@@ -63,8 +63,8 @@ public class GameInfo//  : ISerializationCallbackReceiver
         allplayers_dic.Clear();
         foreach (string key in playersObj.Keys)
         {
-            PlayerInfo playerInfo=new PlayerInfo();
-            playerInfo.InitFromJson(playersObj[key] as JsonObject);
+            PlayerInfo playerInfo = SimpleJson.SimpleJson.DeserializeObject<PlayerInfo>(playersObj[key].ToString());//new PlayerInfo();
+            //playerInfo.InitFromJson(playersObj[key] as JsonObject);
             allplayers_dic.Add(playerInfo.uid, playerInfo);
         }
 

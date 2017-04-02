@@ -52,6 +52,9 @@ public class RoleMediator:Mediator
     [Inject]
     public ActionAnimStartSignal actionAnimStartSignal { get; set; }
 
+    [Inject]
+    public FlowUpTipSignal flowUpTipSignal { get; set; }
+
     MapRootMediator mapRootMediator;
 
     RoleInfo roleInfo;
@@ -77,7 +80,7 @@ public class RoleMediator:Mediator
         UpdateRolePos();
 
         roleUIView = resourceService.Spawn("roleui/roleui").GetComponent<RoleUIView>();
-        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal,doActionAnimSignal);
+        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal,doActionAnimSignal,flowUpTipSignal);
         doActionAnimSignal.AddListener(OnDoActionAnimSignal);
         
     }
@@ -109,58 +112,32 @@ public class RoleMediator:Mediator
             return;
         int direction_did = gameInfo.role_dic[updated_role_id].direction_did;
         List<int> direction_path = gameInfo.role_dic[updated_role_id].direction_param;
-        //Debug.Log(directionInfo.path.Count);
-        //MapRootMediator mapRootMediator = mainContext.mapRootMediator;
 
-//        roleView.ClearAllDirectionNode();
-        if (direction_path.Count == 0)
+        if (direction_did != 8)//不是吃料理指令
+        {
+            if (direction_path.Count == 0)
+            {
+                roleView.ClearArrow();
+                return;
+            }
+
+            Vector3[] tempList = new Vector3[direction_path.Count + 1];
+            tempList[direction_path.Count] = mapRootMediator.mapRootView.GetNodeObj(gameInfo.role_dic[updated_role_id].pos_id).transform.position;
+            for (int i = 0; i < direction_path.Count; i++)
+            {
+                tempList[direction_path.Count - 1 - i] = (mapRootMediator.mapRootView.GetNodeObj(direction_path[i]).transform.position);
+            }
+            Vector3 newFirst = new Vector3(tempList[0].x * 0.7f + tempList[1].x * 0.3f, 0, tempList[0].z * 0.7f + tempList[1].z * 0.3f);
+            //        Vector3 newLast = new Vector3(tempList[tempList.Length-2].x*0.3f+tempList[tempList.Length-1].x*0.7f,0,tempList[tempList.Length-2].z*0.3f+tempList[tempList.Length-1].z*0.7f);
+            tempList[0] = newFirst;
+
+
+            roleView.GenerateArrow(tempList);
+        }
+        else
         {
             roleView.ClearArrow();
-            return;
         }
-        //Debug.Log(directionInfo.path.Count);
-        Vector3[] tempList =new Vector3[direction_path.Count+1];
-        tempList[direction_path.Count] = mapRootMediator.mapRootView.GetNodeObj(gameInfo.role_dic[updated_role_id].pos_id).transform.position;
-        for (int i = 0; i <direction_path.Count ; i++)
-        {
-            tempList[direction_path.Count-1-i]=(mapRootMediator.mapRootView.GetNodeObj(direction_path[i]).transform.position);
-        }
-        Vector3 newFirst= new Vector3(tempList[0].x*0.7f+tempList[1].x*0.3f,0,tempList[0].z*0.7f+tempList[1].z*0.3f);
-//        Vector3 newLast = new Vector3(tempList[tempList.Length-2].x*0.3f+tempList[tempList.Length-1].x*0.7f,0,tempList[tempList.Length-2].z*0.3f+tempList[tempList.Length-1].z*0.7f);
-        tempList[0] = newFirst;
-//        tempList[tempList.Length - 1] = newLast;
-
-//        for (int i = 0; i <tempList.Length ; i++)
-//        {
-//            tempList[i].y = 2.5f;
-//        }
-
-        roleView.GenerateArrow(tempList);
-//        tempList.AddRange(direction_path);
-//        for (int i = 0; i < tempList.Count; i++)
-//        {
-//            int nodeid = tempList[i];
-//            int lastnodeid;
-//            int nextnodeid;
-//            if(i==0)
-//            {
-//                lastnodeid=0;
-//                nextnodeid = tempList[i + 1];
-//                
-//            }
-//            else if (i == tempList.Count - 1)
-//            {
-//                lastnodeid = tempList[i - 1];
-//                nextnodeid=0;
-//            }
-//            else
-//            {
-//                lastnodeid = tempList[i - 1];
-//                nextnodeid = tempList[i + 1];
-//            }
-            //Debug.Log(directionInfo.path.Count);
-//            roleView.GenerateADirectionNode(lastnodeid,nextnodeid,nodeid, direction_id);
-//        }
 
     }
 

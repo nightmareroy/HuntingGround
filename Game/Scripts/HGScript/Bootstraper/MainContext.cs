@@ -98,7 +98,8 @@ public class MainContext : MVCSContext {
         //网络推送触发signal服务
         injectionBinder.Bind<NetPushSignalSerivice>().ToSingleton();
 
-
+        //icon sprites
+        injectionBinder.Bind<IconSpritesService>().ToSingleton();
 
 
 
@@ -178,6 +179,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<ActionAnimFinishSignal>().ToSingleton();
         injectionBinder.Bind<DoBananaUpdateSignal>().ToSingleton();
         injectionBinder.Bind<DoSightzoonUpdateSignal>().ToSingleton();
+        commandBinder.Bind<FlowUpTipSignal>().To<FlowUpTipCommand>();
 
         //gamehall push
         injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
@@ -192,7 +194,8 @@ public class MainContext : MVCSContext {
         commandBinder.Bind<CheckUserStateQueueSignal>().To<CheckUserStateQueueCommand>();
         injectionBinder.Bind<UserStateChangeSignal>().ToSingleton();
 
-        
+        //food
+        injectionBinder.Bind<OpenFoodPanelSignal>().ToSingleton();
 
     }
 
@@ -200,6 +203,7 @@ public class MainContext : MVCSContext {
     {
         //injectionBinder.Bind<DirectionClickSignal>().ToSingleton();
         injectionBinder.Bind<MapNodeSelectSignal>().ToSingleton();
+        injectionBinder.Bind<FindNodeSignal>().ToSingleton();
         //injectionBinder.Bind<UpdateDirectionPathSignal>().ToSingleton();
         //injectionBinder.Bind<RoleSelectSignal>().ToSingleton();
         //injectionBinder.Bind<PathSetFinishedSignal>().ToSingleton();
@@ -222,6 +226,8 @@ public class MainContext : MVCSContext {
 
         mediationBinder.Bind<MyRoleListPanelView>().To<MyRoleListPanelMediator>();
         mediationBinder.Bind<AllPlayerListPanelView>().To<AllPlayerListPanelMediator>();
+
+        mediationBinder.Bind<FoodPanelView>().To<FoodPanelMediator>();
     }
 
     public override IContext Start()

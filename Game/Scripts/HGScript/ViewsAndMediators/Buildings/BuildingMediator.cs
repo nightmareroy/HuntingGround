@@ -17,7 +17,12 @@ public class BuildingMediator:Mediator
     [Inject]
     public MainContext mainContext { get; set; }
 
+    [Inject]
+    public ResourceService resourceService { get; set; }
+
     string building_id;
+
+    BuildingUIView buildingUIView;
 
     MapRootMediator mapRootMediator;
 
@@ -27,6 +32,10 @@ public class BuildingMediator:Mediator
         string[] ids = buildingView.gameObject.name.Split('_');
         buildingView.Init();
         building_id = ids[1];
+
+
+        buildingUIView = resourceService.Spawn("buildingui/buildingui").GetComponent<BuildingUIView>();
+        buildingUIView.Init(gameObject, mainContext, doBuildingActionAnimSignal,building_id);
 
         mapRootMediator = mainContext.mapRootMediator;
         UpdateBuildingPos();

@@ -23,6 +23,7 @@ public class RoleInfo
     public int muscle { get; set;}
     public int fat { get; set;}
     public int amino_acid{ get; set;}
+    public int inteligent { get; set; }
     public int breath { get; set;}
     public int digest { get; set;}
     public int courage { get; set;}
@@ -79,7 +80,7 @@ public class RoleInfo
         get
         {
 //            return (int)Math.Pow(2,speed_lv);
-            return 3f*health*(float)muscle/(float)weight;
+            return 3f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
         }
     }
         
@@ -91,7 +92,9 @@ public class RoleInfo
 
 
 
-    public List<int> skill_did_list;
+    public List<int> skill_id_list;
+
+    public List<int> cook_skill_id_list;
 
 //    public bool retreating;
 //    public int fighting_last_turn;
@@ -120,6 +123,7 @@ public class RoleInfo
         blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
         muscle = int.Parse(jsonobj["muscle"].ToString());
         fat = int.Parse(jsonobj["fat"].ToString());
+        inteligent = int.Parse(jsonobj["inteligent"].ToString());
         amino_acid = int.Parse(jsonobj["amino_acid"].ToString());
         breath = int.Parse(jsonobj["breath"].ToString());
         digest = int.Parse(jsonobj["digest"].ToString());
@@ -128,7 +132,8 @@ public class RoleInfo
         far_sight = int.Parse(jsonobj["far_sight"].ToString());
         see_through = int.Parse(jsonobj["see_through"].ToString());
 //        alive = int.Parse(jsonobj["alive"].ToString());
-        skill_did_list=SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["skill_did_list"].ToString());
+        skill_id_list=SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["skill_id_list"].ToString());
+        cook_skill_id_list = SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["cook_skill_id_list"].ToString());
 
 //        retreating = bool.Parse(jsonobj["retreating"].ToString());
 //        fighting_last_turn = int.Parse(jsonobj["fighting_last_turn"].ToString());

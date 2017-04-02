@@ -23,6 +23,7 @@ public class PropertyPanelView :View
     //node
     public Text landform;
     public Text resource;
+    public Text meat;
 
     //role
     public Text role_name;
@@ -42,8 +43,10 @@ public class PropertyPanelView :View
     public Transform roleDirectionBtnTpl;
 
     //building
+    public Transform building_panel;
     public Text building_name;
     public Text building_level;
+    public Text building_dstance;
 
 
 
@@ -56,6 +59,7 @@ public class PropertyPanelView :View
     {
         landform.text = "";
         resource.text = "";
+        meat.text = "";
     }
 
     public void ClearRolePanel()
@@ -75,8 +79,10 @@ public class PropertyPanelView :View
 
     public void ClearBuildingPanel()
     {
+        building_panel.gameObject.SetActive(false);
         building_name.text = "";
         building_level.text = "";
+        building_dstance.text = "";
     }
 
     public void SetRolePanel(RoleInfo roleInfo)
@@ -104,6 +110,19 @@ public class PropertyPanelView :View
     {
         landform.text = dGameDataCollection.dLandformCollection.dLandformDic[gameInfo.map_info.landform[pos_id]].desc;
         resource.text = dGameDataCollection.dResourceCollection.dResourceDic[gameInfo.map_info.resource[pos_id]].desc;
+
+        int meat_id=gameInfo.map_info.meat[pos_id] / 10;
+        int meat_left=gameInfo.map_info.meat[pos_id] % 10;
+        //Debug.Log(gameInfo.map_info.meat[pos_id]);
+
+        if (meat_id == 2)
+        {
+            meat.text = dGameDataCollection.dMeatCollection.dMeatDic[meat_id].desc + "(" + meat_left + ")";
+        }
+        else
+        {
+            meat.text = dGameDataCollection.dMeatCollection.dMeatDic[meat_id].desc;
+        }
 
         //switch (gameInfo.map_info.landform[pos_id])
         //{
@@ -169,14 +188,17 @@ public class PropertyPanelView :View
     {
         if (buildingInfo == null)
         {
-            ClearBuildingPanel();
+            //ClearBuildingPanel();
+            building_panel.gameObject.SetActive(false);
         }
         else
         {
+            building_panel.gameObject.SetActive(true);
             DBuilding dBuilding = dGameDataCollection.dBuildingCollection.dBuildingDic[buildingInfo.building_did];
 
             building_name.text = dBuilding.name;
             building_level.text = buildingInfo.level.ToString();
+            building_dstance.text = buildingInfo.distance_from_home.ToString();
 //            if (buildingInfo.building_direction_did != 0)
 //            {
 //                building_current_direction.text = dBuilding.name;

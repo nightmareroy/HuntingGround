@@ -18,6 +18,7 @@ public class DGameDataCollection
     //map
     public DLandformCollection dLandformCollection;// = new DLandformCollection();
     public DResourceCollection dResourceCollection;// = new DResourceCollection();
+    public DMeatCollection dMeatCollection;
 
     //gametype
     public DGameTypeCollection dGameTypeCollection;//=new DGameTypeCollection();
@@ -27,6 +28,10 @@ public class DGameDataCollection
 
     //single game info
     public DSingleGameInfoCollection dSingleGameInfoCollection;
+
+    //food
+    public DCookSkillCollection dCookSkillCollection;
+    public DFoodCollection dFoodCollection;
 
 }
 

@@ -1,1 +1,0 @@
-﻿{"dBuildingTypeList":[{"id":0,"name":"未知建筑"}]}

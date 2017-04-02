@@ -7,7 +7,7 @@ using SimpleJson;
 
 public class DSkill
 {
-    public int skill_did;
+    public int skill_id;
     public string name;
     public string property;
     public int param;
@@ -45,7 +45,7 @@ public class DSkillCollection
 
             DSkill dSkill = SimpleJson.SimpleJson.DeserializeObject<DSkill>(jo.ToString());
                 //new DSkill(skillid,name,property,param,desc);
-            dSkillDic.Add(dSkill.skill_did,dSkill);
+            dSkillDic.Add(dSkill.skill_id,dSkill);
         }
     }
 }

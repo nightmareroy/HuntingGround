@@ -50,6 +50,9 @@ public class DefaultGameDataUpdateCommand:Command
             dGameDataCollection.dResourceCollection = new DResourceCollection();
             dGameDataCollection.dResourceCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DResource.txt"));
 
+            dGameDataCollection.dMeatCollection = new DMeatCollection();
+            dGameDataCollection.dMeatCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DMeat.txt"));
+
             //gametype
             dGameDataCollection.dGameTypeCollection=new DGameTypeCollection();
             dGameDataCollection.dGameTypeCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DGameType.txt"));
@@ -61,6 +64,13 @@ public class DefaultGameDataUpdateCommand:Command
             //single game info
             dGameDataCollection.dSingleGameInfoCollection=new DSingleGameInfoCollection();
             dGameDataCollection.dSingleGameInfoCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DSingleGameInfo.txt"));
+
+            //food
+            dGameDataCollection.dCookSkillCollection = new DCookSkillCollection();
+            dGameDataCollection.dCookSkillCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DCookSkill.txt"));
+
+            dGameDataCollection.dFoodCollection = new DFoodCollection();
+            dGameDataCollection.dFoodCollection.InitFromStr(fileIOService.ReadAllText("/Defaultdata/Data/DFood.txt"));
 
             callback();
         });

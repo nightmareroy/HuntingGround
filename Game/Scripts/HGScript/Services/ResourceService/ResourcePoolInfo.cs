@@ -36,8 +36,15 @@ public class ResourcePoolInfo{
 
         //roleui
         ResourcePool.Add("roleui/roleui",new ResourcePoolInfo("roleui/roleui",15));
+        ResourcePool.Add("buildingui/buildingui", new ResourcePoolInfo("buildingui/buildingui", 15));
 
         //map
         ResourcePool.Add("map/HexNode/HexNode", new ResourcePoolInfo("map/HexNode/HexNode",40));
+
+        //flow up tip
+        ResourcePool.Add("flowuptip/FlowUpTip", new ResourcePoolInfo("flowuptip/FlowUpTip", 40));
+
+        //icon sprites
+        ResourcePool.Add("iconsprites/IconSprites", new ResourcePoolInfo("iconsprites/IconSprites", 1));
     }
 }

@@ -20,7 +20,11 @@ public class MapInfo
     //[SerializeField]
     public List<int> resource=new List<int>();
 
+    public List<int> meat = new List<int>();
+
     public List<int> sightzoon=new List<int>();
+
+    
 
     //[SerializeField]
     //public List<int> detective_map=new List<int>();

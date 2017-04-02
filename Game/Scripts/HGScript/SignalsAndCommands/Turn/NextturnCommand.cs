@@ -27,6 +27,8 @@ public class NextturnCommand:Command
     [Inject]
     public MapNodeSelectSignal mapNodeSelectSignal{ get; set;}
 
+    
+
     public override void Execute()
     {
         //gameInfo.anim_lock++;

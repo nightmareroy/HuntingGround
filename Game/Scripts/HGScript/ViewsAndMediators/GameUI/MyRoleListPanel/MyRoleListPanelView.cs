@@ -17,6 +17,9 @@ public class MyRoleListPanelView : View
     public MapNodeSelectSignal mapNodeSelectSignal{ get; set;}
 
     [Inject]
+    public FindNodeSignal findNodeSignal { get;set; }
+
+    [Inject]
     public ActiveGameDataService activeGameDataService{ get; set;}
 
     [Inject]
@@ -96,8 +99,9 @@ public class MyRoleListPanelView : View
                         if(active)
                         {
     //                        mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
-                            mapNodeSelectSignal.Dispatch(mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id));
-
+                            MapNavNode node = mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id);
+                            mapNodeSelectSignal.Dispatch(node);
+                            findNodeSignal.Dispatch(node, false);
                         }
                     }
 //                    Debug.Log(toggleGroup.ActiveToggles().ToString());
@@ -133,7 +137,9 @@ public class MyRoleListPanelView : View
                 {
                     if(active)
                     {
-                        mapNodeSelectSignal.Dispatch(mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id));
+                        MapNavNode node = mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id);
+                        mapNodeSelectSignal.Dispatch(node);
+                        findNodeSignal.Dispatch(node, false);
 
                     }
                 }
@@ -222,7 +228,9 @@ public class MyRoleListPanelView : View
 //            int r = Random.Range(0, assignedRoleList.Count);
             selecter_id=(selecter_id+1)%assignedRoleList.Count;
             RoleInfo roleInfo = gameInfo.role_dic[assignedRoleList[selecter_id]];
-            mapNodeSelectSignal.Dispatch(mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id));
+            MapNavNode node = mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id);
+            mapNodeSelectSignal.Dispatch(node);
+            findNodeSignal.Dispatch(node,false);
         }
     }
 
