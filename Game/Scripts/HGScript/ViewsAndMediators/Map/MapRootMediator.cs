@@ -273,15 +273,15 @@ public class MapRootMediator : Mediator {
 //        Debug.Log("dispatch");
 
         //更新指令
-        if (gameInfo.role_dic[selectedRoleInfo.role_id].direction_param.Count == 0)
-        {
-            gameInfo.role_dic[selectedRoleInfo.role_id].direction_did = 2;//设为防御
-        }
-        else
-        {
-            gameInfo.role_dic[selectedRoleInfo.role_id].direction_did = 1;//设为移动
-        }
-
+        //if (gameInfo.role_dic[selectedRoleInfo.role_id].direction_param.Count == 0)
+        //{
+        //    gameInfo.role_dic[selectedRoleInfo.role_id].direction_did = 2;//设为防御
+        //}
+        //else
+        //{
+        //    gameInfo.role_dic[selectedRoleInfo.role_id].direction_did = 1;//设为移动
+        //}
+        gameInfo.role_dic[selectedRoleInfo.role_id].direction_did = 1;//设为移动
         
 
 
