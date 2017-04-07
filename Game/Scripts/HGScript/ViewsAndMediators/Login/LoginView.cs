@@ -16,6 +16,8 @@ public class LoginView : View {
     [Inject]
     public SPlayerInfo sPlayerInfo{ get; set;}
 
+    [Inject]
+    public IconSpritesService iconSpritesService { get;set; }
 
     //total
     public Action onRegisterClickedDelegate;
@@ -37,21 +39,41 @@ public class LoginView : View {
     public GameObject loginMenu;
     public GameObject registerMenu;
     public GameObject gameMenu;
-    public GameObject gameTypeMenu;
-    public GameObject multiGameSettingMenu;
-    public GameObject multiGamesMenu;
+    //public GameObject gameTypeMenu;
+    //public GameObject oneOnOneHallGameSettingMenu;
+    //public GameObject oneOnOneHallGamesMenu;
     public GameObject singleGameMenu;
+    public GameObject friendMenu;
+    public GameObject friendListMenu;
+    public GameObject receiveApplyMenu;
+    public GameObject sendApplyMenu;
 
+    public Transform friendItemTplT;
+    public Transform friendListRootT;
+    public Transform deleteFriendPanelT;
 
-    public GameObject multiGameItemTemplate;
-    public GameObject multiGameScrollviewList;
+    public Transform receiveApplyItemTplT;
+    public Transform receiveApplyRootT;
 
-    public GameObject multiGameSettingPlayerTemplate;
-    public GameObject multiGameSettingGroupTemplate;
-    public GameObject multiGameSettingPanel;
+    public Transform sendApplyItemTplT;
+    public Transform sendApplyRootT;
+
+    //public GameObject multiGameItemTemplate;
+    //public GameObject multiGameScrollviewList;
+
+    //public GameObject multiGameSettingPlayerTemplate;
+    //public GameObject multiGameSettingGroupTemplate;
+    //public GameObject oneOnOneGameSettingPanel;
 
     public GameObject gameNamesRoot;
     public GameObject gameNameTpl;
+
+    public GameObject messagePanel;
+    public Text messageText;
+
+    public Text applyFriendName;
+
+    public Transform applyPanelT;
 
     [HideInInspector]
     public int selectedCreatorId=-1;
@@ -81,6 +103,15 @@ public class LoginView : View {
 
     //public Button loginBtn;
     //public Button registerBtn;
+
+    [HideInInspector]
+    public int selectedFriendUid=-1;
+
+    [HideInInspector]
+    public int selectedReceiveApplyUid = -1;
+
+    [HideInInspector]
+    public int selectedCancelApplyUid = -1;
 
 
 
@@ -126,19 +157,11 @@ public class LoginView : View {
         }
     }
 
-    public void OnMultiGamesClicked()
+    public void OnLadderClicked()
     {
         if (viewClick != null)
         {
-            viewClick("MultiGames");
-        }
-    }
-
-    public void OnLoadGameClicked()
-    {
-        if (viewClick != null)
-        {
-            viewClick("LoadGame");
+            viewClick("Ladder");
         }
     }
 
@@ -150,58 +173,135 @@ public class LoginView : View {
         }
     }
 
-    //multi game
-    public void OnCreateMultiGameClicked()
+    //friend
+    public void OnFriendListClicked()
     {
         if (viewClick != null)
         {
-            viewClick("CreateMultiGame");
+            viewClick("FriendList");
         }
     }
 
-    public void OnJoinGameClicked()
+    public void OnConfirmApplyFriendClicked()
     {
         if (viewClick != null)
         {
-            viewClick("JoinGame");
+            viewClick("ConfirmApplyFriend");
         }
     }
+
+    public void OnReceiveApplyClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("ReceiveApply");
+        }
+    }
+
+    public void OnSendApplyClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("SendApply");
+        }
+    }
+
+    //friend list
+    //public void OnFightFriendClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("FightFriend");
+    //    }
+    //}
+
+    public void OnDeleteFriendClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("DeleteFriend");
+        }
+    }
+
+    public void OnCancelFightClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("CancelFight");
+        }
+    }
+
+    //receive apply
+    //public void OnAgreeApplyClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("AgreeApply");
+    //    }
+    //}
+
+    //public void OnRefuseApplyClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("RefuseApply");
+    //    }
+    //}
+    
+    
+
+    //1v1 game
+    //public void OnCreateOneOnOneGameClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("CreateOneOnOneGame");
+    //    }
+    //}
+
+    //public void OnJoinOneOnOneGameClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("JoinOneOnOneGame");
+    //    }
+    //}
 
     //game type
-    public void On1v1Clicked()
-    {
+    //public void On1v1Clicked()
+    //{
         
-        if (viewClick != null)
-        {
-            viewClick("1v1");
-        }
-    }
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("1v1");
+    //    }
+    //}
 
-    public void On2v2Clicked()
-    {
+    //public void On2v2Clicked()
+    //{
         
-        if (viewClick != null)
-        {
-            viewClick("2v2");
-        }
-    }
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("2v2");
+    //    }
+    //}
 
-    //multi game setting
-    public void OnStartMultiGameClicked()
-    {
-        if (viewClick != null)
-        {
-            viewClick("StartMultiGame");
-        }
-    }
+    //1v1 game setting
+    //public void OnStartOneOnOneGameClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("StartOneOnOneGame");
+    //    }
+    //}
 
-    public void OnCancelOrLeaveMultiGameClicked()
-    {
-        if (viewClick != null)
-        {
-            viewClick("CancelOrLeaveMultiGame");
-        }
-    }
+    //public void OnCancelOrLeaveOneOnOneGameClicked()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("CancelOrLeaveOneOnOneGame");
+    //    }
+    //}
 
     //shared
     public void OnReturnClicked()
@@ -238,6 +338,8 @@ public class LoginView : View {
     //    loginMenu.SetActive(false);
     //    gameMenu.SetActive(true);
     //}
+
+    //single game
     public void InitSingleGameBtns(Action<int> action)
     {
         Tools.ClearChildren(gameNamesRoot.transform);
@@ -260,73 +362,265 @@ public class LoginView : View {
         }
     }
 
+    //friend
 
-
-    public void SetLoadGameVisible(bool visible)
+    public void SetApplyPanelVisible(bool visible)
     {
-        gameMenu.transform.FindChild("LoadBtn").GetComponent<Button>().interactable = visible;
+        applyPanelT.gameObject.SetActive(visible);
     }
+    
 
+    
 
-
-    public void MultiGameAddGame(GameHallGame gameHallGame)
+    //friend list
+    public void InitFriendList(List<Friend> friendList)
     {
-        string game_name = gameHallGame.game_name;
-        int creator_id = gameHallGame.creator_id;
-        string creator_name = gameHallGame.players_info[creator_id].name;
-        int gametype_id = gameHallGame.gametype_id;
-        int player_count = gameHallGame.players_info.Count;
+        Tools.ClearChildren(friendListRootT);
+        //JsonObject friends_idle = jo["friends_idle"] as JsonObject;
+        //JsonObject friends_fighting = jo["friends_fighting"] as JsonObject;
+        //JsonObject friends_offline = jo["friends_offline"] as JsonObject;
+        
 
-        GameObject itemObj = GameObject.Instantiate(multiGameItemTemplate as UnityEngine.Object) as GameObject;
-
-        Text creatorText = itemObj.transform.Find("ItemDetail/Creator").GetComponent<Text>();
-        Text typeText = itemObj.transform.Find("ItemDetail/Type").GetComponent<Text>();
-        Text playerCountText = itemObj.transform.Find("ItemDetail/PlayerCount").GetComponent<Text>();
-
-        creatorText.text = creator_name;
-        typeText.text = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gametype_id].desc;
-        int maxPlayerCount = 0;
-        for (int i = 0; i < dGameDataCollection.dGameTypeCollection.dGameTypeDic[gametype_id].playercount_in_group.Count; i++)
+        foreach (Friend friend in friendList)
         {
-            maxPlayerCount += dGameDataCollection.dGameTypeCollection.dGameTypeDic[gametype_id].playercount_in_group[i];
-        }
-        playerCountText.text = player_count + "/" + maxPlayerCount;
+            //JsonObject itemJS = key as JsonObject;
+            //int uid = int.Parse( itemJS["uid"].ToString());
+            //string name = itemJS["name"].ToString();
+            //int state = int.Parse(itemJS["state"].ToString());
 
-        itemObj.GetComponent<Toggle>().onValueChanged.AddListener((newValue) =>
-        {
-            if (newValue == true)
+            GameObject item = GameObject.Instantiate<GameObject>(friendItemTplT.gameObject);
+            item.transform.SetParent(friendListRootT);
+            item.SetActive(true);
+            item.transform.localScale = Vector3.one;
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+
+            item.name = friend.uid.ToString();
+
+            Text nameText = item.transform.FindChild("Name").GetComponent<Text>();
+            Image stateImg = item.transform.FindChild("State").GetComponent<Image>();
+            Button fightBtn = item.transform.FindChild("FightBtn").GetComponent<Button>();
+            Button deleteBtn = item.transform.FindChild("DeleteBtn").GetComponent<Button>();
+
+            nameText.text = friend.name;
+            fightBtn.onClick.AddListener(() =>
             {
-                selectedCreatorId = int.Parse(itemObj.name);
+                selectedFriendUid = friend.uid;
+                if (viewClick != null)
+                {
+                    viewClick("FightFriend");
+                }
+            });
+            deleteBtn.onClick.AddListener(() =>
+            {
+                selectedFriendUid = friend.uid;
+
+            });
+
+            switch (friend.state)
+            {
+                    //offline
+                case 0:
+                    nameText.color = Color.black;
+                    stateImg.sprite = iconSpritesService.GetView().ball1;
+                    fightBtn.interactable = false;
+                    break;
+                    //fighting
+                case 1:
+                    nameText.color = Color.white;
+                    stateImg.sprite = iconSpritesService.GetView().ball2;
+                    fightBtn.interactable = false;
+                    break;
+                    //idle
+                case 2:
+                    nameText.color = Color.white;
+                    stateImg.sprite = iconSpritesService.GetView().ball3;
+                    fightBtn.interactable = true;
+                    break;
             }
-        });
-
-        itemObj.name = creator_id.ToString();
-        itemObj.transform.SetParent(multiGameScrollviewList.transform);
-        itemObj.transform.localScale = Vector3.one;
-        itemObj.transform.localPosition = Vector3.zero;
-        itemObj.SetActive(true);
-    }
-
-    public void MultiGameRemoveGame(int gameid)
-    {
-        GameObject itemObj = multiGameScrollviewList.transform.Find(gameid.ToString()).gameObject;
-        Destroy(itemObj);
-        if (selectedCreatorId == gameid)
-        {
-            selectedCreatorId = -1;
-            Debug.Log(selectedCreatorId);
         }
     }
 
-    public void MultiGameInitList(GameHallDic gameHallDic)
+    
+
+    public void DeleteFriend(int friend_uid)
     {
-        Tools.ClearChildren(multiGameScrollviewList.transform);
-        foreach (int gameid in gameHallDic.gameHallDic.Keys)
+        Tools.Destroy(friendListRootT.FindChild(friend_uid.ToString()));
+        
+    }
+
+    
+
+    public void SetDeleteFriendPanelVisible(bool visible)
+    {
+        deleteFriendPanelT.gameObject.SetActive(visible);
+    }
+
+    //receive apply
+    public void InitReceiveApplyList(JsonObject jo)
+    {
+        Tools.ClearChildren(receiveApplyRootT);
+        foreach (string key in jo.Keys)
         {
-            GameHallGame gameHallGame=gameHallDic.gameHallDic[gameid];
-            MultiGameAddGame(gameHallGame);
+            int uid = int.Parse(key);
+            string name = (jo[key] as JsonObject)["name"].ToString();
+
+            GameObject item = GameObject.Instantiate<GameObject>(receiveApplyItemTplT.gameObject);
+            item.transform.SetParent(receiveApplyRootT);
+            item.SetActive(true);
+            item.transform.localScale = Vector3.one;
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+
+            item.name = uid.ToString();
+
+            Text nameText = item.transform.FindChild("Name").GetComponent<Text>();
+            Button agreeBtn = item.transform.FindChild("AgreeBtn").GetComponent<Button>();
+            Button refuseBtn = item.transform.FindChild("RefuseBtn").GetComponent<Button>();
+
+            nameText.text = name;
+            agreeBtn.onClick.AddListener(() =>
+            {
+                selectedReceiveApplyUid = uid;
+                if (viewClick != null)
+                {
+                    viewClick("AgreeApply");
+                }
+            });
+            refuseBtn.onClick.AddListener(() =>
+            {
+                selectedReceiveApplyUid = uid;
+                if (viewClick != null)
+                {
+                    viewClick("RefuseApply");
+                }
+            });
         }
     }
+
+    
+
+    public void DeleteApply(int friend_uid)
+    {
+        Tools.Destroy(receiveApplyRootT.FindChild(friend_uid.ToString()));
+    }
+
+    //send apply
+    public void InitSendApplyList(JsonObject jo)
+    {
+        Tools.ClearChildren(sendApplyRootT);
+        foreach (string key in jo.Keys)
+        {
+            int uid = int.Parse(key);
+            string name = (jo[key] as JsonObject)["name"].ToString();
+
+            GameObject item = GameObject.Instantiate<GameObject>(sendApplyItemTplT.gameObject);
+            item.transform.SetParent(sendApplyRootT);
+            item.SetActive(true);
+            item.transform.localScale = Vector3.one;
+            item.transform.localPosition = Vector3.zero;
+            item.transform.localRotation = Quaternion.identity;
+
+            item.name = uid.ToString();
+
+            Text nameText = item.transform.FindChild("Name").GetComponent<Text>();
+            Button cancelBtn = item.transform.FindChild("CancelBtn").GetComponent<Button>();
+
+            nameText.text = name;
+            cancelBtn.onClick.AddListener(() =>
+            {
+                selectedCancelApplyUid = uid;
+                if (viewClick != null)
+                {
+                    viewClick("CancelApply");
+                }
+            });
+
+        }
+    }
+
+
+    public void DeleteSend(int friend_uid)
+    {
+        Tools.Destroy(sendApplyRootT.FindChild(friend_uid.ToString()));
+    }
+
+
+
+    //shared
+    public void ShowMessage(string content)
+    {
+        messagePanel.SetActive(true);
+        messageText.text = content;
+
+    }
+
+
+    //public void SetLoadGameVisible(bool visible)
+    //{
+    //    gameMenu.transform.FindChild("LoadBtn").GetComponent<Button>().interactable = visible;
+    //}
+
+
+
+    //public void MultiGameAddGame(GameHallGame gameHallGame)
+    //{
+    //    string game_name = gameHallGame.game_name;
+    //    int creator_id = gameHallGame.creator_id;
+    //    string creator_name = gameHallGame.players_info[creator_id].name;
+    //    int gametype_id = gameHallGame.gametype_id;
+    //    int player_count = gameHallGame.players_info.Count;
+
+    //    GameObject itemObj = GameObject.Instantiate(multiGameItemTemplate as UnityEngine.Object) as GameObject;
+
+    //    Text creatorText = itemObj.transform.Find("ItemDetail/Creator").GetComponent<Text>();
+    //    Text typeText = itemObj.transform.Find("ItemDetail/Type").GetComponent<Text>();
+    //    Text playerCountText = itemObj.transform.Find("ItemDetail/PlayerCount").GetComponent<Text>();
+
+    //    creatorText.text = creator_name;
+    //    typeText.text = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gametype_id].desc;
+    //    int maxPlayerCount = 0;
+    //    for (int i = 0; i < dGameDataCollection.dGameTypeCollection.dGameTypeDic[gametype_id].playercount_in_group.Count; i++)
+    //    {
+    //        maxPlayerCount += dGameDataCollection.dGameTypeCollection.dGameTypeDic[gametype_id].playercount_in_group[i];
+    //    }
+    //    playerCountText.text = player_count + "/" + maxPlayerCount;
+
+    //    itemObj.GetComponent<Toggle>().onValueChanged.AddListener((newValue) =>
+    //    {
+    //        if (newValue == true)
+    //        {
+    //            selectedCreatorId = int.Parse(itemObj.name);
+    //        }
+    //    });
+
+    //    itemObj.name = creator_id.ToString();
+    //    itemObj.transform.SetParent(multiGameScrollviewList.transform);
+    //    itemObj.transform.localScale = Vector3.one;
+    //    itemObj.transform.localPosition = Vector3.zero;
+    //    itemObj.SetActive(true);
+    //}
+
+    //public void MultiGameRemoveGame(int gameid)
+    //{
+    //    GameObject itemObj = multiGameScrollviewList.transform.Find(gameid.ToString()).gameObject;
+    //    Destroy(itemObj);
+    //    if (selectedCreatorId == gameid)
+    //    {
+    //        selectedCreatorId = -1;
+    //        Debug.Log(selectedCreatorId);
+    //    }
+    //}
+
+    //public void MultiGameInitList(GameHallDic gameHallDic)
+    //{
+    //    Tools.ClearChildren(multiGameScrollviewList.transform);
+    //    foreach (int gameid in gameHallDic.gameHallDic.Keys)
+    //    {
+    //        GameHallGame gameHallGame=gameHallDic.gameHallDic[gameid];
+    //        MultiGameAddGame(gameHallGame);
+    //    }
+    //}
 
 //    public void OnMultiGameItemValueChanged(bool value)
 //    {
@@ -337,86 +631,110 @@ public class LoginView : View {
 //        }
 //    }
 
-    public void MultiGameSettingSetGroupCount(int groupCount)
-    {
-        Tools.ClearChildren(multiGameSettingPanel.transform);
-        for (int i = 0; i < groupCount; i++)
-        {
-            GameObject groupItem = GameObject.Instantiate(multiGameSettingGroupTemplate as UnityEngine.Object) as GameObject;
 
-            groupItem.name = (i + 1).ToString();
-            groupItem.transform.FindChild("Team").GetComponent<Text>().text="队伍"+(i+1);
-            groupItem.transform.SetParent(multiGameSettingPanel.transform);
-            groupItem.transform.localPosition = Vector3.zero;
-            groupItem.transform.localScale = Vector3.one;
-            groupItem.SetActive(true);
-        }
-    }
 
-    public void MultiGameSettingAddPlayer(GameHallPlayer gameHallPlayer)
-    {
-        GameObject groupItem = multiGameSettingPanel.transform.FindChild(gameHallPlayer.group_id.ToString()).gameObject;
 
-        GameObject playerItem = GameObject.Instantiate(multiGameSettingPlayerTemplate as UnityEngine.Object) as GameObject;
 
-        playerItem.name = gameHallPlayer.uid.ToString();
-        playerItem.GetComponent<Text>().text = gameHallPlayer.name;
-        playerItem.transform.SetParent(groupItem.transform.FindChild("PlayerList"));
-        playerItem.transform.localPosition = Vector3.zero;
-        playerItem.transform.localScale = Vector3.one;
-        playerItem.SetActive(true);
+    //public void MultiGameSettingSetGroupCount(int groupCount)
+    //{
+    //    Tools.ClearChildren(multiGameSettingPanel.transform);
+    //    for (int i = 0; i < groupCount; i++)
+    //    {
+    //        GameObject groupItem = GameObject.Instantiate(multiGameSettingGroupTemplate as UnityEngine.Object) as GameObject;
 
-    }
+    //        groupItem.name = (i + 1).ToString();
+    //        groupItem.transform.FindChild("Team").GetComponent<Text>().text="队伍"+(i+1);
+    //        groupItem.transform.SetParent(multiGameSettingPanel.transform);
+    //        groupItem.transform.localPosition = Vector3.zero;
+    //        groupItem.transform.localScale = Vector3.one;
+    //        groupItem.SetActive(true);
+    //    }
+    //}
 
-    public void MultiGameSettingRemovePlayer(int player_id)
-    {
-        GameObject item;
-        for (int i = 0; i < multiGameSettingPanel.transform.childCount; i++)
-        {
-            GameObject groupItem = multiGameSettingPanel.transform.GetChild(i).gameObject;
-            Transform playerListT = groupItem.transform.FindChild("PlayerList");
-            for (int j = 0; j < playerListT.childCount; j++)
-            {
-                GameObject playerItem = playerListT.GetChild(j).gameObject;
-//                Debug.Log(playerItem.name+",,,"+player_id.ToString());
-                if (playerItem.name == player_id.ToString())
-                {
-                    item = playerItem;
-                    goto togo;
-                }
+    //public void MultiGameSettingAddPlayer(GameHallPlayer gameHallPlayer,int colorIndex)
+    //{
+    //    GameObject groupItem = multiGameSettingPanel.transform.FindChild(gameHallPlayer.group_id.ToString()).gameObject;
 
-            }
-        }
-        Debug.LogError("can not find that player!");
-        return;
+    //    GameObject playerItem = GameObject.Instantiate(multiGameSettingPlayerTemplate as UnityEngine.Object) as GameObject;
 
-        togo:
-        Destroy(item);
-    }
+    //    playerItem.name = gameHallPlayer.uid.ToString();
+    //    playerItem.GetComponent<Text>().text = gameHallPlayer.name;
+    //    playerItem.transform.SetParent(groupItem.transform.FindChild("PlayerList"));
+    //    playerItem.transform.localPosition = Vector3.zero;
+    //    playerItem.transform.localScale = Vector3.one;
+    //    playerItem.SetActive(true);
 
-    public void MultiGameSettingClearAllPlayers()
-    {
-        for (int i = 0; i < multiGameSettingPanel.transform.childCount; i++)
-        {
-            GameObject groupItem = multiGameSettingPanel.transform.GetChild(i).gameObject;
-            Transform playerListT = groupItem.transform.FindChild("PlayerList");
-            for (int j = 0; j < playerListT.childCount; j++)
-            {
-                GameObject playerItem = playerListT.GetChild(j).gameObject;
-                Destroy(playerItem);
+    //}
 
-            }
-        }
-    }
+    //public void MultiGameSettingRemovePlayer(int player_id)
+    //{
+    //    GameObject item;
+    //    for (int i = 0; i < multiGameSettingPanel.transform.childCount; i++)
+    //    {
+    //        GameObject groupItem = multiGameSettingPanel.transform.GetChild(i).gameObject;
+    //        Transform playerListT = groupItem.transform.FindChild("PlayerList");
+    //        for (int j = 0; j < playerListT.childCount; j++)
+    //        {
+    //            GameObject playerItem = playerListT.GetChild(j).gameObject;
 
-    public void MultiGameSettingInit(GameHallGame gameHallGame)
-    {
-        int groupCount = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameHallGame.gametype_id].playercount_in_group.Count;
-        MultiGameSettingSetGroupCount(groupCount);
-        foreach (int player_id in gameHallGame.players_info.Keys)
-        {
-            MultiGameSettingAddPlayer(gameHallGame.players_info[player_id]);
-        }
-    }
+    //            if (playerItem.name == player_id.ToString())
+    //            {
+    //                item = playerItem;
+    //                goto togo;
+    //            }
+
+    //        }
+    //    }
+    //    Debug.LogError("can not find that player!");
+    //    return;
+
+    //    togo:
+    //    Destroy(item);
+    //}
+
+    //public void MultiGameSettingClearAllPlayers()
+    //{
+    //    for (int i = 0; i < multiGameSettingPanel.transform.childCount; i++)
+    //    {
+    //        GameObject groupItem = multiGameSettingPanel.transform.GetChild(i).gameObject;
+    //        Transform playerListT = groupItem.transform.FindChild("PlayerList");
+    //        for (int j = 0; j < playerListT.childCount; j++)
+    //        {
+    //            GameObject playerItem = playerListT.GetChild(j).gameObject;
+    //            Destroy(playerItem);
+
+    //        }
+    //    }
+    //}
+
+    //public void MultiGameSettingInit(GameHallGame gameHallGame)
+    //{
+    //    int groupCount = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameHallGame.gametype_id].playercount_in_group.Count;
+    //    MultiGameSettingSetGroupCount(groupCount);
+    //    foreach (int player_id in gameHallGame.players_info.Keys)
+    //    {
+    //        MultiGameSettingAddPlayer(gameHallGame.players_info[player_id]);
+    //    }
+    //}
+
+    //public void OneOnOneGameAddPlayer(GameHallPlayer gameHallPlayer)
+    //{
+    //    Transform groupItemT = oneOnOneGameSettingPanel.transform.FindChild(gameHallPlayer.group_id.ToString());
+
+    //    //GameObject playerItem = GameObject.Instantiate(multiGameSettingPlayerTemplate as UnityEngine.Object) as GameObject;
+    //    Transform playerItemT = groupItemT.FindChild("PlayerList/Player");
+
+    //    //Image colorImg = playerItemT.FindChild("Color").GetComponent<Image>();
+    //    Text name = playerItemT.FindChild("Name").GetComponent<Text>();
+
+    //    playerItemT.name = gameHallPlayer.uid.ToString();
+    //    name.text = gameHallPlayer.name;
+
+    //}
+
+    //public void OneOnOneGameRemovePlayer(int player_id)
+    //{
+
+    //}
 
 }

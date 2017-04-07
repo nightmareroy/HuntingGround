@@ -50,14 +50,14 @@ public class LoginMediator : Mediator {
     public GameInfo gameInfo { get; set; }
 
     //game hall
-    [Inject]
-    public CreateMultiGamePushSignal createMultiGamePushSignal{ get; set;}
-    [Inject]
-    public CancelMultiGamePushSignal cancelMultiGamePushSignal{ get; set;}
-    [Inject]
-    public JoinMultiGamePushSignal joinMultiGamePushSignal{ get; set;}
-    [Inject]
-    public LeaveMultiGamePushSignal leaveMultiGamePushSignal{ get; set;}
+    //[Inject]
+    //public CreateMultiGamePushSignal createMultiGamePushSignal{ get; set;}
+    //[Inject]
+    //public CancelMultiGamePushSignal cancelMultiGamePushSignal{ get; set;}
+    //[Inject]
+    //public JoinMultiGamePushSignal joinMultiGamePushSignal{ get; set;}
+    //[Inject]
+    //public LeaveMultiGamePushSignal leaveMultiGamePushSignal{ get; set;}
 
     //game
     [Inject]
@@ -80,10 +80,15 @@ public class LoginMediator : Mediator {
     public Page loginPage;
     public Page registerPage;
     public Page gamePage;
-    public Page gameTypePage;
-    public Page multiGameSettingPage;
-	public Page multiGamesPage;
+    //public Page gameTypePage;
+    //public Page oneOnOneHallGameSettingPage;
+    //public Page oneOnOneHallGamesPage;
+    
     public Page singleGamePage;
+    public Page friendPage;
+    public Page friendListPage;
+    public Page receiveApplyPage;
+    public Page sendApplyPage;
     //public Page serverSelectPage;
 
     //UpdateMapInfoSignal.Param updateMapInfoSignalParam;
@@ -93,6 +98,8 @@ public class LoginMediator : Mediator {
 
     int multi_game_type_id;
 
+    int colorIndexToSelect = 0;
+
     public override void OnRegister()
     {
         loginView.Init();
@@ -101,10 +108,10 @@ public class LoginMediator : Mediator {
         loginView.viewClick += OnViewClicked;
 
         //game hall
-        createMultiGamePushSignal.AddListener(OnCreateMultiGamePushSignal);
-        cancelMultiGamePushSignal.AddListener(OnCancelMultiGamePushSignal);
-        joinMultiGamePushSignal.AddListener(OnJoinMultiGamePushSignal);
-        leaveMultiGamePushSignal.AddListener(OnLeaveMultiGamePushSignal);
+        //createMultiGamePushSignal.AddListener(OnCreateMultiGamePushSignal);
+        //cancelMultiGamePushSignal.AddListener(OnCancelMultiGamePushSignal);
+        //joinMultiGamePushSignal.AddListener(OnJoinMultiGamePushSignal);
+        //leaveMultiGamePushSignal.AddListener(OnLeaveMultiGamePushSignal);
 
         //game
         multiGameStartPushSignal.AddListener(OnMultiGameStartPushSignal);
@@ -130,10 +137,14 @@ public class LoginMediator : Mediator {
         loginPage = new Page(loginView.loginMenu);
         registerPage = new Page(loginView.registerMenu);
         gamePage = new Page(loginView.gameMenu);
-        gameTypePage = new Page(loginView.gameTypeMenu);
-        multiGameSettingPage = new Page(loginView.multiGameSettingMenu);
-        multiGamesPage = new Page(loginView.multiGamesMenu);
+        //gameTypePage = new Page(loginView.gameTypeMenu);
+        //oneOnOneHallGameSettingPage = new Page(loginView.oneOnOneHallGameSettingMenu);
+        //oneOnOneHallGamesPage = new Page(loginView.oneOnOneHallGamesMenu);
         singleGamePage = new Page(loginView.singleGameMenu);
+        friendPage = new Page(loginView.friendMenu);
+        friendListPage = new Page(loginView.friendListMenu);
+        receiveApplyPage = new Page(loginView.receiveApplyMenu);
+        sendApplyPage = new Page(loginView.sendApplyMenu);
 
         pageManager = new PageManager(loginPage);
 
@@ -145,11 +156,15 @@ public class LoginMediator : Mediator {
         loginPage.SetChild(gamePage);
 
         gamePage.SetChild(singleGamePage);
-        gamePage.SetChild(multiGamesPage);
+        gamePage.SetChild(friendPage);
 
-        multiGamesPage.SetChild(gameTypePage);
+        friendPage.SetChild(friendListPage);
+        friendPage.SetChild(receiveApplyPage);
+        friendPage.SetChild(sendApplyPage);
 
-        gameTypePage.SetChild(multiGameSettingPage);
+        //oneOnOneHallGamesPage.SetChild(gameTypePage);
+
+        //oneOnOneHallGamesPage.SetChild(oneOnOneHallGameSettingPage);
 
 
 
@@ -176,32 +191,21 @@ public class LoginMediator : Mediator {
                     if (msg.code == 200)
                     {
                         JsonObject splayerObj=(msg.data as JsonObject)["splayer"] as JsonObject;
-                        bool isingame=bool.Parse((msg.data as JsonObject)["isingame"].ToString());
+                        //bool isingame=bool.Parse((msg.data as JsonObject)["isingame"].ToString());
 
                         SPlayerInfo sPlayerInfo_temp=new SPlayerInfo();
                         sPlayerInfo_temp=SimpleJson.SimpleJson.DeserializeObject<SPlayerInfo>(splayerObj.ToString());
                         sPlayerInfo.UpdateSplayer(sPlayerInfo_temp);
 
                         pageManager.JumpDown(gamePage);
-                        loginView.SetLoadGameVisible(isingame);
-                        //Debug.Log(sPlayerInfo);
-                        //mainContext.injectionBinder.Unbind<SPlayerInfo>();
-                        //mainContext.injectionBinder.Bind<SPlayerInfo>().ToValue(sPlayerInfo);
+                        //loginView.SetLoadGameVisible(isingame);
 
-//                        JsonObject user_isingame = new JsonObject();
-//                        netService.Request(NetService.isingame, null, (msg2) =>
-//                        {
-//                            bool isingame = bool.Parse((msg2.data as JsonObject)["isingame"].ToString());
-//                            pageManager.JumpDown(gamePage);
-//                            loginView.SetLoadGameVisible(isingame);
-//                            
-//                        });
-                        //
                     }
                     else if (msg.code == 500)
                     {
-                        Debug.LogError("error!");
+                        loginView.ShowMessage(msg.data.ToString());
                     }
+                    
                 });
                 break;
             case "Register":
@@ -220,7 +224,8 @@ public class LoginMediator : Mediator {
                 user_register["pwd"]=loginView.registerPwd.text;
                 netService.Request(NetService.registerRoute, user_register, (msg) =>
                 {
-                    Debug.Log(msg.rawString);
+                    //Debug.Log(msg.rawString);
+                    loginView.ShowMessage(msg.data.ToString());
                 });
 
                 //registerSignal.Dispatch(new RegisterSignal.Param(loginView.loginAccount.text, loginView.loginPwd.text));
@@ -232,104 +237,193 @@ public class LoginMediator : Mediator {
                     loginView.InitSingleGameBtns((progress_id)=>{
                         JsonObject form=new JsonObject();
                         form.Add("progress_id",progress_id);
-                        netService.Request(NetService.create_single_game,form,(msg)=>{
-                            if(msg.code==200)
+                        netService.Request(NetService.SingleGameStart,form,(msg)=>{
+                            if (msg.code == 200)
                             {
                                 netService.Request(NetService.LoadGame, null, (msg2) =>
                                     {
                                         if (msg2.code == 200)
                                         {
                                             gameInfo.InitFromJson(msg2.data as JsonObject);
-                                            startGameSignal.Dispatch();  
+                                            gameInfo.allplayers_dic[sPlayerInfo.uid].color_index = 0;
+                                            startGameSignal.Dispatch();
                                         }
                                     });
+                            }
+                            else
+                            {
+                                loginView.ShowMessage(msg.data.ToString());
                             }
                         });
                     });
                 });
                 break;
-            case "MultiGames":
-                netService.Request(NetService.enterGameHall,null,(msg)=>{
-                    if(msg.code==200)
+            case "Ladder":
+                //netService.Request(NetService.enterOneOnOneGameHall,null,(msg)=>{
+                //    if(msg.code==200)
+                //    {
+                //        gameHallDic.InitFromJson(msg.data as JsonObject);
+                //        loginView.MultiGameInitList(gameHallDic);
+                //        pageManager.JumpDown(oneOnOneHallGamesPage);
+                //    }
+                //});
+                break;
+            case "Friend":
+                pageManager.JumpDown(friendPage);
+                break;
+
+                //friend
+
+            case "FriendList":
+                JsonObject form_get_friends = new JsonObject();
+                netService.Request(NetService.GetFriends, form_get_friends, (msg) =>
+                {
+
+                    if (msg.code == 200)
                     {
-                        gameHallDic.InitFromJson(msg.data as JsonObject);
-                        loginView.MultiGameInitList(gameHallDic);
-                        pageManager.JumpDown(multiGamesPage);
+                        List<Friend> friendList = new List<Friend>();
+                        foreach (object key in msg.data as JsonArray)
+                        {
+                            Friend friend = SimpleJson.SimpleJson.DeserializeObject<Friend>(key.ToString());
+                            friendList.Add(friend);
+                        }
+
+                        friendList.Sort(SortFriend);
+                        loginView.InitFriendList(friendList);
+                        pageManager.JumpDown(friendListPage);
                     }
                 });
                 break;
-            case "LoadGame":
-                netService.Request(NetService.LoadGame, null, (msg) =>
-                    {
-                        //Debug.Log(msg.rawString);
-                        if (msg.code == 200)
-                        {
-                            gameInfo.InitFromJson(msg.data as JsonObject);
-                            startGameSignal.Dispatch();                 
-                        }
-
-                    });
-                break;
-            case "Friend":
-                Debug.Log("friend list");
-                break;
-
-                //multi game
-            case "CreateMultiGame":
-                pageManager.JumpTo(gameTypePage);
-                break;
-            case "JoinGame":
-                if (loginView.selectedCreatorId != -1)
+            case "ConfirmApplyFriend":
+                if (loginView.applyFriendName.text.Length == 0)
                 {
-                    JsonObject form = new JsonObject();
-                    form.Add("creator_id",loginView.selectedCreatorId);
-                    netService.Request(NetService.join_multi_game,form,(msg)=>{
-                        
-                    });
+                    loginView.ShowMessage("用户昵称不能为空");
+                    break;
                 }
-
-                
-                break;
-//            case "ReturnGameSetting":
-//                JsonObject form_leave_c = new JsonObject();
-//                netService.Request(NetService.return_gamesetting,form_leave_c,(msg_return_c)=>{
-//                    if(msg_return_c.code==200)
-//                        pageManager.JumpUp();
-//                });
-//                break;
-
-                //gametype
-            case "1v1":
-
-                JsonObject form_1v1 = new JsonObject();
-                form_1v1.Add("gametype_id",2);
-                netService.Request(NetService.create_multi_game,form_1v1,(msg_1v1)=>{
-//                    if(msg_1v1.code==200)
-//                        pageManager.JumpTo(multiGameSettingPage);
-                });
-
-                break;
-            case "2v2":
-                JsonObject form_2v2 = new JsonObject();
-                form_2v2.Add("gametype_id",3);
-                netService.Request(NetService.create_multi_game,form_2v2,(msg_2v2)=>{
-//                    if(msg_2v2.code==200)
-//                        pageManager.JumpTo(multiGameSettingPage);
+                JsonObject form_confirm_apply_friends = new JsonObject();
+                form_confirm_apply_friends.Add("tar_name",loginView.applyFriendName.text);
+                netService.Request(NetService.ApplyFriend, form_confirm_apply_friends, (msg) =>
+                {
+                    //Debug.Log(msg_confirm_apply_friends.rawString);
+                    if (msg.code == 200)
+                    {
+                        //loginView.InitFriendList(msg_confirm_apply_friends.data as JsonObject);
+                        //pageManager.JumpDown(friendListPage);
+                        loginView.SetApplyPanelVisible(false);
+                    }
+                    //else if (msg_confirm_apply_friends.code == 500)
+                    //{
+                        
+                    //}
+                    loginView.ShowMessage(msg.data.ToString());
                 });
                 break;
+            case "ReceiveApply":
+                JsonObject form_receive_apply = new JsonObject();
+                //form_receive_apply.Add("tar_name", loginView.applyFriendName.text);
+                netService.Request(NetService.GetApplications, form_receive_apply, (msg) =>
+                {
+                    //Debug.Log(msg_receive_apply.rawString);
+                    if (msg.code == 200)
+                    {
+                        loginView.InitReceiveApplyList(msg.data as JsonObject);
+                        pageManager.JumpDown(receiveApplyPage);
+                    }
 
-                //multi game setting
-            case "StartMultiGame":
-                netService.Request(NetService.multi_game_start,null,(msg)=>{
-                    
-                });
-                break;
-            case "CancelOrLeaveMultiGame":
-                netService.Request(NetService.cancel_or_leave_multi_game,null,(msg)=>{
                     
                 });
                 break;
 
+            case "SendApply":
+                JsonObject form_send_apply = new JsonObject();
+                //form_send_apply.Add("tar_name", loginView.applyFriendName.text);
+                netService.Request(NetService.GetSends, form_send_apply, (msg) =>
+                {
+                    //Debug.Log(msg_receive_apply.rawString);
+                    if (msg.code == 200)
+                    {
+                        loginView.InitSendApplyList(msg.data as JsonObject);
+                        pageManager.JumpDown(sendApplyPage);
+                    }
+
+
+                });
+                break;
+
+
+
+                //friend list
+            case "FightFriend":
+                //JsonObject form_fight_friend = new JsonObject();
+                //netService.Request(NetService.GetFriends, form_get_friends, (msg_get_friends) =>
+                //{
+
+                //    if (msg_get_friends.code == 200)
+                //    {
+                //        loginView.InitFriendList(msg_get_friends.data as JsonObject);
+                //    }
+                //});
+                break;
+            case "DeleteFriend":
+                JsonObject form_delete_friend = new JsonObject();
+                form_delete_friend.Add("tar_uid",loginView.selectedFriendUid);
+                netService.Request(NetService.DeleteFriend, form_delete_friend, (msg) =>
+                {
+
+                    if (msg.code == 200)
+                    {
+                        int friend_uid = int.Parse(msg.data.ToString());
+                        loginView.DeleteFriend(friend_uid);
+                        loginView.SetDeleteFriendPanelVisible(false);
+                    }
+                });
+                break;
+            case "CancelFight":
+                break;
+            
+
+                //receive apply
+            case "AgreeApply":
+                JsonObject form_agree_apply = new JsonObject();
+                form_agree_apply.Add("src_uid", loginView.selectedReceiveApplyUid);
+                netService.Request(NetService.AgreeApplication, form_agree_apply, (msg) =>
+                {
+
+                    if (msg.code == 200)
+                    {
+                        int friend_uid = int.Parse(msg.data.ToString());
+                        loginView.DeleteApply(friend_uid);
+                    }
+                });
+                break;
+            case "RefuseApply":
+                JsonObject form_refuse_apply = new JsonObject();
+                form_refuse_apply.Add("src_uid", loginView.selectedReceiveApplyUid);
+                netService.Request(NetService.RefuseApplication, form_refuse_apply, (msg) =>
+                {
+
+                    if (msg.code == 200)
+                    {
+                        int friend_uid = int.Parse(msg.data.ToString());
+                        loginView.DeleteApply(friend_uid);
+                    }
+                });
+                break;
+
+                //send apply
+            case "CancelApply":
+                JsonObject form_cancel_apply = new JsonObject();
+                form_cancel_apply.Add("tar_uid", loginView.selectedCancelApplyUid);
+                netService.Request(NetService.CancelApplication, form_cancel_apply, (msg) =>
+                {
+
+                    if (msg.code == 200)
+                    {
+                        int friend_uid = int.Parse(msg.data.ToString());
+                        loginView.DeleteSend(friend_uid);
+                    }
+                });
+                break;
 
             
                 //shared
@@ -345,6 +439,11 @@ public class LoginMediator : Mediator {
             default:
                 break;
         }
+    }
+
+    int SortFriend(Friend friend_a, Friend friend_b)
+    {
+        return friend_a.state - friend_b.state;
     }
 
     public void OnSingleGameNameClick(int progress_id)
@@ -418,150 +517,103 @@ public class LoginMediator : Mediator {
 
     void OnCreateMultiGamePushSignal(JsonObject jo)
     {
-        GameHallGame gameHallGame = new GameHallGame();
-        gameHallGame.InitFromJson(jo);
-        gameHallDic.gameHallDic.Add(gameHallGame.creator_id,gameHallGame);
+        //GameHallGame gameHallGame = new GameHallGame();
+        //gameHallGame.InitFromJson(jo);
+        //gameHallDic.gameHallDic.Add(gameHallGame.creator_id,gameHallGame);
 
-        if (gameHallGame.creator_id==sPlayerInfo.uid)
-        {
-//            int groupCount = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameHallGame.gametype_id].playercount_in_group.Count;
-//            loginView.MultiGameSettingSetGroupCount(groupCount);
-//            loginView.MultiGameSettingAddPlayer(gameHallGame.players_info[gameHallGame.creator_id]);
-            loginView.MultiGameSettingInit(gameHallGame);
-            pageManager.JumpTo(multiGameSettingPage);
-        }
+        //if (gameHallGame.creator_id==sPlayerInfo.uid)
+        //{
 
-        if (pageManager.activePage == multiGamesPage)
-        {
-            loginView.MultiGameAddGame(gameHallGame);
-        }
+        //    loginView.MultiGameSettingInit(gameHallGame);
+        //    pageManager.JumpTo(oneOnOneHallGameSettingPage);
+        //}
 
-//        switch (pageManager.activePage)
-//        {
-//            case multiGamesPage:
-//                loginView.MultiGameAddGame(gameHallGame);
-//                break;
-//            case multiGameSettingPage:
-//                break;
-//        }
+        //if (pageManager.activePage == oneOnOneHallGamesPage)
+        //{
+        //    loginView.MultiGameAddGame(gameHallGame);
+        //}
+
 
     }
 
-    void OnCancelMultiGamePushSignal(JsonObject jo)
-    {
-        int creator_id = int.Parse(jo["creator_id"].ToString());
-        bool is_start = bool.Parse(jo["is_start"].ToString());
+    //void OnCancelMultiGamePushSignal(JsonObject jo)
+    //{
+    //    int creator_id = int.Parse(jo["creator_id"].ToString());
+    //    bool is_start = bool.Parse(jo["is_start"].ToString());
 
-        GameHallGame gameHallGame = gameHallDic.gameHallDic[creator_id];
-        gameHallDic.gameHallDic.Remove(creator_id);
+    //    GameHallGame gameHallGame = gameHallDic.gameHallDic[creator_id];
+    //    gameHallDic.gameHallDic.Remove(creator_id);
 
-        if (pageManager.activePage == multiGamesPage)
-        {
-            loginView.MultiGameRemoveGame(creator_id);
-        }
-        else if (pageManager.activePage == multiGameSettingPage)
-        {
-            if (is_start == false)
-            {
-                if (gameHallGame.players_info.ContainsKey(sPlayerInfo.uid))
-                {
-                    loginView.MultiGameInitList(gameHallDic);
-                    pageManager.JumpTo(multiGamesPage);
-                }
-            }
-        }
-//        switch (pageManager.activePage)
-//        {
-//            case multiGamesPage:
-//                loginView.MultiGameRemoveGame(creator_id);
-//                break;
-//            case multiGameSettingPage:
-//                if (gameHallDic.gameHallDic[creator_id].players_info.ContainsKey(sPlayerInfo.uid))
-//                {
-//                    loginView.MultiGameInitList(gameHallDic);
-//                    pageManager.JumpUp(multiGamesPage);
-//                }
-//                break;
-//        }
+    //    if (pageManager.activePage == oneOnOneHallGamesPage)
+    //    {
+    //        loginView.MultiGameRemoveGame(creator_id);
+    //    }
+    //    else if (pageManager.activePage == oneOnOneHallGameSettingPage)
+    //    {
+    //        if (is_start == false)
+    //        {
+    //            if (gameHallGame.players_info.ContainsKey(sPlayerInfo.uid))
+    //            {
+    //                loginView.MultiGameInitList(gameHallDic);
+    //                pageManager.JumpTo(oneOnOneHallGamesPage);
+    //            }
+    //        }
+    //    }
 
-    }
+
+    //}
 
     void OnJoinMultiGamePushSignal(JsonObject jo)
     {
-        int creator_id = int.Parse(jo["creator_id"].ToString());
-        int uid = int.Parse(jo["uid"].ToString());
+//        int creator_id = int.Parse(jo["creator_id"].ToString());
+//        int uid = int.Parse(jo["uid"].ToString());
 
-        GameHallPlayer gameHallPlayer = new GameHallPlayer();
-        gameHallPlayer.uid = uid;
-        gameHallPlayer.group_id = int.Parse(jo["group_id"].ToString());
-        gameHallPlayer.name = jo["name"].ToString();
+//        GameHallPlayer gameHallPlayer = new GameHallPlayer();
+//        gameHallPlayer.uid = uid;
+//        gameHallPlayer.group_id = int.Parse(jo["group_id"].ToString());
+//        gameHallPlayer.name = jo["name"].ToString();
 
 
-        gameHallDic.gameHallDic[creator_id].players_info.Add(uid,gameHallPlayer);
+//        gameHallDic.gameHallDic[creator_id].players_info.Add(uid,gameHallPlayer);
 
-        if (pageManager.activePage == multiGamesPage)
-        {
-            if (uid == sPlayerInfo.uid)
-            {
-                loginView.MultiGameSettingInit(gameHallDic.gameHallDic[creator_id]);
-//                loginView.MultiGameSettingAddPlayer(gameHallPlayer);
-                pageManager.JumpTo(multiGameSettingPage);
-            }
-        }
-        else if (pageManager.activePage == multiGameSettingPage)
-        {
-            loginView.MultiGameSettingAddPlayer(gameHallPlayer);
-        }
-
-//        switch (pageManager.activePage)
+//        if (pageManager.activePage == oneOnOneHallGamesPage)
 //        {
-//            case multiGamesPage:
-//                if (uid == sPlayerInfo.uid)
-//                {
-//                    loginView.MultiGameSettingAddPlayer(gameHallPlayer);
-//                    pageManager.JumpDown(multiGameSettingPage);
-//                }
-//                break;
-//            case multiGameSettingPage:
-//                loginView.MultiGameSettingAddPlayer(gameHallPlayer);
-//                break;
+//            if (uid == sPlayerInfo.uid)
+//            {
+//                loginView.MultiGameSettingInit(gameHallDic.gameHallDic[creator_id]);
+////                loginView.MultiGameSettingAddPlayer(gameHallPlayer);
+//                pageManager.JumpTo(oneOnOneHallGameSettingPage);
+//            }
 //        }
+//        else if (pageManager.activePage == oneOnOneHallGameSettingPage)
+//        {
+//            loginView.MultiGameSettingAddPlayer(gameHallPlayer);
+//        }
+
+
     }
 
     void OnLeaveMultiGamePushSignal(JsonObject jo)
     {
-        int creator_id = int.Parse(jo["creator_id"].ToString());
-        int uid = int.Parse(jo["uid"].ToString());
+        //int creator_id = int.Parse(jo["creator_id"].ToString());
+        //int uid = int.Parse(jo["uid"].ToString());
 
-        gameHallDic.gameHallDic[creator_id].players_info.Remove(uid);
+        //gameHallDic.gameHallDic[creator_id].players_info.Remove(uid);
 
-        if (pageManager.activePage == multiGamesPage)
-        {
+        //if (pageManager.activePage == oneOnOneHallGamesPage)
+        //{
             
-        }
-        else if (pageManager.activePage == multiGameSettingPage)
-        {
-            if (uid == sPlayerInfo.uid)
-            {
-                loginView.MultiGameInitList(gameHallDic);
-                pageManager.JumpTo(multiGamesPage);
-            }
-            loginView.MultiGameSettingRemovePlayer(uid);
-        }
+        //}
+        //else if (pageManager.activePage == oneOnOneHallGameSettingPage)
+        //{
+        //    if (uid == sPlayerInfo.uid)
+        //    {
+        //        loginView.MultiGameInitList(gameHallDic);
+        //        pageManager.JumpTo(oneOnOneHallGamesPage);
+        //    }
+        //    loginView.MultiGameSettingRemovePlayer(uid);
+        //}
 
-//        switch (pageManager.activePage)
-//        {
-//            case multiGamesPage:
-//                break;
-//            case multiGameSettingPage:
-//                if (uid == sPlayerInfo.uid)
-//                {
-//                    loginView.MultiGameInitList(gameHallDic);
-//                    pageManager.JumpUp(multiGamesPage);
-//                }
-//                loginView.MultiGameSettingRemovePlayer(uid);
-//                break;
-//        }
     }
 
 
@@ -581,10 +633,10 @@ public class LoginMediator : Mediator {
     public void OnDestroy()
     {
         //game hall
-        createMultiGamePushSignal.RemoveListener(OnCreateMultiGamePushSignal);
-        cancelMultiGamePushSignal.RemoveListener(OnCancelMultiGamePushSignal);
-        joinMultiGamePushSignal.RemoveListener(OnJoinMultiGamePushSignal);
-        leaveMultiGamePushSignal.RemoveListener(OnLeaveMultiGamePushSignal);
+        //createMultiGamePushSignal.RemoveListener(OnCreateMultiGamePushSignal);
+        //cancelMultiGamePushSignal.RemoveListener(OnCancelMultiGamePushSignal);
+        //joinMultiGamePushSignal.RemoveListener(OnJoinMultiGamePushSignal);
+        //leaveMultiGamePushSignal.RemoveListener(OnLeaveMultiGamePushSignal);
 
         //game
         //game

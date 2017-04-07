@@ -23,6 +23,8 @@ public class PlayerInfo
     public List<int> actived_food_ids;
 
     public int direction_turn;
+
+    public int color_index=0;
     //public bool ready = false;
 
     //key是角色静态id

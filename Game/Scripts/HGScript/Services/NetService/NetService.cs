@@ -62,15 +62,33 @@ public class NetService
     //
     public const string NextTurn = "game.gameHandler.NextTurn";
     //
-    public const string create_single_game="game.gameHandler.SingleGameStart";
+    public const string SingleGameStart="game.gameHandler.SingleGameStart";
     //
-    public const string create_multi_game = "gamelist.gamelistHandler.CreateMultiGame";
+    //public const string CreateMultiGame = "gamelist.gamelistHandler.CreateMultiGame";
+    ////
+    //public const string CancelOrLeaveMultiGame="gamelist.gamelistHandler.CancelOrLeaveMultiGame";
+    ////
+    //public const string JoinMultiGame="gamelist.gamelistHandler.JoinMultiGame";
+    ////
+    //public const string MultiGameStart = "game.gameHandler.MultiGameStart";
+
     //
-    public const string cancel_or_leave_multi_game="gamelist.gamelistHandler.CancelOrLeaveMultiGame";
+    public const string GetFriends = "friend.friendHandler.GetFriends";
     //
-    public const string join_multi_game="gamelist.gamelistHandler.JoinMultiGame";
+    public const string GetApplications = "friend.friendHandler.GetApplications";
     //
-    public const string multi_game_start = "game.gameHandler.MultiGameStart";
+    public const string GetSends = "friend.friendHandler.GetSends";
+    //
+    public const string ApplyFriend = "friend.friendHandler.ApplyFriend";
+    //
+    public const string DeleteFriend = "friend.friendHandler.DeleteFriend";
+    //
+    public const string AgreeApplication = "friend.friendHandler.AgreeApplication";
+    //
+    public const string RefuseApplication = "friend.friendHandler.RefuseApplication";
+    //
+    public const string CancelApplication = "friend.friendHandler.CancelApplication";
+
     //
     public const string LoadGame = "game.gameHandler.LoadGame";
     //
@@ -84,7 +102,7 @@ public class NetService
 //    public const string doAction = "doAction";
 
     //game hall
-    public const string enterGameHall="gamelist.gamelistHandler.EnterGameHall";
+    public const string enterOneOnOneGameHall="gamelist.gamelistHandler.EnterGameHall";
     public const string leaveGameHall="gamelist.gamelistHandler.LeaveGameHall";
 
 

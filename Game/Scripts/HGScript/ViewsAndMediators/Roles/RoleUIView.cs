@@ -16,6 +16,7 @@ public class RoleUIView:View
     public MainContext mainContext;
     
     public Text roleName;
+    public Image roleNameBack;
     public Slider blood;
     public GameObject directionsRoot;
     public GameObject directionTpl;
@@ -109,7 +110,7 @@ public class RoleUIView:View
 //        damageAnim.Stop();
 //        recoveryAnim.Stop();
 
-        UpdateName();
+        UpdateNameAndColor();
 //        UpdateDirections();
     }
 
@@ -280,10 +281,11 @@ public class RoleUIView:View
     
 
 
-    public void UpdateName()
+    public void UpdateNameAndColor()
     {
         //roleName.text = dGameDataCollection.dRoleCollection.dRoleDic[gameInfo.allplayers[playerid].role_dic[roleid].did].name;
         roleName.text = gameInfo.role_dic[role_id].name;
+
         blood.value=gameInfo.role_dic[role_id].health;
     }
 
