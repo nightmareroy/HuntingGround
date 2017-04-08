@@ -65,6 +65,12 @@ public class LoginMediator : Mediator {
 
     [Inject]
     public InviteFightPushSignal inviteFightPushSignal { get;set; }
+    [Inject]
+    public CancelInviteFightPushSignal cancelInviteFightPushSignal { get; set; }
+    [Inject]
+    public FriendGameStartPushSignal friendGameStartPushSignal { get; set; }
+    [Inject]
+    public RefuseInviteFightPushSignal refuseInviteFightPushSignal { get; set; }
 
     int width;
     int height;
@@ -121,6 +127,9 @@ public class LoginMediator : Mediator {
 
         //friend
         inviteFightPushSignal.AddListener(OnInviteFightPushSignal);
+        cancelInviteFightPushSignal.AddListener(OnCancelInviteFightPushSignal);
+        friendGameStartPushSignal.AddListener(OnFriendGameStartPushSignal);
+        refuseInviteFightPushSignal.AddListener(OnRefuseInviteFightPushSignal);
 
 
         if (netService.GetConnectStatus() == Pomelo.DotNetClient.NetWorkState.DISCONNECTED)
@@ -386,6 +395,20 @@ public class LoginMediator : Mediator {
                 });
                 break;
             case "CancelFight":
+                JsonObject form_cancel_fight = new JsonObject();
+                form_cancel_fight.Add("tar_uid", loginView.selectedFriendUid);
+                netService.Request(NetService.CancelInviteFight, form_cancel_fight, (msg) =>
+                {
+
+                    if (msg.code == 200)
+                    {
+                        loginView.SetWaitInvitePanelVisible(false);
+                    }
+                    else if (msg.code == 500)
+                    {
+                        loginView.ShowMessage(msg.data.ToString());
+                    }
+                });
                 break;
             
 
@@ -434,9 +457,19 @@ public class LoginMediator : Mediator {
 
                 //invite fight
             case "AcceptInviteFight":
+                JsonObject form_agree_fight = new JsonObject();
+                form_agree_fight.Add("src_uid", loginView.selectedInviterUid);
+                netService.Request(NetService.AgreeInviteFight, form_agree_fight, (msg) =>
+                {
+                });
                 break;
 
             case "RefuseInviteFight":
+                JsonObject form_refuse_fight = new JsonObject();
+                form_refuse_fight.Add("src_uid", loginView.selectedInviterUid);
+                netService.Request(NetService.RefuseInviteFight, form_refuse_fight, (msg) =>
+                {
+                });
                 break;
 
             
@@ -643,9 +676,34 @@ public class LoginMediator : Mediator {
             });
     }
 
-    void OnInviteFightPushSignal(int uid, string name)
+    void OnInviteFightPushSignal(int src_uid, string name)
     {
-        loginView.ShowInvitePanel(uid, name);
+        loginView.ShowInvitePanel(src_uid, name);
+    }
+
+    void OnCancelInviteFightPushSignal(int src_uid)
+    {
+        if (loginView.selectedInviterUid == src_uid)
+        {
+            loginView.HideInvitePanel();
+        }
+    }
+
+    void OnFriendGameStartPushSignal()
+    {
+        netService.Request(NetService.LoadGame, null, (msg) =>
+        {
+            if (msg.code == 200)
+            {
+                gameInfo.InitFromJson(msg.data as JsonObject);
+                startGameSignal.Dispatch();
+            }
+        });
+    }
+
+    void OnRefuseInviteFightPushSignal(int tar_uid)
+    {
+        loginView.SetWaitInvitePanelVisible(false);
     }
 
 
@@ -663,6 +721,9 @@ public class LoginMediator : Mediator {
 
         //friend
         inviteFightPushSignal.RemoveListener(OnInviteFightPushSignal);
+        cancelInviteFightPushSignal.RemoveListener(OnCancelInviteFightPushSignal);
+        friendGameStartPushSignal.RemoveListener(OnFriendGameStartPushSignal);
+        refuseInviteFightPushSignal.RemoveListener(OnRefuseInviteFightPushSignal);
 
         //loginView.playModeSignal.RemoveListener(OnPlayModeSignal);
 

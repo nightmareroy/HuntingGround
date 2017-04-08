@@ -91,7 +91,11 @@ public class NetService
     //
     public const string InviteFight = "friend.friendHandler.InviteFight";
     //
-    public const string AnswerInviteFight = "friend.friendHandler.AnswerInviteFight";
+    public const string CancelInviteFight = "friend.friendHandler.CancelInviteFight";
+    //
+    public const string AgreeInviteFight = "friend.friendHandler.AgreeInviteFight";
+    //
+    public const string RefuseInviteFight = "friend.friendHandler.RefuseInviteFight";
 
     //
     public const string LoadGame = "game.gameHandler.LoadGame";

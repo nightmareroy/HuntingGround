@@ -51,6 +51,7 @@ public class LoginView : View {
     public Transform friendItemTplT;
     public Transform friendListRootT;
     public Transform deleteFriendPanelT;
+    public Transform waitInvitePanelT;
 
     public Transform receiveApplyItemTplT;
     public Transform receiveApplyRootT;
@@ -458,7 +459,10 @@ public class LoginView : View {
         
     }
 
-    
+    public void SetWaitInvitePanelVisible(bool visible)
+    {
+        waitInvitePanelT.gameObject.SetActive(visible);
+    }
 
     public void SetDeleteFriendPanelVisible(bool visible)
     {
@@ -556,11 +560,18 @@ public class LoginView : View {
 
 
     //invite fight
-    public void ShowInvitePanel(int uid, string name)
+    public void ShowInvitePanel(int src_uid, string name)
     {
         inviteFightPanelT.gameObject.SetActive(true);
         inviterName.text = name;
-        selectedInviterUid = uid;
+        selectedInviterUid = src_uid;
+    }
+
+    public void HideInvitePanel()
+    {
+        inviteFightPanelT.gameObject.SetActive(false);
+        //inviterName.text = name;
+        selectedInviterUid = -1;
     }
 
 

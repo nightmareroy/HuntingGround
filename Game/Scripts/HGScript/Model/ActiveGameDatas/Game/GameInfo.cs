@@ -60,10 +60,13 @@ public class GameInfo//  : ISerializationCallbackReceiver
 
         map_info = SimpleJson.SimpleJson.DeserializeObject<MapInfo>(mapObj.ToString());
 
+        int color_index = 0;
         allplayers_dic.Clear();
         foreach (string key in playersObj.Keys)
         {
             PlayerInfo playerInfo = SimpleJson.SimpleJson.DeserializeObject<PlayerInfo>(playersObj[key].ToString());//new PlayerInfo();
+            playerInfo.color_index = color_index;
+            color_index++;
             //playerInfo.InitFromJson(playersObj[key] as JsonObject);
             allplayers_dic.Add(playerInfo.uid, playerInfo);
         }

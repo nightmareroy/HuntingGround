@@ -24,6 +24,9 @@ public class NetPushSignalSerivice
     public const string UserLeave = "UserLeave";
 
     public const string InviteFight = "InviteFight";
+    public const string CancelInviteFight = "CancelInviteFight";
+    public const string FriendGameStart = "FriendGameStart";
+    public const string RefuseInviteFight = "RefuseInviteFight";
 
     //signal
     ////game hall
@@ -53,7 +56,12 @@ public class NetPushSignalSerivice
     //friend
     [Inject]
     public InviteFightPushSignal inviteFightPushSignal { get; set; }
-
+    [Inject]
+    public CancelInviteFightPushSignal canCelnviteFightPushSignal { get; set; }
+    [Inject]
+    public FriendGameStartPushSignal friendGameStartPushSignal { get; set; }
+    [Inject]
+    public RefuseInviteFightPushSignal refuseInviteFightPushSignal { get; set; }
 
 
 
@@ -152,10 +160,34 @@ public class NetPushSignalSerivice
         pclient.on(InviteFight, (msg) =>
         {
             JsonObject msgJO=msg.data as JsonObject;
-            int uid = int.Parse(msgJO["uid"].ToString());
+            int src_uid = int.Parse(msgJO["src_uid"].ToString());
             string name = msgJO["name"].ToString();
             //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
-            inviteFightPushSignal.Dispatch(uid,name);
+            inviteFightPushSignal.Dispatch(src_uid,name);
+        });
+        pclient.on(CancelInviteFight, (msg) =>
+        {
+            JsonObject msgJO = msg.data as JsonObject;
+            int src_uid = int.Parse(msgJO["src_uid"].ToString());
+            //string name = msgJO["name"].ToString();
+            //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
+            canCelnviteFightPushSignal.Dispatch(src_uid);
+        });
+        pclient.on(FriendGameStart, (msg) =>
+        {
+            //JsonObject msgJO = msg.data as JsonObject;
+            //int uid = int.Parse(msgJO["uid"].ToString());
+            //string name = msgJO["name"].ToString();
+            //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
+            friendGameStartPushSignal.Dispatch();
+        });
+        pclient.on(RefuseInviteFight, (msg) =>
+        {
+            JsonObject msgJO = msg.data as JsonObject;
+            int tar_uid = int.Parse(msgJO["tar_uid"].ToString());
+            //string name = msgJO["name"].ToString();
+            //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
+            refuseInviteFightPushSignal.Dispatch(tar_uid);
         });
     }
 
