@@ -13,7 +13,7 @@ public class GameInfo//  : ISerializationCallbackReceiver
     //List<int> _values = new List<int>();
 
     public int creator_id;
-    public string game_name;
+    //public string game_name;
     public int gametype_id;
     public int current_turn = 0;
 
@@ -54,7 +54,7 @@ public class GameInfo//  : ISerializationCallbackReceiver
 
 
         creator_id = int.Parse(gameObj["creator_id"].ToString());
-        game_name = gameObj["game_name"].ToString();
+        //game_name = gameObj["game_name"].ToString();
         gametype_id = int.Parse(gameObj["gametype_id"].ToString());
         current_turn = int.Parse(gameObj["current_turn"].ToString());
 
