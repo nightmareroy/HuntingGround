@@ -196,6 +196,9 @@ public class MainContext : MVCSContext {
 
         //friend push
         injectionBinder.Bind<InviteFightPushSignal>().ToSingleton();
+        injectionBinder.Bind<CancelInviteFightPushSignal>().ToSingleton();
+        injectionBinder.Bind<FriendGameStartPushSignal>().ToSingleton();
+        injectionBinder.Bind<RefuseInviteFightPushSignal>().ToSingleton();
 
         //food
         injectionBinder.Bind<OpenFoodPanelSignal>().ToSingleton();
