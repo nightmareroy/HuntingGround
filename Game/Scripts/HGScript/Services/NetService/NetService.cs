@@ -88,6 +88,10 @@ public class NetService
     public const string RefuseApplication = "friend.friendHandler.RefuseApplication";
     //
     public const string CancelApplication = "friend.friendHandler.CancelApplication";
+    //
+    public const string InviteFight = "friend.friendHandler.InviteFight";
+    //
+    public const string AnswerInviteFight = "friend.friendHandler.AnswerInviteFight";
 
     //
     public const string LoadGame = "game.gameHandler.LoadGame";

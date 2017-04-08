@@ -58,6 +58,11 @@ public class LoginView : View {
     public Transform sendApplyItemTplT;
     public Transform sendApplyRootT;
 
+    public Transform inviteFightPanelT;
+    public Text inviterName;
+    public Button inviteAcceptBtn;
+    public Button inviteRefuseBtn;
+
     //public GameObject multiGameItemTemplate;
     //public GameObject multiGameScrollviewList;
 
@@ -67,6 +72,8 @@ public class LoginView : View {
 
     public GameObject gameNamesRoot;
     public GameObject gameNameTpl;
+
+    
 
     public GameObject messagePanel;
     public Text messageText;
@@ -113,6 +120,8 @@ public class LoginView : View {
     [HideInInspector]
     public int selectedCancelApplyUid = -1;
 
+    [HideInInspector]
+    public int selectedInviterUid = -1;
 
 
 	// Use this for initialization
@@ -231,22 +240,22 @@ public class LoginView : View {
         }
     }
 
-    //receive apply
-    //public void OnAgreeApplyClicked()
-    //{
-    //    if (viewClick != null)
-    //    {
-    //        viewClick("AgreeApply");
-    //    }
-    //}
+    //invite fight
+    public void OnAcceptInviteFightClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("AcceptInviteFight");
+        }
+    }
 
-    //public void OnRefuseApplyClicked()
-    //{
-    //    if (viewClick != null)
-    //    {
-    //        viewClick("RefuseApply");
-    //    }
-    //}
+    public void OnRefuseInviteFightClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("RefuseInviteFight");
+        }
+    }
     
     
 
@@ -543,6 +552,15 @@ public class LoginView : View {
     public void DeleteSend(int friend_uid)
     {
         Tools.Destroy(sendApplyRootT.FindChild(friend_uid.ToString()));
+    }
+
+
+    //invite fight
+    public void ShowInvitePanel(int uid, string name)
+    {
+        inviteFightPanelT.gameObject.SetActive(true);
+        inviterName.text = name;
+        selectedInviterUid = uid;
     }
 
 

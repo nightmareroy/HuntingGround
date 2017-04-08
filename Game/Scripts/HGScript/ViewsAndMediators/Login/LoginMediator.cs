@@ -63,6 +63,9 @@ public class LoginMediator : Mediator {
     [Inject]
     public MultiGameStartPushSignal multiGameStartPushSignal{ get; set;}
 
+    [Inject]
+    public InviteFightPushSignal inviteFightPushSignal { get;set; }
+
     int width;
     int height;
 //    int gametypeid;
@@ -115,6 +118,9 @@ public class LoginMediator : Mediator {
 
         //game
         multiGameStartPushSignal.AddListener(OnMultiGameStartPushSignal);
+
+        //friend
+        inviteFightPushSignal.AddListener(OnInviteFightPushSignal);
 
 
         if (netService.GetConnectStatus() == Pomelo.DotNetClient.NetWorkState.DISCONNECTED)
@@ -354,15 +360,16 @@ public class LoginMediator : Mediator {
 
                 //friend list
             case "FightFriend":
-                //JsonObject form_fight_friend = new JsonObject();
-                //netService.Request(NetService.GetFriends, form_get_friends, (msg_get_friends) =>
-                //{
+                JsonObject form_fight_friend = new JsonObject();
+                form_fight_friend.Add("tar_uid",loginView.selectedFriendUid);
+                netService.Request(NetService.InviteFight, form_fight_friend, (msg_fight_friend) =>
+                {
 
-                //    if (msg_get_friends.code == 200)
-                //    {
-                //        loginView.InitFriendList(msg_get_friends.data as JsonObject);
-                //    }
-                //});
+                    //if (msg_get_friends.code == 200)
+                    //{
+                    //    loginView.InitFriendList(msg_get_friends.data as JsonObject);
+                    //}
+                });
                 break;
             case "DeleteFriend":
                 JsonObject form_delete_friend = new JsonObject();
@@ -423,6 +430,13 @@ public class LoginMediator : Mediator {
                         loginView.DeleteSend(friend_uid);
                     }
                 });
+                break;
+
+                //invite fight
+            case "AcceptInviteFight":
+                break;
+
+            case "RefuseInviteFight":
                 break;
 
             
@@ -629,6 +643,11 @@ public class LoginMediator : Mediator {
             });
     }
 
+    void OnInviteFightPushSignal(int uid, string name)
+    {
+        loginView.ShowInvitePanel(uid, name);
+    }
+
 
     public void OnDestroy()
     {
@@ -641,6 +660,9 @@ public class LoginMediator : Mediator {
         //game
         //game
         multiGameStartPushSignal.RemoveListener(OnMultiGameStartPushSignal);
+
+        //friend
+        inviteFightPushSignal.RemoveListener(OnInviteFightPushSignal);
 
         //loginView.playModeSignal.RemoveListener(OnPlayModeSignal);
 

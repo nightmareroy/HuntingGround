@@ -9,10 +9,10 @@ public class NetPushSignalSerivice
 
     //push routes
     //game hall
-    public const string CreateMultiGame="CreateMultiGame";
-    public const string CancelMultiGame="CancelMultiGame";
-    public const string JoinMultiGame="JoinMultiGame";
-    public const string LeaveMultiGame="LeaveMultiGame";
+    //public const string CreateMultiGame="CreateMultiGame";
+    //public const string CancelMultiGame="CancelMultiGame";
+    //public const string JoinMultiGame="JoinMultiGame";
+    //public const string LeaveMultiGame="LeaveMultiGame";
 
     //game
     public const string MultiGameStart="MultiGameStart";
@@ -23,16 +23,18 @@ public class NetPushSignalSerivice
     public const string UserEnter = "UserEnter";
     public const string UserLeave = "UserLeave";
 
+    public const string InviteFight = "InviteFight";
+
     //signal
-    //game hall
-    [Inject]
-    public CreateMultiGamePushSignal createMultiGamePushSignal { get; set; }
-    [Inject]
-    public CancelMultiGamePushSignal cancelMultiGamePushSignal { get; set; }
-    [Inject]
-    public JoinMultiGamePushSignal joinMultiGamePushSignal { get; set; }
-    [Inject]
-    public LeaveMultiGamePushSignal leaveMultiGamePushSignal { get; set; }
+    ////game hall
+    //[Inject]
+    //public CreateMultiGamePushSignal createMultiGamePushSignal { get; set; }
+    //[Inject]
+    //public CancelMultiGamePushSignal cancelMultiGamePushSignal { get; set; }
+    //[Inject]
+    //public JoinMultiGamePushSignal joinMultiGamePushSignal { get; set; }
+    //[Inject]
+    //public LeaveMultiGamePushSignal leaveMultiGamePushSignal { get; set; }
 
     //game
     [Inject]
@@ -47,6 +49,9 @@ public class NetPushSignalSerivice
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get; set; }
     [Inject]
     public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
+
+    //friend
+    public InviteFightPushSignal inviteFightPushSignal { get; set; }
 
 
 
@@ -79,18 +84,18 @@ public class NetPushSignalSerivice
 
 
         //game hall
-        pclient.on(CreateMultiGame,(msg)=>{
-            createMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
-        });
-        pclient.on(CancelMultiGame,(msg)=>{
-            cancelMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
-        });
-        pclient.on(JoinMultiGame,(msg)=>{
-            joinMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
-        });
-        pclient.on(LeaveMultiGame,(msg)=>{
-            leaveMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
-        });
+        //pclient.on(CreateMultiGame,(msg)=>{
+        //    createMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
+        //});
+        //pclient.on(CancelMultiGame,(msg)=>{
+        //    cancelMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
+        //});
+        //pclient.on(JoinMultiGame,(msg)=>{
+        //    joinMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
+        //});
+        //pclient.on(LeaveMultiGame,(msg)=>{
+        //    leaveMultiGamePushSignal.Dispatch(msg.data as JsonObject); 
+        //});
 
         //game
         pclient.on(MultiGameStart,(msg)=>{
@@ -140,6 +145,16 @@ public class NetPushSignalSerivice
             int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
             //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
             updateDirectionTurnSignal.Dispatch(uid);
+        });
+
+        //friend
+        pclient.on(InviteFight, (msg) =>
+        {
+            JsonObject msgJO=msg.data as JsonObject;
+            int uid = int.Parse(msgJO["uid"].ToString());
+            string name = msgJO["name"].ToString();
+            //int direction_turn = int.Parse((msg.data as JsonObject)["direction_turn"].ToString());
+            inviteFightPushSignal.Dispatch(uid,name);
         });
     }
 
