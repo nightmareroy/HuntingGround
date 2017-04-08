@@ -378,6 +378,7 @@ public class LoginMediator : Mediator {
                     //{
                     //    loginView.InitFriendList(msg_get_friends.data as JsonObject);
                     //}
+                    loginView.SetWaitInvitePanelVisible(true);
                 });
                 break;
             case "DeleteFriend":
@@ -461,6 +462,10 @@ public class LoginMediator : Mediator {
                 form_agree_fight.Add("src_uid", loginView.selectedInviterUid);
                 netService.Request(NetService.AgreeInviteFight, form_agree_fight, (msg) =>
                 {
+                    if (msg.code == 500)
+                    {
+                        loginView.ShowMessage(msg.data.ToString());
+                    }
                 });
                 break;
 
@@ -469,6 +474,14 @@ public class LoginMediator : Mediator {
                 form_refuse_fight.Add("src_uid", loginView.selectedInviterUid);
                 netService.Request(NetService.RefuseInviteFight, form_refuse_fight, (msg) =>
                 {
+                    if (msg.code == 200)
+                    {
+                        loginView.HideInvitePanel();
+                    }
+                    else if (msg.code == 500)
+                    {
+                        loginView.ShowMessage(msg.data.ToString());
+                    }
                 });
                 break;
 
