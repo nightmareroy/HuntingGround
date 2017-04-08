@@ -182,10 +182,10 @@ public class MainContext : MVCSContext {
         commandBinder.Bind<FlowUpTipSignal>().To<FlowUpTipCommand>();
 
         //gamehall push
-        injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
-        injectionBinder.Bind<CancelMultiGamePushSignal>().ToSingleton();
-        injectionBinder.Bind<JoinMultiGamePushSignal>().ToSingleton();
-        injectionBinder.Bind<LeaveMultiGamePushSignal>().ToSingleton();
+        //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
+        //injectionBinder.Bind<CancelMultiGamePushSignal>().ToSingleton();
+        //injectionBinder.Bind<JoinMultiGamePushSignal>().ToSingleton();
+        //injectionBinder.Bind<LeaveMultiGamePushSignal>().ToSingleton();
 
         //game push
         injectionBinder.Bind<MultiGameStartPushSignal>().ToSingleton();
@@ -193,6 +193,9 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<UpdateDirectionTurnSignal>().ToSingleton();
         commandBinder.Bind<CheckUserStateQueueSignal>().To<CheckUserStateQueueCommand>();
         injectionBinder.Bind<UserStateChangeSignal>().ToSingleton();
+
+        //friend push
+        injectionBinder.Bind<InviteFightPushSignal>().ToSingleton();
 
         //food
         injectionBinder.Bind<OpenFoodPanelSignal>().ToSingleton();
