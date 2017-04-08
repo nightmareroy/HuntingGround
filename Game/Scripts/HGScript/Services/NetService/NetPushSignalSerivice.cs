@@ -51,6 +51,7 @@ public class NetPushSignalSerivice
     public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
 
     //friend
+    [Inject]
     public InviteFightPushSignal inviteFightPushSignal { get; set; }
 
 
