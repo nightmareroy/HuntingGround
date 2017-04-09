@@ -55,6 +55,9 @@ public class RoleMediator:Mediator
     [Inject]
     public FlowUpTipSignal flowUpTipSignal { get; set; }
 
+    [Inject]
+    public ColorService colorService { get; set; }
+
     MapRootMediator mapRootMediator;
 
     RoleInfo roleInfo;
@@ -80,7 +83,7 @@ public class RoleMediator:Mediator
         UpdateRolePos();
 
         roleUIView = resourceService.Spawn("roleui/roleui").GetComponent<RoleUIView>();
-        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal,doActionAnimSignal,flowUpTipSignal);
+        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal, doActionAnimSignal, flowUpTipSignal, colorService);
         doActionAnimSignal.AddListener(OnDoActionAnimSignal);
         
     }

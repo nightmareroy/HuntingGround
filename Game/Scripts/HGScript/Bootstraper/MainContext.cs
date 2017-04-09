@@ -101,6 +101,9 @@ public class MainContext : MVCSContext {
         //icon sprites
         injectionBinder.Bind<IconSpritesService>().ToSingleton();
 
+        //color
+        injectionBinder.Bind<ColorService>().ToSingleton();
+
 
 
     }

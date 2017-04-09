@@ -56,13 +56,15 @@ public class RoleUIView:View
     //public Action cancelPathSelectCallback;
     CanvasScaler canvasScaler;
 
+    ColorService colorService;
+
     //int playerid;
     string role_id;
 
     public void Init(MainContext mainContext, GameObject roleObj, GameInfo gameInfo, DGameDataCollection dGameDataCollection,
         string role_id, ActiveGameDataService activeGameDataService, ResourceService resourceService, 
          MapNodeSelectSignal mapNodeSelectSignal, ActionAnimStartSignal actionAnimStartSignal,
-        DoRoleActionAnimSignal doActionAnimSignal, FlowUpTipSignal flowUpTipSignal)
+        DoRoleActionAnimSignal doActionAnimSignal, FlowUpTipSignal flowUpTipSignal,ColorService colorService)
     {
         this.requiresContext = false;
         roleUIRectTransform = GetComponent<RectTransform>();
@@ -81,6 +83,7 @@ public class RoleUIView:View
         //this.updateDirectionPathCallbackSignal = updateDirectionPathCallbackSignal;
         this.doActionAnimSignal=doActionAnimSignal;
         this.flowUpTipSignal = flowUpTipSignal;
+        this.colorService = colorService;
 
         canvasScaler = mainContext.uiCanvas.GetComponent<CanvasScaler>();
 
@@ -283,10 +286,11 @@ public class RoleUIView:View
 
     public void UpdateNameAndColor()
     {
+        RoleInfo roleInfo=gameInfo.role_dic[role_id];
         //roleName.text = dGameDataCollection.dRoleCollection.dRoleDic[gameInfo.allplayers[playerid].role_dic[roleid].did].name;
-        roleName.text = gameInfo.role_dic[role_id].name;
-
-        blood.value=gameInfo.role_dic[role_id].health;
+        roleName.text = roleInfo.name;
+        roleNameBack.color = colorService.getColor(gameInfo.allplayers_dic[roleInfo.uid].color_index);
+        blood.value = roleInfo.health;
     }
 
     protected override void OnDestroy()
