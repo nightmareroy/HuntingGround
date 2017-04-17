@@ -97,6 +97,7 @@ public class TopPanelView:View
         //int averageGrowupMax = int.Parse(growupMaxJO["quality"].ToString());
         //int differenceGrowupMax = int.Parse(growupMaxJO["difference"].ToString());
 
+        Debug.Log(bloodSugarJO.ToString());
         averageBloodSugarText.text = bloodSugarJO["quality"].ToString();
         differenceBloodSugarText.text = bloodSugarJO["difference"].ToString();
 

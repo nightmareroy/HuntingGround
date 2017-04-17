@@ -139,17 +139,18 @@ public class BroadcastActionCommand:Command
                         yield return new WaitForSeconds(step_time);
                     }
                     break;
-
+                //角色死亡，生成尸体
+                case 3:
                 //特殊指令中的角色、建筑、视野变化
                 case 4:
                 //角色死亡，生成尸体
-                case 8:
+                case 9:
                     
                     DoSightModefiedAction(stepJS);
 
                     //yield return new WaitForSeconds(step_time);
                     break;
-                //攻击
+                //攻击+掉血
                 case 2:
                     JsonObject attackJS = stepJS["attack"] as JsonObject;
                     
@@ -179,19 +180,19 @@ public class BroadcastActionCommand:Command
 
                     }
                     yield return new WaitForSeconds(step_time);
-                    //JsonObject damageJS=stepJS["damage"] as JsonObject;
-                    //foreach (string role_id in damageJS.Keys)
-                    //{
-                    //    int damage = int.Parse(damageJS[role_id].ToString());
-                    //    gameInfo.role_dic[role_id].blood_sugar -= damage;
+                    JsonObject damageJS=stepJS["damage"] as JsonObject;
+                    foreach (string role_id in damageJS.Keys)
+                    {
+                        int damage = int.Parse(damageJS[role_id].ToString());
+                        gameInfo.role_dic[role_id].blood_sugar -= damage;
 
-                    //    DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                    //    doActionAnimSignalParam.type = 3;
-                    //    doActionAnimSignalParam.role_id = role_id;
-                    //    doActionAnimSignalParam.value = damage;
-                    //    doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
-                    //}
-                    //yield return new WaitForSeconds(step_time);
+                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        doActionAnimSignalParam.type = 7;
+                        doActionAnimSignalParam.role_id = role_id;
+                        doActionAnimSignalParam.value = -1*damage;
+                        doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                    }
+                    yield return new WaitForSeconds(step_time);
                     break;
                 //角色属性变化
 //                case 7:
@@ -357,7 +358,7 @@ public class BroadcastActionCommand:Command
 //                    yield return new WaitForSeconds(step_time);
 //                    break;
                 //属性变化
-                case 7:
+                case 8:
                     JsonObject rolesJO = stepJS["roles"] as JsonObject;
 
 
@@ -682,7 +683,7 @@ public class BroadcastActionCommand:Command
                 
 
                 //同步金钱
-                case 9:
+                case 10:
                     JsonObject moneyJS = stepJS["money"] as JsonObject;
 
                     int banana_new = int.Parse(moneyJS["banana"].ToString());

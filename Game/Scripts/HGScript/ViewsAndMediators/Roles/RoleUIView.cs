@@ -218,22 +218,22 @@ public class RoleUIView:View
                 case 2:
                     Destroy(gameObject);
                     break;
-                case 3:
-                    //flow_up_er.GetComponent<Text>().text = param.value.ToString();
-                    //flow_up_er.GetComponent<Animator>().SetTrigger("damage_trigger");
-                    //
+                //case 3:
+                //    //flow_up_er.GetComponent<Text>().text = param.value.ToString();
+                //    //flow_up_er.GetComponent<Animator>().SetTrigger("damage_trigger");
+                //    //
 
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,-1*param.value);
-                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
-                    blood.value = gameInfo.role_dic[role_id].health;
-                    break;
-                case 4:
-                    //flow_up_er.GetComponent<Text>().text = param.value.ToString();
-                    //flow_up_er.GetComponent<Animator>().SetTrigger("recovery_trigger");
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,param.value);
-                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
-                    blood.value=gameInfo.role_dic[role_id].health;
-                    break;
+                //    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,-1*param.value);
+                //    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                //    blood.value = gameInfo.role_dic[role_id].health;
+                //    break;
+                //case 4:
+                //    //flow_up_er.GetComponent<Text>().text = param.value.ToString();
+                //    //flow_up_er.GetComponent<Animator>().SetTrigger("recovery_trigger");
+                //    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,param.value);
+                //    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                //    blood.value=gameInfo.role_dic[role_id].health;
+                //    break;
 
                 case 7:
                     flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,param.value);
