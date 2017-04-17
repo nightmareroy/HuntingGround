@@ -29,6 +29,11 @@ public class RoleInfo
     public int courage { get; set;}
     public int far_sight { get; set;}
     public int see_through { get; set;}
+
+    public int younger_left { get; set; }
+    public int growup_left { get; set; }
+    public int younger_left_max { get; set; }
+    public int growup_left_max { get; set; }
 //    public int alive { get; set;}
 
     //advance
@@ -83,7 +88,7 @@ public class RoleInfo
             return 3f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
         }
     }
-        
+
     public float basal_metabolism
     {
         get { return (float)Math.Floor((float)muscle*0.3f+(float)fat*0.1f); }
@@ -127,6 +132,11 @@ public class RoleInfo
         amino_acid = int.Parse(jsonobj["amino_acid"].ToString());
         breath = int.Parse(jsonobj["breath"].ToString());
         digest = int.Parse(jsonobj["digest"].ToString());
+
+        younger_left = int.Parse(jsonobj["younger_left"].ToString());
+        growup_left = int.Parse(jsonobj["growup_left"].ToString());
+        younger_left_max = int.Parse(jsonobj["younger_left_max"].ToString());
+        growup_left_max = int.Parse(jsonobj["growup_left_max"].ToString());
 
         courage = int.Parse(jsonobj["courage"].ToString());
         far_sight = int.Parse(jsonobj["far_sight"].ToString());

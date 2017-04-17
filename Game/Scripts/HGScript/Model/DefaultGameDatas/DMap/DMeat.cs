@@ -7,6 +7,9 @@ using SimpleJson;
 public class DMeat
 {
     public int meat_id;
+    public int last_turn;
+    public int base_food;
+    public int inteligent_need;
     public string desc;
 
     //public DMeat(int resource_id, string desc)

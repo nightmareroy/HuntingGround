@@ -45,8 +45,10 @@ public class PropertyPanelMediator : Mediator
         mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
 
         propertyPanelView.ClearNodePanel();
-        propertyPanelView.ClearRolePanel();
-        propertyPanelView.ClearBuildingPanel();
+        //propertyPanelView.ClearRolePanel();
+        //propertyPanelView.ClearBuildingPanel();
+        propertyPanelView.SetRolePanelVisible(false);
+        propertyPanelView.SetBuildingPanelVisible(false);
 
         propertyPanelView.onDirectionClick += OnDirectionClick;
 //        propertyPanelView.onBuildingDirectionClick += OnBuildingDirectionClick;
@@ -58,8 +60,10 @@ public class PropertyPanelMediator : Mediator
         if (mapNavNode == null)
         {
             propertyPanelView.ClearNodePanel();
-            propertyPanelView.ClearRolePanel();
-            propertyPanelView.ClearBuildingPanel();
+            //propertyPanelView.ClearRolePanel();
+            //propertyPanelView.ClearBuildingPanel();
+            propertyPanelView.SetRolePanelVisible(false);
+            propertyPanelView.SetBuildingPanelVisible(false);
 
             propertyPanelView.ClearRoleDirections();
             return;
@@ -68,7 +72,7 @@ public class PropertyPanelMediator : Mediator
 
         //role
         currentSelectedRole = activeGameDataService.GetRoleInMap(mapNavNode.idx);
-        propertyPanelView.SetRolePanel(currentSelectedRole);
+        propertyPanelView.SetRolePanelValue(currentSelectedRole);
 
         //node
         propertyPanelView.SetNodePanel(mapNavNode.idx);

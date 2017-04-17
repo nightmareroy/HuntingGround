@@ -236,15 +236,17 @@ public class RoleUIView:View
                     break;
 
                 case 7:
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.banana,param.value);
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
 
                 case 8:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood_max,param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
 
                 case 9:
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood_max,param.value);
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.muscle,param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
                 case 10:
@@ -260,17 +262,42 @@ public class RoleUIView:View
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
                 case 13:
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.digest, param.value);
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.breath, param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
                 case 14:
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.skill, param.value);
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.digest, param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
                 case 15:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.courage, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 16:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.life, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 17:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.skill, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 18:
                     flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.cook_skill, param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
+                case 20:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.banana, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 21:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.meat, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 22:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.branch, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+
 
             }
         }

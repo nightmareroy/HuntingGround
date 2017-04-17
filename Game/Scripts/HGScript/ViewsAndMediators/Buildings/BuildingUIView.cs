@@ -17,10 +17,17 @@ public class BuildingUIView:View
     [Inject]
     public FlowUpTipSignal flowUpTipSignal { get; set; }
 
+
+    public DGameDataCollection dGameDataCollection;
+
+    public ColorService colorService;
+
     MainContext mainContext;
 
     //public GameObject flow_up_er;
 
+    public Text buildingName;
+    public Image buildingNameBack;
 
     CanvasScaler canvasScaler;
 
@@ -28,9 +35,12 @@ public class BuildingUIView:View
 
     GameObject buildingObj;
 
+    GameInfo gameInfo;
+
     string building_id;
 
-    public void Init(GameObject buildingObj, MainContext mainContext, DoBuildingActionAnimSignal doBuildingActionAnimSignal,string building_id)
+    public void Init(GameObject buildingObj, MainContext mainContext, DoBuildingActionAnimSignal doBuildingActionAnimSignal, string building_id, GameInfo gameInfo, 
+        DGameDataCollection dGameDataCollection,ColorService colorService)
     {
         
         
@@ -39,6 +49,9 @@ public class BuildingUIView:View
         this.mainContext = mainContext;
         this.doBuildingActionAnimSignal = doBuildingActionAnimSignal;
         this.building_id = building_id;
+        this.gameInfo = gameInfo;
+        this.dGameDataCollection = dGameDataCollection;
+        this.colorService = colorService;
 
         //Debug.Log(doBuildingActionAnimSignal);
 
@@ -53,6 +66,8 @@ public class BuildingUIView:View
 
 
         doBuildingActionAnimSignal.AddListener(OnDoBuildingActionAnimSignal);
+
+        UpdateName();
     }
 
     void LateUpdate()
@@ -88,6 +103,16 @@ public class BuildingUIView:View
                     break;
             }
         }
+    }
+
+    public void UpdateName()
+    {
+        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+        DBuilding dBuilding = dGameDataCollection.dBuildingCollection.dBuildingDic[buildingInfo.building_did];
+        //roleName.text = dGameDataCollection.dRoleCollection.dRoleDic[gameInfo.allplayers[playerid].role_dic[roleid].did].name;
+        buildingName.text = dBuilding.name;
+        buildingNameBack.color = colorService.getColor(gameInfo.allplayers_dic[buildingInfo.uid].color_index);
+
     }
 
     void OnDestroy()

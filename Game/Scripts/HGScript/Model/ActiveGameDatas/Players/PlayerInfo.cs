@@ -15,8 +15,14 @@ public class PlayerInfo
     public int group_id;
     //public PlayerDRoleSkillInfo playerDRoleSkillInfo = new PlayerDRoleSkillInfo();
     //public Dictionary<int, Dictionary<int, DSkill>> roledid_skill_dic = new Dictionary<int, Dictionary<int, DSkill>>();
-    public int banana=-1;
-    public int meat = -1;
+    public int banana=0;
+    public int meat = 0;
+    public int branch=0;
+
+    public int bananaModify = 0;
+    public int meatModify = 0;
+    public int branchModify = 0;
+
     public int score;
     public bool failed;
 
@@ -27,8 +33,14 @@ public class PlayerInfo
     public int color_index=0;
     //public bool ready = false;
 
+    public JsonObject groupInfoJO=null;
+
     //key是角色静态id
     //public Dictionary<int, List<int>> country_skill_dic = new Dictionary<int, List<int>>();
+
+
+
+
 
     public PlayerInfo(int id, bool is_splayer,int groupid)
     {
@@ -42,6 +54,8 @@ public class PlayerInfo
     {
 
     }
+
+    
 
     //public void InitFromJson(JsonObject jsonobj)//, SPlayerInfo sPlayerInfo)
     //{

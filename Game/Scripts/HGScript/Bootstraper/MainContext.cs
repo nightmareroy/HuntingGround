@@ -180,9 +180,10 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<DoMapUpdateSignal>().ToSingleton();
         injectionBinder.Bind<ActionAnimStartSignal>().ToSingleton();
         injectionBinder.Bind<ActionAnimFinishSignal>().ToSingleton();
-        injectionBinder.Bind<DoBananaUpdateSignal>().ToSingleton();
+        injectionBinder.Bind<DoMoneyUpdateSignal>().ToSingleton();
         injectionBinder.Bind<DoSightzoonUpdateSignal>().ToSingleton();
         commandBinder.Bind<FlowUpTipSignal>().To<FlowUpTipCommand>();
+        injectionBinder.Bind<DoGroupGeneUpdateSignal>().ToSingleton();
 
         //gamehall push
         //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();

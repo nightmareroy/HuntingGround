@@ -28,7 +28,7 @@ public class BroadcastActionCommand:Command
     public DoMapUpdateSignal doMapUpdateSignal { get; set; }
 
     [Inject]
-    public DoBananaUpdateSignal doBananaUpdateSignal{ get; set;}
+    public DoMoneyUpdateSignal doMoneyUpdateSignal{ get; set;}
 
     [Inject]
     public DoSightzoonUpdateSignal doSightzoonUpdateSignal{ get; set;}
@@ -57,7 +57,11 @@ public class BroadcastActionCommand:Command
     [Inject]
     public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
 
-    
+    [Inject]
+    public DoGroupGeneUpdateSignal doGroupGeneUpdateSignal { get; set; }
+
+    [Inject]
+    public UpdateRoleDirectionSignal updateRoleDirectionSignal { get;set; }
 
 
     //回合动画时间
@@ -123,7 +127,7 @@ public class BroadcastActionCommand:Command
             switch (step)
             {
                 case 0:
-                    yield return new WaitForSeconds(0);
+                    yield return null;
                     break;
                 //移动
                 case 1:
@@ -136,16 +140,16 @@ public class BroadcastActionCommand:Command
                     }
                     break;
 
-                //角色死亡
-                case 3:
                 //特殊指令中的角色、建筑、视野变化
-                case 5:
+                case 4:
+                //角色死亡，生成尸体
+                case 8:
                     
                     DoSightModefiedAction(stepJS);
 
                     //yield return new WaitForSeconds(step_time);
                     break;
-                //攻击+掉血
+                //攻击
                 case 2:
                     JsonObject attackJS = stepJS["attack"] as JsonObject;
                     
@@ -175,217 +179,525 @@ public class BroadcastActionCommand:Command
 
                     }
                     yield return new WaitForSeconds(step_time);
-                    JsonObject damageJS=stepJS["damage"] as JsonObject;
-                    foreach (string role_id in damageJS.Keys)
-                    {
-                        int damage = int.Parse(damageJS[role_id].ToString());
-                        gameInfo.role_dic[role_id].blood_sugar -= damage;
+                    //JsonObject damageJS=stepJS["damage"] as JsonObject;
+                    //foreach (string role_id in damageJS.Keys)
+                    //{
+                    //    int damage = int.Parse(damageJS[role_id].ToString());
+                    //    gameInfo.role_dic[role_id].blood_sugar -= damage;
 
-                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                        doActionAnimSignalParam.type = 3;
-                        doActionAnimSignalParam.role_id = role_id;
-                        doActionAnimSignalParam.value = damage;
-                        doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
-                    }
-                    yield return new WaitForSeconds(step_time);
-                    break;
-                //回血
-                case 4:
-                    JsonObject recoveryJS=stepJS["recovery"] as JsonObject;
-                    foreach (string role_id in recoveryJS.Keys)
-                    {
-                        int recovery=int.Parse(recoveryJS[role_id].ToString());
-                        gameInfo.role_dic[role_id].blood_sugar += recovery;
-
-                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                        doActionAnimSignalParam.type = 4;
-                        doActionAnimSignalParam.role_id = role_id;
-                        doActionAnimSignalParam.value = recovery;
-                        doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
-                    }
-                    yield return new WaitForSeconds(step_time);
-                    break;
-                //更新猴子的与家距离
-                case 6:
-                    JsonObject distanceJS = stepJS["distance"] as JsonObject;
-                    foreach (string building_id in distanceJS.Keys)
-                    {
-                        int distance=int.Parse(distanceJS[building_id].ToString());
-                        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
-                        buildingInfo.distance_from_home = distance;
-
-                    }
+                    //    DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                    //    doActionAnimSignalParam.type = 3;
+                    //    doActionAnimSignalParam.role_id = role_id;
+                    //    doActionAnimSignalParam.value = damage;
+                    //    doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
+                    //}
                     //yield return new WaitForSeconds(step_time);
                     break;
-                //不造成角色、建筑、视野变化的指令
-                case 7:
-                    foreach (string role_id in (stepJS["action"] as JsonObject).Keys)
-                    {
-                        JsonObject turnActionJS = (stepJS["action"] as JsonObject)[role_id] as JsonObject;
+                //角色属性变化
+//                case 7:
+//                    JsonObject recoveryJS=stepJS["recovery"] as JsonObject;
+//                    foreach (string role_id in recoveryJS.Keys)
+//                    {
+//                        int recovery=int.Parse(recoveryJS[role_id].ToString());
+//                        gameInfo.role_dic[role_id].blood_sugar += recovery;
+//                        gameInfo.role_dic[role_id].fat -= recovery;
 
-                        int direction_did = int.Parse(turnActionJS["direction_did"].ToString());
-                        JsonObject param = turnActionJS["param"] as JsonObject;
-                        RoleInfo roleInfo = gameInfo.role_dic[role_id];
-//                        RoleActionList.TurnAction turnAction = roleActionList.turnActionDic[role_id];
-                        switch (direction_did)
-                        {
-                            //采集
-                            case 3:
-                                int banana = int.Parse(param["cost"].ToString());
-                                //gameInfo.map_info.resource[roleInfo.pos_id] = 2;
+//                        DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+//                        doActionAnimSignalParam.type = 4;
+//                        doActionAnimSignalParam.role_id = role_id;
+//                        doActionAnimSignalParam.value = recovery;
+//                        doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
+//                    }
+//                    yield return new WaitForSeconds(step_time);
+//                    break;
+//                //寿命减少
+//                case 5:
+//                    JsonObject lifeJS = stepJS["life"] as JsonObject;
+//                    foreach (string role_id in lifeJS.Keys)
+//                    {
+//                        JsonObject roleLifeJO = lifeJS[role_id] as JsonObject;
 
-                                if (roleInfo.uid == sPlayerInfo.uid)
-                                {
-                                    gameInfo.allplayers_dic[roleInfo.uid].banana += banana;
-//                                    doBananaUpdateSignal.Dispatch();
+//                        int younger_left = int.Parse(roleLifeJO["younger_left"].ToString());
+//                        int growup_left = int.Parse(roleLifeJO["growup_left"].ToString());
 
-                                }
-                                DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                                doRoleActionAnimSignalParam.type = 7;
-                                doRoleActionAnimSignalParam.role_id = roleInfo.role_id;
-                                doRoleActionAnimSignalParam.value = banana;
+//                        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+//                        roleInfo.younger_left = younger_left;
+//                        roleInfo.growup_left = growup_left;
 
-                                doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam);
+//                    }
+//                    //yield return new WaitForSeconds(step_time);
+//                    break;
+//                //更新猴子的与家距离
+//                case 7:
+//                    JsonObject distanceJS = stepJS["distance"] as JsonObject;
+//                    foreach (string building_id in distanceJS.Keys)
+//                    {
+//                        int distance=int.Parse(distanceJS[building_id].ToString());
+//                        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+//                        buildingInfo.distance_from_home = distance;
 
-                                //DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
-                                //doMapUpdateSignalParam.landformList = new Dictionary<int, int>();
-                                //doMapUpdateSignalParam.resourceList = new Dictionary<int, int>();
-                                //doMapUpdateSignalParam.resourceList.Add(roleInfo.pos_id, 2);
-                                //doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
+//                    }
+//                    //yield return new WaitForSeconds(step_time);
+//                    break;
+//                //不造成角色、建筑、视野变化的指令
+//                case 8:
+//                    foreach (string role_id in (stepJS["action"] as JsonObject).Keys)
+//                    {
+//                        JsonObject turnActionJS = (stepJS["action"] as JsonObject)[role_id] as JsonObject;
+
+//                        int direction_did = int.Parse(turnActionJS["direction_did"].ToString());
+//                        JsonObject param = turnActionJS["param"] as JsonObject;
+//                        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+////                        RoleActionList.TurnAction turnAction = roleActionList.turnActionDic[role_id];
+//                        switch (direction_did)
+//                        {
+//                            //采集
+//                            case 3:
+//                                int banana = int.Parse(param["banana"].ToString());
+//                                //gameInfo.map_info.resource[roleInfo.pos_id] = 2;
+
+////                                if (roleInfo.uid == sPlayerInfo.uid)
+////                                {
+////                                    gameInfo.allplayers_dic[roleInfo.uid].banana += banana;
+//////                                    doBananaUpdateSignal.Dispatch();
+
+////                                }
+//                                gameInfo.allplayers_dic[roleInfo.uid].banana += banana;
+//                                DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+//                                doRoleActionAnimSignalParam.type = 7;
+//                                doRoleActionAnimSignalParam.role_id = roleInfo.role_id;
+//                                doRoleActionAnimSignalParam.value = banana;
+
+//                                doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam);
+
+//                                //DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
+//                                //doMapUpdateSignalParam.landformList = new Dictionary<int, int>();
+//                                //doMapUpdateSignalParam.resourceList = new Dictionary<int, int>();
+//                                //doMapUpdateSignalParam.resourceList.Add(roleInfo.pos_id, 2);
+//                                //doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
 
 
 
-                                break;
+//                                break;
 
-                            //招募猴子
-                            case 5:
-                                int cost_5 = int.Parse(param["cost"].ToString());
-                                if (roleInfo.uid == sPlayerInfo.uid)
-                                {
-                                    gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_5;
-//                                    doBananaUpdateSignal.Dispatch();
-                                }
-                                break;
+//                            //招募猴子
+//                            case 5:
+//                                int cost_5 = int.Parse(param["cost"].ToString());
+//                                if (roleInfo.uid == sPlayerInfo.uid)
+//                                {
+//                                    gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_5;
+////                                    doBananaUpdateSignal.Dispatch();
+//                                }
+//                                break;
 
-                            //升级
-                            case 7:
-                                string building_id = param["cost"].ToString();
-                                gameInfo.building_dic[building_id].level++;
-                                break;
+//                            //升级
+//                            case 7:
+//                                string building_id = param["cost"].ToString();
+//                                gameInfo.building_dic[building_id].level++;
+//                                break;
 
-                            //搭窝
-                            case 9:
-                                int cost_9 = int.Parse(param["cost"].ToString());
-                                if (roleInfo.uid == sPlayerInfo.uid)
-                                {
-                                    gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_9;
-                                    //                                    doBananaUpdateSignal.Dispatch();
-                                }
-                                break;
-                            //哺育
-                            case 11:
-                                int damage_11 = int.Parse(param["damage"].ToString());
-                                gameInfo.role_dic[role_id].blood_sugar -= damage_11;
-                                DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                                doActionAnimSignalParam.type = 3;
-                                doActionAnimSignalParam.role_id = role_id;
-                                doActionAnimSignalParam.value = damage_11;
-                                doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
-                                yield return new WaitForSeconds(step_time);
-                                break;
-                        }
+//                            //搭窝
+//                            case 9:
+//                                int cost_9 = int.Parse(param["cost"].ToString());
+//                                if (roleInfo.uid == sPlayerInfo.uid)
+//                                {
+//                                    gameInfo.allplayers_dic[roleInfo.uid].banana -= cost_9;
+//                                    //                                    doBananaUpdateSignal.Dispatch();
+//                                }
+//                                break;
+//                            //哺育
+//                            case 11:
+//                                int damage_11 = int.Parse(param["damage"].ToString());
+//                                gameInfo.role_dic[role_id].blood_sugar -= damage_11;
+//                                DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+//                                doActionAnimSignalParam.type = 3;
+//                                doActionAnimSignalParam.role_id = role_id;
+//                                doActionAnimSignalParam.value = damage_11;
+//                                doRoleActionAnimSignal.Dispatch(doActionAnimSignalParam);
+//                                yield return new WaitForSeconds(step_time);
+//                                break;
 
-                    }
+//                            //搜索
+//                            case 13:
+//                                int meat = int.Parse(param["meat"].ToString());
+//                                //gameInfo.map_info.resource[roleInfo.pos_id] = 2;
+
+//                                //if (roleInfo.uid == sPlayerInfo.uid)
+//                                //{
+//                                //    gameInfo.allplayers_dic[roleInfo.uid].meat += meat;
+//                                //    //                                    doBananaUpdateSignal.Dispatch();
+
+//                                //}
+//                                gameInfo.allplayers_dic[roleInfo.uid].meat += meat;
+//                                gameInfo.map_info.meat[roleInfo.pos_id] = 100;
+
+//                                DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam_13 = new DoRoleActionAnimSignal.Param();
+//                                doRoleActionAnimSignalParam_13.type = 8;
+//                                doRoleActionAnimSignalParam_13.role_id = roleInfo.role_id;
+//                                doRoleActionAnimSignalParam_13.value = meat;
+
+//                                doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_13);
+
+//                                //DoMapUpdateSignal.Param doMapUpdateSignalParam = new DoMapUpdateSignal.Param();
+//                                //doMapUpdateSignalParam.landformList = new Dictionary<int, int>();
+//                                //doMapUpdateSignalParam.resourceList = new Dictionary<int, int>();
+//                                //doMapUpdateSignalParam.resourceList.Add(roleInfo.pos_id, 2);
+//                                //doMapUpdateSignal.Dispatch(doMapUpdateSignalParam);
+
+
+
+//                                break;
+//                        }
+
+//                    }
 
                 
 
                     
-                    yield return new WaitForSeconds(step_time);
-                    break;
-                //吃料理
-                case 8:
-                    JsonObject foodJS = stepJS["food"] as JsonObject;
-                    
+//                    yield return new WaitForSeconds(step_time);
+//                    break;
+                //属性变化
+                case 7:
+                    JsonObject rolesJO = stepJS["roles"] as JsonObject;
 
-                    foreach (string role_id in foodJS.Keys)
+
+                    List<DoRoleActionAnimSignal.Param> blood_sugarParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> blood_sugar_maxParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> muscleParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> fatParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> inteligentParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> amino_acidParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> breathParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> digestParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> courageParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> lifeParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> skillParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> directionParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> bananaParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> meatParamList = new List<DoRoleActionAnimSignal.Param>();
+                    List<DoRoleActionAnimSignal.Param> branchParamList = new List<DoRoleActionAnimSignal.Param>();
+
+                    foreach (string role_id in rolesJO.Keys)
                     {
-                        JsonObject param = (foodJS[role_id] as JsonObject)["param"] as JsonObject;
+                        JsonObject roleJO = rolesJO[role_id] as JsonObject;
                         RoleInfo roleInfo = gameInfo.role_dic[role_id];
 
-                        DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam_8 = new DoRoleActionAnimSignal.Param();
-                        
-                        doRoleActionAnimSignalParam_8.role_id = role_id;
                         
 
-                        int blood_sugar = int.Parse(param["blood_sugar"].ToString());
-                        roleInfo.blood_sugar_max += blood_sugar;
-                        doRoleActionAnimSignalParam_8.type = 9;
-                        doRoleActionAnimSignalParam_8.value = blood_sugar;
-                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
-                        yield return new WaitForSeconds(food_step_time);
+                        DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam;
+                        
+                        
+                        
 
-                        int fat = int.Parse(param["fat"].ToString());
+                        int blood_sugar = int.Parse(roleJO["blood_sugar"].ToString());
+                        roleInfo.blood_sugar += blood_sugar;
+                        if (blood_sugar != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 7;
+                            doRoleActionAnimSignalParam.value = blood_sugar;
+                            blood_sugarParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+                        int blood_sugar_max = int.Parse(roleJO["blood_sugar_max"].ToString());
+                        roleInfo.blood_sugar_max += blood_sugar_max;
+                        if (blood_sugar_max != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 8;
+                            doRoleActionAnimSignalParam.value = blood_sugar_max;
+                            blood_sugar_maxParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+                        int muscle = int.Parse(roleJO["muscle"].ToString());
+                        roleInfo.muscle += muscle;
+                        if (muscle != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 9;
+                            doRoleActionAnimSignalParam.value = muscle;
+                            muscleParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+
+                        int fat = int.Parse(roleJO["fat"].ToString());
                         roleInfo.fat += fat;
-                        doRoleActionAnimSignalParam_8.type = 10;
-                        doRoleActionAnimSignalParam_8.value = blood_sugar;
-                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
-                        yield return new WaitForSeconds(food_step_time);
+                        if (fat != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 10;
+                            doRoleActionAnimSignalParam.value = blood_sugar;
+                            fatParamList.Add(doRoleActionAnimSignalParam);
+                        }
 
-                        int inteligent = int.Parse(param["inteligent"].ToString());
+
+                        int inteligent = int.Parse(roleJO["inteligent"].ToString());
                         roleInfo.inteligent += inteligent;
-                        doRoleActionAnimSignalParam_8.type = 11;
-                        doRoleActionAnimSignalParam_8.value = inteligent;
-                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
-                        yield return new WaitForSeconds(food_step_time);
+                        if (inteligent != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 11;
+                            doRoleActionAnimSignalParam.value = inteligent;
+                            inteligentParamList.Add(doRoleActionAnimSignalParam);
+                        }
 
-                        int amino_acid = int.Parse(param["amino_acid"].ToString());
+
+                        int amino_acid = int.Parse(roleJO["amino_acid"].ToString());
                         roleInfo.amino_acid += amino_acid;
-                        doRoleActionAnimSignalParam_8.type = 12;
-                        doRoleActionAnimSignalParam_8.value = amino_acid;
-                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
-                        yield return new WaitForSeconds(food_step_time);
+                        if (amino_acid != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 12;
+                            doRoleActionAnimSignalParam.value = amino_acid;
+                            amino_acidParamList.Add(doRoleActionAnimSignalParam);
+                        }
 
-                        int digest = int.Parse(param["digest"].ToString());
+
+                        int breath = int.Parse(roleJO["breath"].ToString());
+                        roleInfo.breath += breath;
+                        if (breath != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 13;
+                            doRoleActionAnimSignalParam.value = breath;
+                            breathParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+                        int digest = int.Parse(roleJO["digest"].ToString());
                         roleInfo.digest += digest;
-                        doRoleActionAnimSignalParam_8.type = 13;
-                        doRoleActionAnimSignalParam_8.value = digest;
-                        doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
-                        yield return new WaitForSeconds(food_step_time);
+                        if (digest != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 14;
+                            doRoleActionAnimSignalParam.value = digest;
+                            digestParamList.Add(doRoleActionAnimSignalParam);
+                        }
 
-                        int skill_type = int.Parse(param["skill_type"].ToString());
-                        int skill_id = int.Parse(param["skill_id"].ToString());
+                        int courage = int.Parse(roleJO["courage"].ToString());
+                        roleInfo.courage += courage;
+                        if (courage != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 15;
+                            doRoleActionAnimSignalParam.value = courage;
+                            courageParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+                        int life = int.Parse(roleJO["life"].ToString());
+                        roleInfo.younger_left += life;
+                        if (roleInfo.younger_left < 0)
+                        {
+                            roleInfo.growup_left += roleInfo.younger_left;
+                            roleInfo.younger_left = 0;
+                        }
+                        if (roleInfo.growup_left < 0)
+                        {
+                            roleInfo.growup_left = 0;
+                        }
+                        if (life != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 16;
+                            doRoleActionAnimSignalParam.value = life;
+                            courageParamList.Add(doRoleActionAnimSignalParam);
+                        }
+                        //doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        //doRoleActionAnimSignalParam.role_id = role_id;
+                        //doRoleActionAnimSignalParam.type = 15;
+                        //doRoleActionAnimSignalParam.value = courage;
+                        //digestParamList.Add(doRoleActionAnimSignalParam);
+
+                        JsonObject skillJO = roleJO["skill"] as JsonObject;
+                        int skill_type = int.Parse(skillJO["type"].ToString());
+                        int skill_id = int.Parse(skillJO["id"].ToString());
                         if (skill_type == 1)
                         {
                             roleInfo.skill_id_list.Add(skill_id);
-                            doRoleActionAnimSignalParam_8.type = 14;
-                            doRoleActionAnimSignalParam_8.value = skill_id;
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 17;
+                            doRoleActionAnimSignalParam.value = skill_id;
+                            skillParamList.Add(doRoleActionAnimSignalParam);
                         }
                         else if (skill_type == 2)
                         {
                             roleInfo.cook_skill_id_list.Add(skill_id);
-                            doRoleActionAnimSignalParam_8.type = 15;
-                            doRoleActionAnimSignalParam_8.value = skill_id;
-                            doRoleActionAnimSignal.Dispatch(doRoleActionAnimSignalParam_8);
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 18;
+                            doRoleActionAnimSignalParam.value = skill_id;
+                            skillParamList.Add(doRoleActionAnimSignalParam);
+
                         }
-                        yield return new WaitForSeconds(food_step_time);
-                    }
-                    break;
-                //猴子收益
-                case 9:
-                    JsonObject bananaJS = stepJS["banana"] as JsonObject;
-                    foreach (string building_id in bananaJS.Keys)
-                    {
-                        int value = int.Parse(bananaJS[building_id].ToString());
-                        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
-                        gameInfo.allplayers_dic[buildingInfo.uid].banana += value;
-                        DoBuildingActionAnimSignal.Param param=new DoBuildingActionAnimSignal.Param();
-                        param.type=2;
-                        param.building_id=building_id;
-                        param.banana=value;
-                        doBuildingActionAnimSignal.Dispatch(param);
+
+                        int direction_did = int.Parse(roleJO["direction_did"].ToString());
+                        //List<int> direction_param = SimpleJson.SimpleJson.DeserializeObject<List<int>>(roleJO["direction_param"].ToString());
+                        roleInfo.direction_did = direction_did;
+                        roleInfo.direction_param.Clear();
+                        doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        doRoleActionAnimSignalParam.role_id = role_id;
+                        doRoleActionAnimSignalParam.type = 19;
+                        doRoleActionAnimSignalParam.value = direction_did;
+                        directionParamList.Add(doRoleActionAnimSignalParam);
+                        //updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
+
+                        int banana = int.Parse(roleJO["banana"].ToString());
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].banana += banana;
+                        if (banana != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 20;
+                            doRoleActionAnimSignalParam.value = banana;
+                            bananaParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+                        int meat = int.Parse(roleJO["meat"].ToString());
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].meat += meat;
+                        if (meat != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 21;
+                            doRoleActionAnimSignalParam.value = meat;
+                            meatParamList.Add(doRoleActionAnimSignalParam);
+                        }
+
+                        int branch = int.Parse(roleJO["branch"].ToString());
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].branch += branch;
+                        if (branch != 0)
+                        {
+                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                            doRoleActionAnimSignalParam.role_id = role_id;
+                            doRoleActionAnimSignalParam.type = 22;
+                            doRoleActionAnimSignalParam.value = branch;
+                            branchParamList.Add(doRoleActionAnimSignalParam);
+                        }
 
                     }
-                    yield return new WaitForSeconds(step_time);
+
+                    
+
+
+                    foreach (DoRoleActionAnimSignal.Param param in blood_sugarParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in blood_sugar_maxParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in muscleParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in fatParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in inteligentParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in amino_acidParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in breathParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in digestParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in courageParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in skillParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in bananaParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in meatParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in branchParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in directionParamList)
+                    {
+                        updateRoleDirectionSignal.Dispatch(param.role_id);
+                        //doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
+                    break;
+                //猴子收益
+                //case 10:
+                //    JsonObject bananaJS = stepJS["banana"] as JsonObject;
+                //    foreach (string building_id in bananaJS.Keys)
+                //    {
+                //        int value = int.Parse(bananaJS[building_id].ToString());
+                //        BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
+                //        gameInfo.allplayers_dic[buildingInfo.uid].banana += value;
+                //        DoBuildingActionAnimSignal.Param param=new DoBuildingActionAnimSignal.Param();
+                //        param.type=2;
+                //        param.building_id=building_id;
+                //        param.banana=value;
+                //        doBuildingActionAnimSignal.Dispatch(param);
+
+                //    }
+                //    yield return new WaitForSeconds(step_time);
+                //    break;
+
+                
+
+                //同步金钱
+                case 9:
+                    JsonObject moneyJS = stepJS["money"] as JsonObject;
+
+                    int banana_new = int.Parse(moneyJS["banana"].ToString());
+                    int meat_new = int.Parse(moneyJS["meat"].ToString());
+                    int branch_new = int.Parse(moneyJS["branch"].ToString());
+
+                    JsonObject groupJO = moneyJS["group"] as JsonObject;
+
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].banana = banana_new;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].meat = meat_new;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].branch = branch_new;
+
+                    doGroupGeneUpdateSignal.Dispatch(groupJO);
+                    doMoneyUpdateSignal.Dispatch();
+                    //yield return new WaitForSeconds(step_time);
                     break;
             }
 
@@ -394,8 +706,7 @@ public class BroadcastActionCommand:Command
             
         }
 
-        //banana统一更新视图
-        doBananaUpdateSignal.Dispatch();
+        
         
 
         //while (playerStateChangeQueue.player_id_queue.Count > 0)

@@ -20,30 +20,50 @@ public class PropertyPanelView :View
     [Inject]
     public DGameDataCollection dGameDataCollection{ get; set;}
 
+
+    
+
     //node
+    //public Transform nodePanelT;
     public Text landform;
     public Text resource;
     public Text meat;
 
     //role
+    public Transform rolePanelT;
+
     public Text role_name;
     public Text blood_sugar;
     public Text muscle;
     public Text fat;
+    public Text inteligent;
     public Text amino_acid;
     public Text breath;
     public Text digest;
     public Text courage;
-    public Text basal_metabolism;
+
+    public Text health;
     public Text move;
     public Text weight;
+    public Text basal_metabolism;
+    public Text younger_left_max;
+    public Text growup_left_max;
+    public Text now_grow_state;
+    
+
+    public Transform roleSkillsRootT;
+    public Transform roleSkillItemT;
+
+    public Transform roleCookSkillsRootT;
+    public Transform roleCookSkillItemT;
+
 
     //direction list
     public Transform roleDirections;
     public Transform roleDirectionBtnTpl;
 
     //building
-    public Transform building_panel;
+    public Transform buildingPanelT;
     public Text building_name;
     public Text building_level;
     public Text building_dstance;
@@ -62,48 +82,123 @@ public class PropertyPanelView :View
         meat.text = "";
     }
 
-    public void ClearRolePanel()
+    //public void ClearRolePanel()
+    //{
+    //    role_name.text = "";
+    //    blood_sugar.text = "";
+    //    muscle.text = "";
+    //    fat.text = "";
+    //    amino_acid.text = "";
+    //    breath.text = "";
+    //    digest.text = "";
+    //    courage.text = "";
+    //    health.text = "";
+    //    move.text = "";
+    //    weight.text = "";
+    //}
+
+    //public void ClearBuildingPanel()
+    //{
+    //    building_panel.gameObject.SetActive(false);
+    //    building_name.text = "";
+    //    building_level.text = "";
+    //    building_dstance.text = "";
+    //}
+
+    public void SetRolePanelVisible(bool visible)
     {
-        role_name.text = "";
-        blood_sugar.text = "";
-        muscle.text = "";
-        fat.text = "";
-        amino_acid.text = "";
-        breath.text = "";
-        digest.text = "";
-        courage.text = "";
-        basal_metabolism.text = "";
-        move.text = "";
-        weight.text = "";
+        rolePanelT.gameObject.SetActive(visible);
     }
 
-    public void ClearBuildingPanel()
+    public void SetBuildingPanelVisible(bool visible)
     {
-        building_panel.gameObject.SetActive(false);
-        building_name.text = "";
-        building_level.text = "";
-        building_dstance.text = "";
+        buildingPanelT.gameObject.SetActive(visible);
     }
 
-    public void SetRolePanel(RoleInfo roleInfo)
+    //public void SetNodePanelVisible(bool visible)
+    //{
+    //    nodePanelT.gameObject.SetActive(visible);
+    //}
+
+    public void SetRolePanelValue(RoleInfo roleInfo)
     {
         if (roleInfo == null)
         {
-            ClearRolePanel();
-            ClearRoleDirections();
+            //ClearRolePanel();
+            //ClearRoleDirections();
+            SetRolePanelVisible(false);
             return;
         }
+        SetRolePanelVisible(true);
         role_name.text = roleInfo.name;//"猩猩";//roleInfo.role_id.ToString();
         blood_sugar.text = roleInfo.blood_sugar+"/"+roleInfo.blood_sugar_max;
         muscle.text = roleInfo.muscle.ToString();
         fat.text = roleInfo.fat.ToString();
+        inteligent.text = roleInfo.inteligent.ToString();
         amino_acid.text = roleInfo.amino_acid.ToString();
         breath.text = roleInfo.breath.ToString();
         digest.text = roleInfo.digest.ToString();
         courage.text = roleInfo.courage.ToString();
-        basal_metabolism.text = roleInfo.basal_metabolism.ToString();
+
+        health.text = roleInfo.health.ToString();
         move.text = roleInfo.max_move.ToString();
         weight.text = roleInfo.weight.ToString();
+        basal_metabolism.text = roleInfo.basal_metabolism.ToString();
+        younger_left_max.text = ((float)roleInfo.younger_left_max / 100f).ToString();
+        growup_left_max.text = ((float)roleInfo.growup_left_max / 100f).ToString();
+        if (roleInfo.younger_left > 0)
+        {
+            now_grow_state.text = "幼年期(" + (float)roleInfo.younger_left / 100f + ")";
+        }
+        else if (roleInfo.growup_left > 0)
+        {
+            now_grow_state.text = "成长期(" + (float)roleInfo.growup_left / 100f + ")";
+        }
+        else
+        {
+            now_grow_state.text = "成熟期";
+        }
+        
+
+        Tools.ClearChildren(roleSkillsRootT);
+        foreach (int skill_id in roleInfo.skill_id_list)
+        {
+            DSkill dSkill = dGameDataCollection.dSkillCollection.dSkillDic[skill_id];
+
+            GameObject skillItem = GameObject.Instantiate<GameObject>(roleSkillItemT.gameObject);
+
+            skillItem.transform.SetParent(roleSkillsRootT);
+            skillItem.transform.localPosition = Vector3.zero;
+            skillItem.transform.localScale = Vector3.one;
+            skillItem.transform.localRotation = Quaternion.identity;
+            skillItem.SetActive(true);
+
+            Text skillName = skillItem.transform.FindChild("SkillName").GetComponent<Text>();
+            Text skillDesc = skillItem.transform.FindChild("SkillDesc").GetComponent<Text>();
+
+            skillName.text = dSkill.name;
+            skillDesc.text = dSkill.desc;
+        }
+
+        Tools.ClearChildren(roleCookSkillsRootT);
+        foreach (int cook_skill_id in roleInfo.cook_skill_id_list)
+        {
+            DCookSkill dCookSkill = dGameDataCollection.dCookSkillCollection.dCookSkillDic[cook_skill_id];
+
+            GameObject cookSkillItem = GameObject.Instantiate<GameObject>(roleCookSkillItemT.gameObject);
+
+            cookSkillItem.transform.SetParent(roleCookSkillsRootT);
+            cookSkillItem.transform.localPosition = Vector3.zero;
+            cookSkillItem.transform.localScale = Vector3.one;
+            cookSkillItem.transform.localRotation = Quaternion.identity;
+            cookSkillItem.SetActive(true);
+
+            Text skillName = cookSkillItem.transform.FindChild("SkillName").GetComponent<Text>();
+            //Text skillDesc = cookSkillItem.transform.FindChild("SkillDesc").GetComponent<Text>();
+
+            skillName.text = dCookSkill.name;
+            //skillDesc.text = dCookSkill.desc;
+        }
     }
 
     public void SetNodePanel(int pos_id)
@@ -111,8 +206,8 @@ public class PropertyPanelView :View
         landform.text = dGameDataCollection.dLandformCollection.dLandformDic[gameInfo.map_info.landform[pos_id]].desc;
         resource.text = dGameDataCollection.dResourceCollection.dResourceDic[gameInfo.map_info.resource[pos_id]].desc;
 
-        int meat_id=gameInfo.map_info.meat[pos_id] / 10;
-        int meat_left=gameInfo.map_info.meat[pos_id] % 10;
+        int meat_id=gameInfo.map_info.meat[pos_id] / 100;
+        int meat_left=gameInfo.map_info.meat[pos_id] % 100;
         //Debug.Log(gameInfo.map_info.meat[pos_id]);
 
         if (meat_id == 2)
@@ -189,11 +284,12 @@ public class PropertyPanelView :View
         if (buildingInfo == null)
         {
             //ClearBuildingPanel();
-            building_panel.gameObject.SetActive(false);
+            SetBuildingPanelVisible(false);
+            
         }
         else
         {
-            building_panel.gameObject.SetActive(true);
+            SetBuildingPanelVisible(true);
             DBuilding dBuilding = dGameDataCollection.dBuildingCollection.dBuildingDic[buildingInfo.building_did];
 
             building_name.text = dBuilding.name;

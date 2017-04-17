@@ -7,7 +7,7 @@ public class DoRoleActionAnimSignal:Signal<DoRoleActionAnimSignal.Param>
 {
     public class Param
     {
-        //0:移动  1:出现 2:消失 3:掉血 4:回血 5:攻击 6:转圈  7:采集香蕉   8:采集肉  9:增加血量和血量上限 10:增加脂肪 11:增加智商 12:增加氨基酸 13:增加消化 13:增加战斗技能 14:增加料理机能
+        //0:移动  1:出现 2:消失 3:掉血 4:回血 5:攻击 6:转圈  7:血量   8:血量上限  9:肌肉 10:脂肪 11:智商 12:氨基酸 13:呼吸 14:消化 15:勇气 16寿命 17:增加战斗技能 18:增加料理技能 19:指令did 20:香蕉  21:肉  22:树枝
         public int type;
 
         public string role_id;

@@ -9,16 +9,22 @@ public class FlowUpTipSignal:Signal<FlowUpTipSignal.Param>
 {
     public enum Type
     {
-        banana,
-        meat,
+        
         blood,
         blood_max,
+        muscle,
         fat,
         inteligent,
         amino_acid,
+        breath,
         digest,
+        courage,
+        life,
         skill,
-        cook_skill
+        cook_skill,
+        banana,
+        meat,
+        branch
     }
 
     public class Param
