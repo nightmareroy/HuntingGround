@@ -1290,16 +1290,16 @@ public class MapRootView : MapNavHexa,IView {
         float fromCost=dLandformDic[gameInfo.map_info.landform[fromNode.idx]].cost;
         float toCost = dLandformDic[gameInfo.map_info.landform[toNode.idx]].cost;
 
-        if(toCost==0f)
-        {
-            return 0f;
-        }
-        else
-        {
-            return fromCost + toCost ;
-        }
+        //if(toCost==0f)
+        //{
+        //    return 0f;
+        //}
+        //else
+        //{
+        //    return fromCost + toCost ;
+        //}
 
-        //        return 1f;
+        return toCost;
     }
 
     #endregion

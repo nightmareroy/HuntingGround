@@ -238,6 +238,7 @@ public class RoleUIView:View
                 case 7:
                     flowUpTipSignalParam = new FlowUpTipSignal.Param(transform,FlowUpTipSignal.Type.blood,param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    blood.value = gameInfo.role_dic[role_id].health;
                     break;
 
                 case 8:

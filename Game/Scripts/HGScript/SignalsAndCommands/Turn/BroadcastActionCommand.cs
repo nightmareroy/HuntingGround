@@ -510,7 +510,7 @@ public class BroadcastActionCommand:Command
                             doRoleActionAnimSignalParam.role_id = role_id;
                             doRoleActionAnimSignalParam.type = 16;
                             doRoleActionAnimSignalParam.value = life;
-                            courageParamList.Add(doRoleActionAnimSignalParam);
+                            lifeParamList.Add(doRoleActionAnimSignalParam);
                         }
                         //doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                         //doRoleActionAnimSignalParam.role_id = role_id;
@@ -635,6 +635,11 @@ public class BroadcastActionCommand:Command
                         doRoleActionAnimSignal.Dispatch(param);
                     }
                     yield return new WaitForSeconds(food_step_time);
+                    foreach (DoRoleActionAnimSignal.Param param in lifeParamList)
+                    {
+                        doRoleActionAnimSignal.Dispatch(param);
+                    }
+                    yield return new WaitForSeconds(food_step_time);
                     foreach (DoRoleActionAnimSignal.Param param in skillParamList)
                     {
                         doRoleActionAnimSignal.Dispatch(param);
@@ -744,7 +749,7 @@ public class BroadcastActionCommand:Command
         //    yield return new WaitForSeconds(step_time);
         //}
 
-        ResetAllRoleDirection();
+        //ResetAllRoleDirection();
         //gameInfo.anim_lock--;
         actionAnimFinishSignal.Dispatch();
 
