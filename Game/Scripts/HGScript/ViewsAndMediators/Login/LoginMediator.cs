@@ -716,7 +716,11 @@ public class LoginMediator : Mediator {
         {
             if (msg.code == 200)
             {
-                gameInfo.InitFromJson(msg.data as JsonObject);
+                JsonObject gameInfoJO = (msg.data as JsonObject)["gameinfo"] as JsonObject;
+                JsonObject groupInfoJO = (msg.data as JsonObject)["groupinfo"] as JsonObject;
+                gameInfo.InitFromJson(gameInfoJO);
+                gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO = groupInfoJO;
+                //gameInfo.allplayers_dic[sPlayerInfo.uid].color_index = 0;
                 startGameSignal.Dispatch();
             }
         });
