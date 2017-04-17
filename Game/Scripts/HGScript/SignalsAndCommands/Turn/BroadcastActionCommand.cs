@@ -142,7 +142,7 @@ public class BroadcastActionCommand:Command
                 //角色死亡，生成尸体
                 case 3:
                 //特殊指令中的角色、建筑、视野变化
-                case 4:
+                case 5:
                 //角色死亡，生成尸体
                 case 9:
                     
