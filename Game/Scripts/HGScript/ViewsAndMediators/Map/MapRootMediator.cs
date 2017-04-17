@@ -291,14 +291,14 @@ public class MapRootMediator : Mediator {
 //            cost=dLandformDic[gameInfo.map_info.landform[selectedRoleInfo.pos_id]].cost;
             for (int i = 0; i < selectedRoleInfo.direction_param.Count; i++)
             {
-                if (i > 0)
-                {
-                    cost += dLandformDic[gameInfo.map_info.landform[selectedRoleInfo.direction_param[i - 1]]].cost;
-                }
-                else
-                {
-                    cost=dLandformDic[gameInfo.map_info.landform[selectedRoleInfo.pos_id]].cost;
-                }
+                //if (i > 0)
+                //{
+                //    cost += dLandformDic[gameInfo.map_info.landform[selectedRoleInfo.direction_param[i - 1]]].cost;
+                //}
+                //else
+                //{
+                //    cost=dLandformDic[gameInfo.map_info.landform[selectedRoleInfo.pos_id]].cost;
+                //}
 
                 cost+=dLandformDic[gameInfo.map_info.landform[selectedRoleInfo.direction_param[i]]].cost;
             }
@@ -315,7 +315,7 @@ public class MapRootMediator : Mediator {
             mapNodeSelectSignal.Dispatch(null);
             return;
         }
-
+        
         updateRoleDirectionSignal.Dispatch(selectedRoleInfo.role_id);
     }
 

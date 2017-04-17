@@ -422,9 +422,11 @@ public class MapRootView : MapNavHexa,IView {
 
                     if (lastEnteredNode != enteredNode)
                     {
+                        
 //                        if (GetPathWithinMaxMoveDistance(n))
                         if(!GetNodeInDragCamZoon(n))
                         {
+                            
                             if (OnMouseEnter != null)
                             {
                                 OnMouseEnter(lastEnteredNode, enteredNode);
