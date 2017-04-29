@@ -26,6 +26,11 @@ public class MapRootView : MapNavHexa,IView {
     public Material grassMat;
     public Material forestMat;
 
+    public Material corpseMat;
+    public Material eggMat;
+    public Material honeyMat;
+    public Material termiteMat;
+
     public UnityEngine.UI.GraphicRaycaster graphicRaycaster;
     public UnityEngine.EventSystems.EventSystem eventSystem;
 
@@ -157,6 +162,7 @@ public class MapRootView : MapNavHexa,IView {
         mainTerrainData = mainTerrain.terrainData;
 
         //Debug.Log(gameInfo.mapInfo.width);
+        //Debug.Log(gameObject);
 
         mapHorizontalSize = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameInfo.gametype_id].width;
         mapVerticalSize = dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameInfo.gametype_id].height;
@@ -390,6 +396,7 @@ public class MapRootView : MapNavHexa,IView {
                             //Debug.Log(isActing);
                             if (isActing == false)
                             {
+                                
                                 mapNodeSelectSignal.Dispatch(n);
                                 
                             }
@@ -782,7 +789,7 @@ public class MapRootView : MapNavHexa,IView {
 
     public GameObject GetNodeObj(int idx)
     {
-        return gameObject.transform.GetChild(idx).gameObject;
+        return transform.GetChild(idx).gameObject;
     }
 
     public GameObject GetNodeObj(int x, int y)
@@ -838,6 +845,7 @@ public class MapRootView : MapNavHexa,IView {
             GameObject nodeObj = GetNodeObj(i);
             Transform landformT=nodeObj.transform.FindChild("Landform");
             Transform resourceT = nodeObj.transform.FindChild("Resource");
+            Transform meatT = nodeObj.transform.FindChild("Meat");
             Transform shadowT = nodeObj.transform.FindChild("Shadow");
             Transform outsightMask = nodeObj.transform.FindChild("OutsightMask");
 
@@ -875,6 +883,32 @@ public class MapRootView : MapNavHexa,IView {
                 case 3:
                     resourceT.gameObject.SetActive(true);
                     resourceT.GetComponent<MeshRenderer>().material = grassMat;
+                    break;
+            }
+
+            int meat_id = gameInfo.map_info.meat[i] / 100;
+            int meat_turn = gameInfo.map_info.meat[i] % 100;
+            //meat_map长度和landform_map相同，此处直接使用
+            switch (meat_id)
+            {
+                case 1:
+                    meatT.gameObject.SetActive(false);
+                    break;
+                case 2:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = corpseMat;
+                    break;
+                case 3:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = termiteMat;
+                    break;
+                case 5:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = eggMat;
+                    break;
+                case 6:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = honeyMat;
                     break;
             }
 
@@ -941,6 +975,36 @@ public class MapRootView : MapNavHexa,IView {
                 case 3:
                     resourceT.gameObject.SetActive(true);
                     resourceT.GetComponent<MeshRenderer>().material = grassMat;
+                    break;
+            }
+        }
+
+        foreach (int pos_id in param.meatList.Keys)
+        {
+            int meat_id=param.meatList[pos_id]/100;
+            int meat_turn=param.meatList[pos_id]%100;
+            GameObject nodeObj = GetNodeObj(pos_id);
+            Transform meatT = nodeObj.transform.Find("Meat");
+            switch (meat_id)
+            {
+                case 1:
+                    meatT.gameObject.SetActive(false);
+                    break;
+                case 2:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = corpseMat;
+                    break;
+                case 3:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = termiteMat;
+                    break;
+                case 5:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = eggMat;
+                    break;
+                case 6:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = honeyMat;
                     break;
             }
         }
@@ -1027,8 +1091,9 @@ public class MapRootView : MapNavHexa,IView {
     //    }
     //}
 
-    void OnDistroy()
+    void OnDestroy()
     {
+        bubbleToContext(this, false, false);
         doMapUpdateSignal.RemoveListener(OnDoMapUpdate);
         //mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
         doSightzoonUpdateSignal.RemoveListener(OnDoSightzoonUpdateSignal);
@@ -1359,10 +1424,10 @@ public class MapRootView : MapNavHexa,IView {
     /// A MonoBehaviour OnDestroy handler
     /// The View will inform the Context that it is about to be
     /// destroyed.
-    protected virtual void OnDestroy()
-    {
-        bubbleToContext(this, false, false);
-    }
+    //protected virtual void OnDestroy()
+    //{
+    //    bubbleToContext(this, false, false);
+    //}
 
     /// Recurses through Transform.parent to find the GameObject to which ContextView is attached
     /// Has a loop limit of 100 levels.

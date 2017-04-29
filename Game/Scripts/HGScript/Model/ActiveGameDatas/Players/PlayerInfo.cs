@@ -19,9 +19,9 @@ public class PlayerInfo
     public int meat = 0;
     public int branch=0;
 
-    public int bananaModify = 0;
-    public int meatModify = 0;
-    public int branchModify = 0;
+    //public int bananaModify = 0;
+    //public int meatModify = 0;
+    //public int branchModify = 0;
 
     public int score;
     public bool failed;
@@ -34,6 +34,7 @@ public class PlayerInfo
     //public bool ready = false;
 
     public JsonObject groupInfoJO=null;
+    public JsonObject weight_dicJO = null;
 
     //key是角色静态id
     //public Dictionary<int, List<int>> country_skill_dic = new Dictionary<int, List<int>>();

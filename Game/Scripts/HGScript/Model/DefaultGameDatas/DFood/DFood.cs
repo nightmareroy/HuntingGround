@@ -12,6 +12,7 @@ public class DFood
     public int banana;
     public int meat;
     public int protein;
+    public int minerals;
     public int fat;
     public int carbohydrate;
     public int dietary_fiber;

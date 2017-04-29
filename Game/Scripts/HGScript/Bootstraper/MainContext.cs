@@ -123,7 +123,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<GameInfo>().ToValue(gameInfo);
 
         //游戏中途退出的玩家队列
-        injectionBinder.Bind<PlayerStateChangeQueue>().ToSingleton();
+        injectionBinder.Bind<GameStateChangeQueue>().ToSingleton();
 
         
 
@@ -174,6 +174,7 @@ public class MainContext : MVCSContext {
         //turn
         commandBinder.Bind<NextturnSignal>().To<NextturnCommand>();
         commandBinder.Bind<BroadcastActionSignal>().To<BroadcastActionCommand>();
+        commandBinder.Bind<BroadcastSubActionSignal>().To<BroadcastSubActionCommand>();
         injectionBinder.Bind<DoRoleActionAnimSignal>().ToSingleton();
         injectionBinder.Bind<DoBuildingActionAnimSignal>().ToSingleton();
         injectionBinder.Bind<PlayerFailPushSignal>().ToSingleton();
@@ -184,6 +185,10 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<DoSightzoonUpdateSignal>().ToSingleton();
         commandBinder.Bind<FlowUpTipSignal>().To<FlowUpTipCommand>();
         injectionBinder.Bind<DoGroupGeneUpdateSignal>().ToSingleton();
+        injectionBinder.Bind<UpdateWeightsSignal>().ToSingleton();
+        injectionBinder.Bind<UpdateCurrentTurnSignal>().ToSingleton();
+        injectionBinder.Bind<GameoverSignal>().ToSingleton();
+        injectionBinder.Bind<UpdateWhenReturnToLogin>().ToSingleton();
 
         //gamehall push
         //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
@@ -195,7 +200,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<MultiGameStartPushSignal>().ToSingleton();
         injectionBinder.Bind<NextTurnPushSignal>().ToSingleton();
         injectionBinder.Bind<UpdateDirectionTurnSignal>().ToSingleton();
-        commandBinder.Bind<CheckUserStateQueueSignal>().To<CheckUserStateQueueCommand>();
+        commandBinder.Bind<CheckGameStateQueueSignal>().To<CheckGameStateQueueCommand>();
         injectionBinder.Bind<UserStateChangeSignal>().ToSingleton();
 
         //friend push
@@ -238,6 +243,8 @@ public class MainContext : MVCSContext {
         mediationBinder.Bind<AllPlayerListPanelView>().To<AllPlayerListPanelMediator>();
 
         mediationBinder.Bind<FoodPanelView>().To<FoodPanelMediator>();
+
+        mediationBinder.Bind<GameoverView>().To<GameoverMediator>();
     }
 
     public override IContext Start()

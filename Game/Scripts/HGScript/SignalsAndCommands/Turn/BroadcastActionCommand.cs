@@ -44,7 +44,7 @@ public class BroadcastActionCommand:Command
     public GameInfo gameInfo { get; set; }
 
     [Inject]
-    public PlayerStateChangeQueue playerStateChangeQueue{ get; set;}
+    public GameStateChangeQueue playerStateChangeQueue{ get; set;}
 
     [Inject]
     public SPlayerInfo sPlayerInfo{ get; set;}
@@ -55,13 +55,19 @@ public class BroadcastActionCommand:Command
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
 
     [Inject]
-    public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
+    public CheckGameStateQueueSignal checkUserStateQueueSignal { get; set; }
 
     [Inject]
     public DoGroupGeneUpdateSignal doGroupGeneUpdateSignal { get; set; }
 
     [Inject]
     public UpdateRoleDirectionSignal updateRoleDirectionSignal { get;set; }
+
+    [Inject]
+    public UpdateWeightsSignal updateWeightsSignal { get;set; }
+
+    [Inject]
+    public UpdateCurrentTurnSignal updateCurrentTurnSignal { get; set; }
 
 
     //回合动画时间
@@ -114,7 +120,7 @@ public class BroadcastActionCommand:Command
     {
         actionAnimStartSignal.Dispatch();
 
-        gameInfo.current_turn++;
+        
 
 
 
@@ -552,6 +558,7 @@ public class BroadcastActionCommand:Command
                         directionParamList.Add(doRoleActionAnimSignalParam);
                         //updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
 
+
                         int banana = int.Parse(roleJO["banana"].ToString());
                         gameInfo.allplayers_dic[sPlayerInfo.uid].banana += banana;
                         if (banana != 0)
@@ -691,19 +698,24 @@ public class BroadcastActionCommand:Command
                 case 10:
                     JsonObject moneyJS = stepJS["money"] as JsonObject;
 
-                    int banana_new = int.Parse(moneyJS["banana"].ToString());
-                    int meat_new = int.Parse(moneyJS["meat"].ToString());
-                    int branch_new = int.Parse(moneyJS["branch"].ToString());
+                    int banana_add = int.Parse(moneyJS["banana"].ToString());
+                    int meat_add = int.Parse(moneyJS["meat"].ToString());
+                    int branch_add = int.Parse(moneyJS["branch"].ToString());
 
                     JsonObject groupJO = moneyJS["group"] as JsonObject;
 
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].banana = banana_new;
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].meat = meat_new;
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].branch = branch_new;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].banana += banana_add;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].meat += meat_add;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].branch += branch_add;
 
                     doGroupGeneUpdateSignal.Dispatch(groupJO);
                     doMoneyUpdateSignal.Dispatch();
                     //yield return new WaitForSeconds(step_time);
+                    break;
+                //更新重量
+                case 11:
+                    JsonObject weight_dicJS = stepJS["weight_dic"] as JsonObject;
+                    updateWeightsSignal.Dispatch(weight_dicJS);
                     break;
             }
 
@@ -751,6 +763,10 @@ public class BroadcastActionCommand:Command
 
         //ResetAllRoleDirection();
         //gameInfo.anim_lock--;
+
+        gameInfo.current_turn++;
+        updateCurrentTurnSignal.Dispatch();
+
         actionAnimFinishSignal.Dispatch();
 
         checkUserStateQueueSignal.Dispatch();

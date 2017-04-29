@@ -133,4 +133,16 @@ public class ResourceService{
             Debug.LogError("ResourcePool don't have that resource!");
         }
     }
+
+    /// <summary>
+    /// 清空所有资源池
+    /// </summary>
+    public void ClearAllPool()
+    {
+        foreach (string path in ResourcePoolInfo.ResourcePool.Keys)
+        {
+            ResourcePoolInfo resourcePoolInfo=ResourcePoolInfo.ResourcePool[path];
+            resourcePoolInfo.GOList.Clear();
+        }
+    }
 }

@@ -62,6 +62,8 @@ public class NetService
     //
     public const string NextTurn = "game.gameHandler.NextTurn";
     //
+    public const string SubTurn = "game.gameHandler.SubTurn";
+    //
     public const string SingleGameStart="game.gameHandler.SingleGameStart";
     //
     //public const string CreateMultiGame = "gamelist.gamelistHandler.CreateMultiGame";

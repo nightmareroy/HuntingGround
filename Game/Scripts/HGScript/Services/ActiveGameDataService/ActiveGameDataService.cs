@@ -67,7 +67,7 @@ public class ActiveGameDataService
         return resultList;
     }
 
-    public List<int> GetAllDirectionDids(string role_id)
+    public List<List<int>> GetAllDirectionDids(string role_id)
     {
 //        List<int> allSkillList = GetAllSkillIds(roleid);
 //        List<int> resultList = new List<int>();
@@ -92,7 +92,8 @@ public class ActiveGameDataService
 //        return resultList;
         RoleInfo roleInfo=gameInfo.role_dic[role_id];
 
-        List<int> allDirectionDids = new List<int>();
+        List<int> delayDirectionDids = new List<int>();
+        List<int> noDelayDirectionDids = new List<int>();
 
         foreach (int direction_did in dGameDataCollection.dDirectionCollection.dDirectionDic.Keys)
         {
@@ -159,13 +160,31 @@ public class ActiveGameDataService
                 }
             }
 
+            
+            if (dDirection.meat.Count > 0)
+            {
+                int meat_id = gameInfo.map_info.meat[roleInfo.pos_id] / 100;
+
+                if (!dDirection.meat.Contains(meat_id))
+                {
+                    continue;
+                }
+            }
+
             if (dDirection.hide == 1)
             {
                 continue;
             }
-                
+            //Debug.Log(dDirection.delay);
+            if (dDirection.delay == 0)
+            {
+                noDelayDirectionDids.Add(dDirection.direction_did);
+            }
+            else if (dDirection.delay == 1)
+            {
+                delayDirectionDids.Add(dDirection.direction_did);
+            }
 
-            allDirectionDids.Add(dDirection.direction_did);
         }
 
 
@@ -178,7 +197,10 @@ public class ActiveGameDataService
 //        {
 //            return new List<int>();
 //        }
-        return allDirectionDids;
+        List<List<int>> resultList = new List<List<int>>();
+        resultList.Add(noDelayDirectionDids);
+        resultList.Add(delayDirectionDids);
+        return resultList;
 
     }
 

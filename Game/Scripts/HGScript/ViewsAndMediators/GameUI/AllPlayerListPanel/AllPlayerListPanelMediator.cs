@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using strange.extensions.mediation.impl;
+using SimpleJson;
 
 public class AllPlayerListPanelMediator : Mediator
 {
@@ -16,14 +17,21 @@ public class AllPlayerListPanelMediator : Mediator
     [Inject]
     public UserStateChangeSignal userStateChangeSignal { get; set; }
 
+    [Inject]
+    public UpdateWeightsSignal updateWeightsSignal { get; set; }
 
+    [Inject]
+    public SPlayerInfo sPlayerInfo { get; set; }
 
 
     public override void OnRegister()
     {
         allPlayerListPanelView.UpdatePlayers();
+        //Debug.Log(gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO.ToString());
+        allPlayerListPanelView.UpdateWeights(gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO);
         updateDirectionTurnSignal.AddListener(OnUpdateDirectionTurnSignal);
         userStateChangeSignal.AddListener(OnUserStateChangeSignal);
+        updateWeightsSignal.AddListener(OnUpdateWeightsSignal);
     }
 
     void OnUpdateDirectionTurnSignal(int uid)
@@ -53,9 +61,15 @@ public class AllPlayerListPanelMediator : Mediator
         }
     }
 
+    void OnUpdateWeightsSignal(JsonObject weight_dic)
+    {
+        allPlayerListPanelView.UpdateWeights(weight_dic);
+    }
+
     void OnDestroy()
     {
         updateDirectionTurnSignal.RemoveListener(OnUpdateDirectionTurnSignal);
         userStateChangeSignal.RemoveListener(OnUserStateChangeSignal);
+        updateWeightsSignal.RemoveListener(OnUpdateWeightsSignal);
     }
 }

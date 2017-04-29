@@ -18,10 +18,12 @@ public class NetPushSignalSerivice
     public const string MultiGameStart="MultiGameStart";
     public const string NextTurn="NextTurn";
     public const string DoAction="DoAction";
+    public const string DoSubAction = "DoSubAction";
     public const string UpdateDirectionTurn = "UpdateDirectionTurn";
-    public const string PlayerFail="PlayerFail";
+    //public const string PlayerFail="PlayerFail";
     public const string UserEnter = "UserEnter";
     public const string UserLeave = "UserLeave";
+    public const string GameOver = "GameOver";
 
     public const string InviteFight = "InviteFight";
     public const string CancelInviteFight = "CancelInviteFight";
@@ -46,12 +48,14 @@ public class NetPushSignalSerivice
     public NextTurnPushSignal nextTurnPushSignal { get; set; }
     [Inject]
     public BroadcastActionSignal broadcastActionSignal { get; set; }
+    [Inject]
+    public BroadcastSubActionSignal broadcastSubActionSignal { get; set; }
     //[Inject]
     //public PlayerFailPushSignal playerFailPushSignal { get; set; }
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get; set; }
     [Inject]
-    public CheckUserStateQueueSignal checkUserStateQueueSignal { get; set; }
+    public CheckGameStateQueueSignal checkGameStateQueueSignal { get; set; }
 
     //friend
     [Inject]
@@ -77,7 +81,7 @@ public class NetPushSignalSerivice
     [Inject]
     public GameInfo gameInfo{ get; set;}
     [Inject]
-    public PlayerStateChangeQueue playerStateChangeQueue{ get; set;}
+    public GameStateChangeQueue gameStateChangeQueue{ get; set;}
 
     bool isAnimActing = false;
 
@@ -114,39 +118,51 @@ public class NetPushSignalSerivice
             nextTurnPushSignal.Dispatch(msg.data as JsonObject); 
         });
         pclient.on(DoAction, (msg) => {
-//            Debug.Log((msg.data as JsonArray).ToString());
-//            RoleActionList roleActionList=new RoleActionList();
-//            roleActionList.InitFromJson(msg.data as JsonArray);
             broadcastActionSignal.Dispatch(msg.data as JsonArray);
 
         });
-        pclient.on(PlayerFail,(msg)=>{
-            int uid=int.Parse((msg.data as JsonObject)["uid"].ToString());
-            playerStateChangeQueue.player_id_queue.Enqueue(uid);
-            playerStateChangeQueue.change_type_queue.Enqueue(3);
-            if (!isAnimActing)
-            {
-                checkUserStateQueueSignal.Dispatch();
-            }
+        pclient.on(DoSubAction, (msg) =>
+        {
+            broadcastSubActionSignal.Dispatch(msg.data as JsonObject);
+
         });
+        //pclient.on(PlayerFail,(msg)=>{
+        //    int uid=int.Parse((msg.data as JsonObject)["uid"].ToString());
+        //    playerStateChangeQueue.player_id_queue.Enqueue(uid);
+        //    playerStateChangeQueue.change_type_queue.Enqueue(3);
+        //    if (!isAnimActing)
+        //    {
+        //        checkUserStateQueueSignal.Dispatch();
+        //    }
+        //});
         pclient.on(UserEnter, (msg) =>
         {
-            int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
-            playerStateChangeQueue.player_id_queue.Enqueue(uid);
-            playerStateChangeQueue.change_type_queue.Enqueue(0);
+            //int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
+            gameStateChangeQueue.change_data_queue.Enqueue(msg.data as JsonObject);
+            gameStateChangeQueue.change_type_queue.Enqueue(0);
             if (!isAnimActing)
             {
-                checkUserStateQueueSignal.Dispatch();
+                checkGameStateQueueSignal.Dispatch();
             }
         });
         pclient.on(UserLeave, (msg) =>
         {
-            int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
-            playerStateChangeQueue.player_id_queue.Enqueue(uid);
-            playerStateChangeQueue.change_type_queue.Enqueue(1);
+            //int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
+            gameStateChangeQueue.change_data_queue.Enqueue(msg.data as JsonObject);
+            gameStateChangeQueue.change_type_queue.Enqueue(1);
             if (!isAnimActing)
             {
-                checkUserStateQueueSignal.Dispatch();
+                checkGameStateQueueSignal.Dispatch();
+            }
+        });
+        pclient.on(GameOver, (msg) =>
+        {
+            //int uid = int.Parse((msg.data as JsonObject)["uid"].ToString());
+            gameStateChangeQueue.change_data_queue.Enqueue(msg.data as JsonObject);
+            gameStateChangeQueue.change_type_queue.Enqueue(2);
+            if (!isAnimActing)
+            {
+                checkGameStateQueueSignal.Dispatch();
             }
         });
         pclient.on(UpdateDirectionTurn, (msg) =>

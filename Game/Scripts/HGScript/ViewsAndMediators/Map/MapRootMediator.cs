@@ -102,14 +102,15 @@ public class MapRootMediator : Mediator {
 
     void OnMapNodeSelectSignal(MapNavNode mapNavNode)
     {
-//        Debug.Log("mapNavNode");
+        //Debug.Log("mapNavNode");
+        findNodeSignal.Dispatch(null, false);
         if (mapNavNode == null)
         {
             selectedNode = null;
             selectedRoleInfo = null;
             
             //mapRootView.ClearUnmovableZoon();
-            findNodeSignal.Dispatch(null,false);
+            //findNodeSignal.Dispatch(null,false);
             mapRootView.SetNodeSelect(-1);
             return;
         }
@@ -125,10 +126,10 @@ public class MapRootMediator : Mediator {
             mapRootView.SetNodeSelect(-1);
         }
 
-        if (selectedRoleInfo == null)
-        {
-            findNodeSignal.Dispatch(null, false);
-        }
+        //if (selectedRoleInfo == null)
+        //{
+        //    findNodeSignal.Dispatch(null, false);
+        //}
 
 
 

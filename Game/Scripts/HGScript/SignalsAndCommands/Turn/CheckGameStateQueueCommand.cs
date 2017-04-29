@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using strange.extensions.command.impl;
 using UnityEngine;
+using SimpleJson;
 
-public class CheckUserStateQueueCommand:Command
+public class CheckGameStateQueueCommand:Command
 {
     [Inject]
     public UserStateChangeSignal userStateChangeSignal { get;set; }
 
     [Inject]
-    public PlayerStateChangeQueue playerStateChangeQueue { get; set; }
+    public GameStateChangeQueue playerStateChangeQueue { get; set; }
 
     [Inject]
     public GameInfo gameInfo { get; set; }
@@ -32,6 +33,9 @@ public class CheckUserStateQueueCommand:Command
     [Inject]
     public BootstrapView bootstrapView { get; set; }
 
+    [Inject]
+    public GameoverSignal gameoverSignal { get;set; }
+
 
 
 
@@ -40,24 +44,26 @@ public class CheckUserStateQueueCommand:Command
     public override void Execute()
     {
 
-        while (playerStateChangeQueue.player_id_queue.Count > 0)
+        while (playerStateChangeQueue.change_type_queue.Count > 0)
         {
-            int uid = playerStateChangeQueue.player_id_queue.Dequeue();
+            //int uid = playerStateChangeQueue.player_id_queue.Dequeue();
             int type = playerStateChangeQueue.change_type_queue.Dequeue();
+            JsonObject data = playerStateChangeQueue.change_data_queue.Dequeue();
 
-            userStateChangeSignal.Dispatch(uid, type);
 
             switch (type)
             {
                 case 0:
+                    int uid_0 = int.Parse(data["uid"].ToString());
+                    userStateChangeSignal.Dispatch(uid_0, type);
                     break;
                 case 1:
-                    break;
-                case 2:
+                    int uid_1 = int.Parse(data["uid"].ToString());
+                    
                     foreach (string role_id in gameInfo.role_dic.Keys)
                     {
                         RoleInfo roleInfo = gameInfo.role_dic[role_id];
-                        if (roleInfo.uid == uid)
+                        if (roleInfo.uid == uid_1)
                         {
                             DoRoleActionAnimSignal.Param doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                             doRoleActionAnimSignalParam.type = 2;
@@ -69,7 +75,7 @@ public class CheckUserStateQueueCommand:Command
                     foreach (string building_id in gameInfo.building_dic.Keys)
                     {
                         BuildingInfo buildingInfo = gameInfo.building_dic[building_id];
-                        if (buildingInfo.uid == uid)
+                        if (buildingInfo.uid == uid_1)
                         {
                             DoBuildingActionAnimSignal.Param doBuildingActionAnimSignalParam = new DoBuildingActionAnimSignal.Param();
                             doBuildingActionAnimSignalParam.type = 1;
@@ -77,7 +83,10 @@ public class CheckUserStateQueueCommand:Command
                             doBuildingActionAnimSignal.Dispatch(doBuildingActionAnimSignalParam);
                         }
                     }
-                    
+                    userStateChangeSignal.Dispatch(uid_1, type);
+                    break;
+                case 2:
+                    gameoverSignal.Dispatch(data);
                     break;
             }
 

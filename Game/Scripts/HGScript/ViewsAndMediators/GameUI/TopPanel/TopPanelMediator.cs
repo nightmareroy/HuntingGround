@@ -15,7 +15,7 @@ public class TopPanelMediator:Mediator
     public GameInfo gameInfo{ get; set;}
 
     [Inject]
-    public DoMoneyUpdateSignal doBananaUpdateSignal{ get; set;}
+    public DoMoneyUpdateSignal doMoneyUpdateSignal{ get; set;}
 
     [Inject]
     public DoGroupGeneUpdateSignal doGroupGeneUpdateSignal { get; set; }
@@ -26,14 +26,19 @@ public class TopPanelMediator:Mediator
     [Inject]
     public ActionAnimFinishSignal actionAnimFinishSignal { get; set; }
 
+    [Inject]
+    public UpdateCurrentTurnSignal updateCurrentTurnSignal { get; set; }
+
     public override void OnRegister()
     {
-        doBananaUpdateSignal.AddListener(OnDoBananaUpdateSignal);
+        doMoneyUpdateSignal.AddListener(OnDoBananaUpdateSignal);
         doGroupGeneUpdateSignal.AddListener(OnDoGroupGeneUpdateSignal);
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.AddListener(OnActionAnimFinishSignal);
+        updateCurrentTurnSignal.AddListener(OnUpdateCurrentTurn);
         topPannelView.UpdateBanana(gameInfo.allplayers_dic[sPlayerInfo.uid]);
         topPannelView.UpdateGroup(gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO);
+        topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
 
     }
 
@@ -58,12 +63,18 @@ public class TopPanelMediator:Mediator
         topPannelView.toggle.interactable = true;
     }
 
+    void OnUpdateCurrentTurn()
+    {
+        topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
+    }
+
     void OnDestroy()
     {
-        doBananaUpdateSignal.RemoveListener(OnDoBananaUpdateSignal);
+        doMoneyUpdateSignal.RemoveListener(OnDoBananaUpdateSignal);
         doGroupGeneUpdateSignal.RemoveListener(OnDoGroupGeneUpdateSignal);
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);
+        updateCurrentTurnSignal.RemoveListener(OnUpdateCurrentTurn);
     }
 }
 

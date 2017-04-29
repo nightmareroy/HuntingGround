@@ -21,7 +21,7 @@ public class MyRoleListPanelMediator : Mediator
     [Inject]
     public DoRoleActionAnimSignal doRoleActionAnimSignal{ get; set;}
 
-
+    
 
 //    List<RoleInfo> myRoleList=new List<RoleInfo>();
 

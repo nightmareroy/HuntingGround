@@ -16,8 +16,11 @@ public class DDirection
     public int building_group;
     public List<int> landform;
     public List<int> resource;
+    public List<int> meat;
 
     public int hide;
+
+    public int delay;
 
 //    public DDirection(int direction_did,string name)
 //    {
@@ -34,6 +37,8 @@ public class DDirectionCollection
 
     public void InitFromStr(string jsstr)
     {
+        
+
         JsonObject jsobj = SimpleJson.SimpleJson.DeserializeObject<JsonObject>(jsstr);
         dDirectionDic.Clear();
         foreach (JsonObject jo in jsobj.Values)
@@ -41,10 +46,9 @@ public class DDirectionCollection
 //            int directionid = int.Parse(jo["directionid"].ToString());
 //            string name = jo["name"].ToString();
 
-
+            
 
             DDirection dDirection = SimpleJson.SimpleJson.DeserializeObject<DDirection>(jo.ToString());
-
                 //new DDirection(directionid,name);
             dDirectionDic.Add(dDirection.direction_did,dDirection);
         }

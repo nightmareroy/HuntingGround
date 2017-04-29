@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using strange.extensions.mediation.impl;
 using MapNavKit;
 
+
 public class MyRoleListPanelView : View
 {
     [Inject]
@@ -33,6 +34,8 @@ public class MyRoleListPanelView : View
 
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
+
+    
 
     public GameObject contentRootObj;
     public GameObject roleItemTpl;
@@ -264,6 +267,8 @@ public class MyRoleListPanelView : View
     {
         findBtn.interactable = true;
     }
+
+    
 
     void OnDestroy()
     {

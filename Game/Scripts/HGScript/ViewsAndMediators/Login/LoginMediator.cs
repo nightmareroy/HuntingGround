@@ -49,6 +49,9 @@ public class LoginMediator : Mediator {
     [Inject]
     public GameInfo gameInfo { get; set; }
 
+    [Inject]
+    public UpdateWhenReturnToLogin updateWhenReturnToLogin { get; set; }
+
     //game hall
     //[Inject]
     //public CreateMultiGamePushSignal createMultiGamePushSignal{ get; set;}
@@ -60,8 +63,8 @@ public class LoginMediator : Mediator {
     //public LeaveMultiGamePushSignal leaveMultiGamePushSignal{ get; set;}
 
     //game
-    [Inject]
-    public MultiGameStartPushSignal multiGameStartPushSignal{ get; set;}
+    //[Inject]
+    //public MultiGameStartPushSignal multiGameStartPushSignal{ get; set;}
 
     [Inject]
     public InviteFightPushSignal inviteFightPushSignal { get;set; }
@@ -116,6 +119,9 @@ public class LoginMediator : Mediator {
         InitPages();
         loginView.viewClick += OnViewClicked;
 
+
+        updateWhenReturnToLogin.AddListener(OnUpdateWhenReturnToLogin);
+
         //game hall
         //createMultiGamePushSignal.AddListener(OnCreateMultiGamePushSignal);
         //cancelMultiGamePushSignal.AddListener(OnCancelMultiGamePushSignal);
@@ -123,7 +129,7 @@ public class LoginMediator : Mediator {
         //leaveMultiGamePushSignal.AddListener(OnLeaveMultiGamePushSignal);
 
         //game
-        multiGameStartPushSignal.AddListener(OnMultiGameStartPushSignal);
+        //multiGameStartPushSignal.AddListener(OnMultiGameStartPushSignal);
 
         //friend
         inviteFightPushSignal.AddListener(OnInviteFightPushSignal);
@@ -142,6 +148,11 @@ public class LoginMediator : Mediator {
                             Debug.Log("connect success!");
                         });
                 });
+        }
+
+        if (sPlayerInfo.uid != -1)
+        {
+            pageManager.JumpDown(gamePage);
         }
     }
 
@@ -261,8 +272,10 @@ public class LoginMediator : Mediator {
                                         {
                                             JsonObject gameInfoJO = (msg2.data as JsonObject)["gameinfo"] as JsonObject;
                                             JsonObject groupInfoJO = (msg2.data as JsonObject)["groupinfo"] as JsonObject;
+                                            JsonObject weight_dicJO = (msg2.data as JsonObject)["weight_dic"] as JsonObject;
                                             gameInfo.InitFromJson(gameInfoJO);
                                             gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO = groupInfoJO;
+                                            gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO = weight_dicJO;
                                             //gameInfo.allplayers_dic[sPlayerInfo.uid].color_index = 0;
                                             startGameSignal.Dispatch();
                                         }
@@ -680,22 +693,22 @@ public class LoginMediator : Mediator {
     }
 
 
-    void OnMultiGameStartPushSignal(JsonObject jo)
-    {
-        netService.Request(NetService.LoadGame, null, (msg) =>
-            {
-                if (msg.code == 200)
-                {
-                    JsonObject gameInfoJO = (msg.data as JsonObject)["gameinfo"] as JsonObject;
-                    JsonObject groupInfoJO = (msg.data as JsonObject)["groupinfo"] as JsonObject;
-                    //Debug.Log(msg.data.ToString());
-                    //Debug.Log(gameInfoJO.ToString());
-                    gameInfo.InitFromJson(gameInfoJO);
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO = groupInfoJO;
-                    startGameSignal.Dispatch();  
-                }
-            });
-    }
+    //void OnMultiGameStartPushSignal(JsonObject jo)
+    //{
+    //    netService.Request(NetService.LoadGame, null, (msg) =>
+    //        {
+    //            if (msg.code == 200)
+    //            {
+    //                JsonObject gameInfoJO = (msg.data as JsonObject)["gameinfo"] as JsonObject;
+    //                JsonObject groupInfoJO = (msg.data as JsonObject)["groupinfo"] as JsonObject;
+    //                //Debug.Log(msg.data.ToString());
+    //                //Debug.Log(gameInfoJO.ToString());
+    //                gameInfo.InitFromJson(gameInfoJO);
+    //                gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO = groupInfoJO;
+    //                startGameSignal.Dispatch();  
+    //            }
+    //        });
+    //}
 
     void OnInviteFightPushSignal(int src_uid, string name)
     {
@@ -718,8 +731,10 @@ public class LoginMediator : Mediator {
             {
                 JsonObject gameInfoJO = (msg.data as JsonObject)["gameinfo"] as JsonObject;
                 JsonObject groupInfoJO = (msg.data as JsonObject)["groupinfo"] as JsonObject;
+                JsonObject weight_dicJO = (msg.data as JsonObject)["weight_dic"] as JsonObject;
                 gameInfo.InitFromJson(gameInfoJO);
                 gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO = groupInfoJO;
+                gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO = weight_dicJO;
                 //gameInfo.allplayers_dic[sPlayerInfo.uid].color_index = 0;
                 startGameSignal.Dispatch();
             }
@@ -729,6 +744,12 @@ public class LoginMediator : Mediator {
     void OnRefuseInviteFightPushSignal(int tar_uid)
     {
         loginView.SetWaitInvitePanelVisible(false);
+    }
+
+    void OnUpdateWhenReturnToLogin()
+    {
+        Debug.Log("test");
+        pageManager.JumpDown(gamePage);
     }
 
 
@@ -742,13 +763,15 @@ public class LoginMediator : Mediator {
 
         //game
         //game
-        multiGameStartPushSignal.RemoveListener(OnMultiGameStartPushSignal);
+        //multiGameStartPushSignal.RemoveListener(OnMultiGameStartPushSignal);
 
         //friend
         inviteFightPushSignal.RemoveListener(OnInviteFightPushSignal);
         cancelInviteFightPushSignal.RemoveListener(OnCancelInviteFightPushSignal);
         friendGameStartPushSignal.RemoveListener(OnFriendGameStartPushSignal);
         refuseInviteFightPushSignal.RemoveListener(OnRefuseInviteFightPushSignal);
+
+        updateWhenReturnToLogin.RemoveListener(OnUpdateWhenReturnToLogin);
 
         //loginView.playModeSignal.RemoveListener(OnPlayModeSignal);
 

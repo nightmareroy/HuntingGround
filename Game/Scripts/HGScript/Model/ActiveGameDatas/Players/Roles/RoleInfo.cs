@@ -43,7 +43,7 @@ public class RoleInfo
     }
     public int weight
     {
-        get { return muscle+fat; }
+        get { return muscle+fat+amino_acid; }
     }
 //    public int attack
 //    {
@@ -85,7 +85,7 @@ public class RoleInfo
         get
         {
 //            return (int)Math.Pow(2,speed_lv);
-            return 3f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
+            return 5f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
         }
     }
 

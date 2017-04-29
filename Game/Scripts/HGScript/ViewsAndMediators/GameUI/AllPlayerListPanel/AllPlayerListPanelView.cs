@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using strange.extensions.mediation.impl;
+using SimpleJson;
 
 public class AllPlayerListPanelView : View
 {
@@ -39,6 +40,8 @@ public class AllPlayerListPanelView : View
 
 
         }
+
+
     }
 
     public void SetPlayerReady(int uid, bool ready)
@@ -62,6 +65,17 @@ public class AllPlayerListPanelView : View
     {
         Transform playerItemT = listT.FindChild(uid.ToString());
         Tools.Destroy(playerItemT);
+    }
+
+    public void UpdateWeights(JsonObject weight_dic)
+    {
+        foreach (string key in weight_dic.Keys)
+        {
+            Transform itemT = listT.FindChild(key);
+            Text weightText = itemT.FindChild("Weight").GetComponent<Text>();
+            weightText.text = weight_dic[key].ToString();
+
+        }
     }
 
 }

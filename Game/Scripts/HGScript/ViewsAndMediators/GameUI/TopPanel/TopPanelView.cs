@@ -9,13 +9,15 @@ public class TopPanelView:View
     public Toggle toggle;
 
     public Text bananaValueText;
-    public Text bananaModifyText;
+    //public Text bananaModifyText;
 
     public Text meatValueText;
-    public Text meatModifyText;
+    //public Text meatModifyText;
 
     public Text branchValueText;
-    public Text branchModifyText;
+    //public Text branchModifyText;
+
+    public Text currentTurnText;
 
 
     public Text averageBloodSugarText;
@@ -44,13 +46,13 @@ public class TopPanelView:View
     public void UpdateBanana(PlayerInfo playerInfo)
     {
         bananaValueText.text = playerInfo.banana.ToString();
-        bananaModifyText.text = "("+playerInfo.bananaModify.ToString()+")";
+        //bananaModifyText.text = "("+playerInfo.bananaModify.ToString()+")";
 
         meatValueText.text = playerInfo.meat.ToString();
-        meatModifyText.text = "(" + playerInfo.meatModify.ToString()+")";
+        //meatModifyText.text = "(" + playerInfo.meatModify.ToString()+")";
 
         branchValueText.text = playerInfo.branch.ToString();
-        branchModifyText.text = "(" + playerInfo.branchModify.ToString() + ")";
+        //branchModifyText.text = "(" + playerInfo.branchModify.ToString() + ")";
 
     }
 
@@ -97,7 +99,6 @@ public class TopPanelView:View
         //int averageGrowupMax = int.Parse(growupMaxJO["quality"].ToString());
         //int differenceGrowupMax = int.Parse(growupMaxJO["difference"].ToString());
 
-        Debug.Log(bloodSugarJO.ToString());
         averageBloodSugarText.text = bloodSugarJO["quality"].ToString();
         differenceBloodSugarText.text = bloodSugarJO["difference"].ToString();
 
@@ -131,6 +132,11 @@ public class TopPanelView:View
         int differenceGrowupMax = int.Parse(growupMaxJO["difference"].ToString());
         averageGrowupMaxText.text = ((float)averageGrowupMax / 100f).ToString();
         differenceGrowupMaxText.text = ((float)differenceGrowupMax / 100f).ToString();
+    }
+
+    public void UpdateCurrentTurn(int currentTurn)
+    {
+        currentTurnText.text = currentTurn.ToString();
     }
 }
 
