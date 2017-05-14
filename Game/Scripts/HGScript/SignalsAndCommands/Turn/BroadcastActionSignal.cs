@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using strange.extensions.signal.impl;
 using SimpleJson;
 
-public class BroadcastActionSignal : Signal<JsonArray>
+public class BroadcastActionSignal : Signal<JsonObject>
 {
     //public class Param
     //{

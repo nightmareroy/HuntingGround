@@ -21,6 +21,9 @@ public class StartGameCommand : Command
     [Inject]
     public MainContext mainContext { get; set; }
 
+    [Inject]
+    public IconSpritesService iconSpritesService { get; set; }
+
     //[Inject]
     //public AddGamePlayerSignal addGamePlayerSignal { get; set; }
 
@@ -74,6 +77,11 @@ public class StartGameCommand : Command
             mainContext.overviewCamera = GameObject.Find("UICamera").GetComponent<Camera>();
             //if(param.loadlevelCallback!=null)
             //    param.loadlevelCallback();
+
+
+
+            //预先实例化IconSpritesView
+            iconSpritesService.GetView();
         });
 
     }

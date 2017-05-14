@@ -10,7 +10,7 @@ public class BroadcastActionCommand:Command
 //    [Inject]
 //    public RoleActionList roleActionList { get; set; }
     [Inject]
-    public JsonArray actionListJS{ get; set;}
+    public JsonObject dataJO{ get; set;}
 
     [Inject]
     public BootstrapView bootstrapView { get; set; }
@@ -69,6 +69,9 @@ public class BroadcastActionCommand:Command
     [Inject]
     public UpdateCurrentTurnSignal updateCurrentTurnSignal { get; set; }
 
+    [Inject]
+    public UpdateNextturnTimeSignal updateNextturnTimeSignal { get; set; }
+
 
     //回合动画时间
     float step_time=0.5f;
@@ -77,8 +80,13 @@ public class BroadcastActionCommand:Command
 
     public override void Execute()
     {
+        JsonArray actionListJS = dataJO["action_list_dic"] as JsonArray;
+        long nexttime = long.Parse(dataJO["nexttime"].ToString());
+        gameInfo.nexttime = nexttime;
+        updateNextturnTimeSignal.Dispatch();
+
         updateDirectionTurnSignal.Dispatch(-1);
-        bootstrapView.StartCoroutine(updateDataAndBroadcaseAction());
+        bootstrapView.StartCoroutine(updateDataAndBroadcaseAction(actionListJS));
 
 
 //        for (int step = 0; step < 7; step++)
@@ -116,7 +124,7 @@ public class BroadcastActionCommand:Command
 
     }
 
-    IEnumerator updateDataAndBroadcaseAction()
+    IEnumerator updateDataAndBroadcaseAction(JsonArray actionListJS)
     {
         actionAnimStartSignal.Dispatch();
 

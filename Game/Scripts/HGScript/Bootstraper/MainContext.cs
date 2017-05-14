@@ -189,6 +189,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<UpdateCurrentTurnSignal>().ToSingleton();
         injectionBinder.Bind<GameoverSignal>().ToSingleton();
         injectionBinder.Bind<UpdateWhenReturnToLogin>().ToSingleton();
+        injectionBinder.Bind<UpdateNextturnTimeSignal>().ToSingleton();
 
         //gamehall push
         //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
@@ -253,10 +254,8 @@ public class MainContext : MVCSContext {
 
         test();
 
-        Texture2D arrowStart=Resources.Load("arrow/Textures/VectorTextures/arrowStart") as Texture2D;
-        Texture2D arrowEnd=Resources.Load("arrow/Textures/VectorTextures/arrowEnd") as Texture2D;
-        Material lineMaterial=Resources.Load("arrow/ThickLine") as Material;
-        VectorLine.SetEndCap("Arrow",EndCap.Front,lineMaterial,arrowStart,arrowEnd);
+        IconSpritesService iconSpritesService = injectionBinder.GetInstance<IconSpritesService>();
+        VectorLine.SetEndCap("Arrow", EndCap.Front, iconSpritesService.GetView().lineMaterial, iconSpritesService.GetView().arrowStart, iconSpritesService.GetView().arrowEnd);
 
         //读取静态数据到内存
         injectionBinder.GetInstance<DefaultGameDataUpdateSignal>().Dispatch(() => 

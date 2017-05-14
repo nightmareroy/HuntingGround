@@ -242,15 +242,18 @@ public class BroadcastSubActionCommand:Command
 
             }
 
-            int direction_did = int.Parse(roleJO["direction_did"].ToString());
-            //List<int> direction_param = SimpleJson.SimpleJson.DeserializeObject<List<int>>(roleJO["direction_param"].ToString());
-            roleInfo.direction_did = direction_did;
-            roleInfo.direction_param.Clear();
-            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-            doRoleActionAnimSignalParam.role_id = role_id;
-            doRoleActionAnimSignalParam.type = 19;
-            doRoleActionAnimSignalParam.value = direction_did;
-            directionParamList.Add(doRoleActionAnimSignalParam);
+            if (roleJO.ContainsKey("direction_did"))
+            {
+                int direction_did = int.Parse(roleJO["direction_did"].ToString());
+                //List<int> direction_param = SimpleJson.SimpleJson.DeserializeObject<List<int>>(roleJO["direction_param"].ToString());
+                roleInfo.direction_did = direction_did;
+                roleInfo.direction_param.Clear();
+                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                doRoleActionAnimSignalParam.role_id = role_id;
+                doRoleActionAnimSignalParam.type = 19;
+                doRoleActionAnimSignalParam.value = direction_did;
+                directionParamList.Add(doRoleActionAnimSignalParam);
+            }
             //updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
 
             int banana = int.Parse(roleJO["banana"].ToString());

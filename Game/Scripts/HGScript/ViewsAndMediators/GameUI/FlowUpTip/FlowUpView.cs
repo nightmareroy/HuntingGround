@@ -11,7 +11,8 @@ public class FlowUpView:MonoBehaviour
 
 
 
-    public Image image;
+    //public Image image;
+    public Text textName;
     public Text text;
 
     //public Sprite[] sprites;
@@ -49,43 +50,82 @@ public class FlowUpView:MonoBehaviour
         {
             
             case FlowUpTipSignal.Type.blood:
-                image.sprite = iconSpritesService.GetView().ball3;
+                textName.text = "血糖";
+                textName.color = Color.red;
                 text.color = Color.red;
                 break;
             case FlowUpTipSignal.Type.blood_max:
+                textName.text = "血糖上限";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.muscle:
+                textName.text = "肌肉";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.fat:
+                textName.text = "脂肪";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.inteligent:
+                textName.text = "智商";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.amino_acid:
+                textName.text = "氨基酸";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.breath:
+                textName.text = "肺活量";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.digest:
+                textName.text = "肠胃";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.courage:
+                textName.text = "勇气";
+                textName.color = Color.red;
+                text.color = Color.red;
+                break;
             case FlowUpTipSignal.Type.life:
-                image.sprite = iconSpritesService.GetView().ball3;
-                text.color = Color.blue;
+                textName.text = "寿命";
+                textName.color = Color.red;
+                text.color = Color.red;
                 break;
             case FlowUpTipSignal.Type.skill:
-                image.sprite = iconSpritesService.GetView().ball3;
-                text.color = Color.blue;
+                textName.text = "战斗技能";
+                textName.color = Color.red;
+                text.color = Color.red;
                 text.text = dGameDataCollection.dSkillCollection.dSkillDic[param.value].name;
                 break;
             case FlowUpTipSignal.Type.cook_skill:
-                image.sprite = iconSpritesService.GetView().ball3;
-                text.color = Color.blue;
+                textName.text = "料理技能";
+                textName.color = Color.red;
+                text.color = Color.red;
                 text.text=dGameDataCollection.dCookSkillCollection.dCookSkillDic[param.value].name;
                 break;
 
             case FlowUpTipSignal.Type.banana:
-                image.sprite = iconSpritesService.GetView().ball1;
+                textName.text = "水果";
+                textName.color = Color.yellow;
                 text.color = Color.yellow;
                 break;
             case FlowUpTipSignal.Type.meat:
-                image.sprite = iconSpritesService.GetView().ball2;
-                text.color = Color.magenta;
+                textName.text = "生肉";
+                textName.color = Color.yellow;
+                text.color = Color.yellow;
                 break;
             case FlowUpTipSignal.Type.branch:
-                image.sprite = iconSpritesService.GetView().ball3;
-                text.color = Color.gray;
+                textName.text = "树枝";
+                textName.color = Color.yellow;
+                text.color = Color.yellow;
                 break;
         }
 

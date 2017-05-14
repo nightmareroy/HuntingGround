@@ -39,6 +39,9 @@ public class PropertyPanelMediator : Mediator
     [Inject]
     public NetService netService { get; set; }
 
+    [Inject]
+    public DGameDataCollection dGameDataCollection { get; set; }
+
 
     RoleInfo currentSelectedRole;
     BuildingInfo currentSelectedBuilding;
@@ -111,6 +114,7 @@ public class PropertyPanelMediator : Mediator
     void OnDirectionClick(int direction_did)
     {
         //Debug.Log(direction_did);
+        DDirection dDirection=dGameDataCollection.dDirectionCollection.dDirectionDic[direction_did];
         if (direction_did == 8)
         {
             openFoodPanelSignal.Dispatch(currentSelectedRole.role_id);
@@ -120,10 +124,16 @@ public class PropertyPanelMediator : Mediator
             MapNavNode node = mainContext.mapRootMediator.mapRootView.NodeAt<MapNavNode>(currentSelectedRole.pos_id);
             findNodeSignal.Dispatch(node, true);
         }
-        else if (direction_did == 9 || direction_did == 10 || direction_did == 13 || direction_did == 14)
+        else 
         {
             gameInfo.role_dic[currentSelectedRole.role_id].direction_did = direction_did;
             gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
+            
+            mapNodeSelectSignal.Dispatch(null);
+            updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
+        }
+        if (dDirection.delay == 0)
+        {
             JsonObject form = new JsonObject();
             form.Add("direction_did", gameInfo.role_dic[currentSelectedRole.role_id].direction_did);
             form.Add("direction_param", gameInfo.role_dic[currentSelectedRole.role_id].direction_param);
@@ -132,19 +142,6 @@ public class PropertyPanelMediator : Mediator
             {
 
             });
-            mapNodeSelectSignal.Dispatch(null);
-        }
-        else
-        {
-
-
-            gameInfo.role_dic[currentSelectedRole.role_id].direction_did = direction_did;
-            gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
-            mapNodeSelectSignal.Dispatch(null);
-
-            updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
-
-            
         }
     }
 

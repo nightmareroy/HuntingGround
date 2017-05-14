@@ -11,13 +11,18 @@ public class RoleView:View
 {
 //    GameObject pathRoot;
 
-    Material normalNodeMat;
-    Material exploreNodeMat;
-    Material attackNodeMat;
-    Material defendNodeMat;
-    Material moveNodeMat;
+    //Material normalNodeMat;
+    //Material exploreNodeMat;
+    //Material attackNodeMat;
+    //Material defendNodeMat;
+    //Material moveNodeMat;
 
-    Material lineMaterial;
+    public MeshRenderer color;
+
+    public Material redMat;
+    public Material blueMat;
+
+    public Material lineMaterial;
 //    Texture2D arrowStart;
 //    Texture2D arrowEnd;
 
@@ -33,6 +38,12 @@ public class RoleView:View
     [Inject]
     public ActionAnimStartSignal actionAnimStartSignal { get; set; }
 
+    [Inject]
+    public IconSpritesService iconSpritesService { get; set; }
+
+    [Inject]
+    public ColorService colorService { get; set; }
+
     Animator animator;
     MapRootMediator mapRootMediator;
     VectorLine vectorLine;
@@ -47,14 +58,29 @@ public class RoleView:View
     public void Init()
     {
         mapRootMediator = mainContext.mapRootMediator;
-        normalNodeMat = Resources.Load("map/HexNode/hexMat") as Material;
-        exploreNodeMat = Resources.Load("map/HexNode/hexExploreMat") as Material;
-        attackNodeMat = Resources.Load("map/HexNode/hexAttackMat") as Material;
-        defendNodeMat = Resources.Load("map/HexNode/hexDefendMat") as Material;
-        moveNodeMat = Resources.Load("map/HexNode/hexMoveMat") as Material;
+        //normalNodeMat = Resources.Load("map/HexNode/hexMat") as Material;
+        //exploreNodeMat = Resources.Load("map/HexNode/hexExploreMat") as Material;
+        //attackNodeMat = Resources.Load("map/HexNode/hexAttackMat") as Material;
+        //defendNodeMat = Resources.Load("map/HexNode/hexDefendMat") as Material;
+        //moveNodeMat = Resources.Load("map/HexNode/hexMoveMat") as Material;
 
-        lineMaterial=Resources.Load("arrow/ThickLine") as Material;
+        //lineMaterial=Resources.Load("arrow/ThickLine") as Material;
 
+        string[] ids = gameObject.name.Split('_');
+        string role_id = ids[1];
+        RoleInfo roleInfo=gameInfo.role_dic[role_id];
+        
+        switch (gameInfo.allplayers_dic[roleInfo.uid].color_index)
+        {
+            case 0:
+                color.material = redMat;
+                break;
+            case 1:
+                color.material = blueMat;
+                break;
+
+        }
+        
 
 //        pathRoot=new GameObject();
 //        pathRoot.transform.SetParent(transform);
@@ -64,6 +90,7 @@ public class RoleView:View
 
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
 
+        
 
         if (vectorLine != null)
         {

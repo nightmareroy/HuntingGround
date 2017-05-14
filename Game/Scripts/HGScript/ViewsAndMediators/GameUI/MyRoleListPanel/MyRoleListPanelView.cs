@@ -35,6 +35,9 @@ public class MyRoleListPanelView : View
     [Inject]
     public UpdateDirectionTurnSignal updateDirectionTurnSignal { get;set; }
 
+    [Inject]
+    public IconSpritesService iconSpritesService { get; set; }
+
     
 
     public GameObject contentRootObj;
@@ -75,6 +78,11 @@ public class MyRoleListPanelView : View
         UpdateRoles();
     }
 
+    //public void InitDirections()
+    //{
+
+    //}
+
     public void UpdateRoles()
     {
         Tools.ClearChildren(contentRootObj.transform);
@@ -110,6 +118,8 @@ public class MyRoleListPanelView : View
 //                    Debug.Log(toggleGroup.ActiveToggles().ToString());
                 });
 //                toggle.onValueChanged.
+
+                UpdateRoleDirection(role_id, roleInfo.direction_did);
             }
                 
         }
@@ -266,6 +276,37 @@ public class MyRoleListPanelView : View
     void OnUpdateDirectionTurnSignal(int uid)
     {
         findBtn.interactable = true;
+    }
+
+    public void UpdateRoleDirection(string role_id, int direction_did)
+    {
+        Transform roleT = contentRootObj.transform.FindChild(role_id);
+
+        Image directionIcon = roleT.FindChild("DirectionIcon").GetComponent<Image>();
+
+        switch (direction_did)
+        {
+            case 1:
+                directionIcon.sprite = iconSpritesService.GetView().move;
+                break;
+            case 2:
+                directionIcon.sprite = iconSpritesService.GetView().defend;
+                break;
+            case 3:
+                directionIcon.sprite = iconSpritesService.GetView().banana;
+                break;
+            case 11:
+                directionIcon.sprite = iconSpritesService.GetView().fead;
+                break;
+            case 13:
+                directionIcon.sprite = iconSpritesService.GetView().meat;
+                break;
+            case 15:
+                directionIcon.sprite = iconSpritesService.GetView().fin;
+                break;
+            
+        }
+        //
     }
 
     

@@ -128,7 +128,7 @@ public class LoginView : View {
 	// Use this for initialization
     public void Init()
 	{
-
+        
 	}
 
 

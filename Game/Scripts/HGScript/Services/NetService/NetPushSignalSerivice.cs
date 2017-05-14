@@ -118,7 +118,7 @@ public class NetPushSignalSerivice
             nextTurnPushSignal.Dispatch(msg.data as JsonObject); 
         });
         pclient.on(DoAction, (msg) => {
-            broadcastActionSignal.Dispatch(msg.data as JsonArray);
+            broadcastActionSignal.Dispatch(msg.data as JsonObject);
 
         });
         pclient.on(DoSubAction, (msg) =>

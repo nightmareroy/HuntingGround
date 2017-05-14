@@ -31,6 +31,8 @@ public class MapRootView : MapNavHexa,IView {
     public Material honeyMat;
     public Material termiteMat;
 
+    
+
     public UnityEngine.UI.GraphicRaycaster graphicRaycaster;
     public UnityEngine.EventSystems.EventSystem eventSystem;
 

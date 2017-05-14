@@ -21,12 +21,14 @@ public class MyRoleListPanelMediator : Mediator
     [Inject]
     public DoRoleActionAnimSignal doRoleActionAnimSignal{ get; set;}
 
-    
+    [Inject]
+    public UpdateRoleDirectionSignal updateRoleDirectionSignal { get; set; }
 
 //    List<RoleInfo> myRoleList=new List<RoleInfo>();
 
     public override void OnRegister()
     {
+        
         StartCoroutine(Init());
     }
 
@@ -38,6 +40,7 @@ public class MyRoleListPanelMediator : Mediator
         myRoleListPannelView.Init();
 
         doRoleActionAnimSignal.AddListener(OnDoRoleActionAnimSignal);
+        updateRoleDirectionSignal.AddListener(OnUpdateRoleDirectionSignal);
     }
 
     void OnDoRoleActionAnimSignal(DoRoleActionAnimSignal.Param param)
@@ -71,8 +74,15 @@ public class MyRoleListPanelMediator : Mediator
         }
     }
 
+    void OnUpdateRoleDirectionSignal(string role_id)
+    {
+        RoleInfo roleInfo=gameInfo.role_dic[role_id];
+        myRoleListPannelView.UpdateRoleDirection(role_id, roleInfo.direction_did);
+    }
+
     void OnDestroy()
     {
         doRoleActionAnimSignal.RemoveListener(OnDoRoleActionAnimSignal);
+        updateRoleDirectionSignal.RemoveListener(OnUpdateRoleDirectionSignal);
     }
 }

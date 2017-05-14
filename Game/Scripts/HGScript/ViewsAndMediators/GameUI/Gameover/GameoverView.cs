@@ -36,31 +36,42 @@ public class GameoverView:View
             Transform rootListT=null;
             switch (key)
             {
-                case "winners":
+                case "winner_groups":
                     rootListT = winnerListT;
                     break;
-                case "losers":
+                case "loser_groups":
                     rootListT = loserListT;
                     break;
             }
 
-            JsonArray listAR = resultJO[key] as JsonArray;
-            foreach(string uidStr in listAR)
+            JsonArray listJA = resultJO[key] as JsonArray;
+            foreach(string groupidStr in listJA)
             {
-                int uid=int.Parse(uidStr);
+                int group_id=int.Parse(groupidStr);
 
-                GameObject playerItem = GameObject.Instantiate<GameObject>(playerItemTplT.gameObject);
-                playerItem.transform.SetParent(rootListT);
-                playerItem.SetActive(true);
-                playerItem.transform.localPosition = Vector3.zero;
-                playerItem.transform.localScale = Vector3.one;
-                playerItem.transform.localRotation = Quaternion.identity;
 
-                Text name = playerItem.transform.FindChild("Name").GetComponent<Text>();
-                Text weight = playerItem.transform.FindChild("Weight").GetComponent<Text>();
+                foreach (int uid in gameInfo.allplayers_dic.Keys)
+                {
+                    PlayerInfo playerInfo=gameInfo.allplayers_dic[uid];
 
-                name.text = gameInfo.allplayers_dic[uid].name;
-                weight.text = (data["all_weight"] as JsonObject)[uid.ToString()].ToString();
+                    if (playerInfo.group_id == group_id)
+                    {
+                        GameObject playerItem = GameObject.Instantiate<GameObject>(playerItemTplT.gameObject);
+                        playerItem.transform.SetParent(rootListT);
+                        playerItem.SetActive(true);
+                        playerItem.transform.localPosition = Vector3.zero;
+                        playerItem.transform.localScale = Vector3.one;
+                        playerItem.transform.localRotation = Quaternion.identity;
+
+                        Text name = playerItem.transform.FindChild("Name").GetComponent<Text>();
+                        Text weight = playerItem.transform.FindChild("Weight").GetComponent<Text>();
+
+                        name.text = playerInfo.name;
+                        weight.text = (data["all_weight"] as JsonObject)[playerInfo.uid.ToString()].ToString();
+                    }
+                }
+
+                
 
             }
         }
