@@ -83,7 +83,10 @@ public class MyRoleListPanelMediator : Mediator
     void OnUpdateRoleDirectionSignal(string role_id)
     {
         RoleInfo roleInfo=gameInfo.role_dic[role_id];
-        myRoleListPannelView.UpdateRoleDirection(role_id, roleInfo.direction_did);
+        if (roleInfo.uid == sPlayerInfo.uid)
+        {
+            myRoleListPannelView.UpdateRoleDirection(role_id, roleInfo.direction_did);
+        }
     }
 
     void OnFindFreeRoleSignal()
