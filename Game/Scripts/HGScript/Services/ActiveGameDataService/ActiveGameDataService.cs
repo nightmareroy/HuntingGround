@@ -99,7 +99,7 @@ public class ActiveGameDataService
         {
             DDirection dDirection = dGameDataCollection.dDirectionCollection.dDirectionDic[direction_did];
             BuildingInfo buildingInfo = GetBuildingInMap(roleInfo.pos_id);
-
+            
             if (dDirection.role_did.Count > 0)
             {
                 if (!dDirection.role_did.Contains(roleInfo.role_did))

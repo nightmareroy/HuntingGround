@@ -24,7 +24,8 @@ public class MapRootMediator : Mediator {
     [Inject]
     public UpdateRoleDirectionSignal updateRoleDirectionSignal { get; set; }
 
-
+    [Inject]
+    public FindFreeRoleSignal findFreeRoleSignal { get; set; }
 
     //[Inject]
     //public RoleSelectSignal roleSelectSignal { get; set; }
@@ -313,7 +314,8 @@ public class MapRootMediator : Mediator {
         {
             selectedRoleInfo.direction_param.RemoveAt(selectedRoleInfo.direction_param.Count-1);
 
-            mapNodeSelectSignal.Dispatch(null);
+            //mapNodeSelectSignal.Dispatch(null);
+            findFreeRoleSignal.Dispatch();
             return;
         }
         

@@ -95,7 +95,7 @@ public class FlowUpView:MonoBehaviour
                 text.color = Color.red;
                 break;
             case FlowUpTipSignal.Type.life:
-                textName.text = "寿命";
+                textName.text = "衰老";
                 textName.color = Color.red;
                 text.color = Color.red;
                 break;

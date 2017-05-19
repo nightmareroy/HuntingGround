@@ -24,6 +24,8 @@ public class StartGameCommand : Command
     [Inject]
     public IconSpritesService iconSpritesService { get; set; }
 
+    
+
     //[Inject]
     //public AddGamePlayerSignal addGamePlayerSignal { get; set; }
 
@@ -82,6 +84,7 @@ public class StartGameCommand : Command
 
             //预先实例化IconSpritesView
             iconSpritesService.GetView();
+
         });
 
     }

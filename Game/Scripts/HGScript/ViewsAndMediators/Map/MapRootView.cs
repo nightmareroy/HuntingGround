@@ -90,6 +90,9 @@ public class MapRootView : MapNavHexa,IView {
     [Inject]
     public FindNodeSignal findNodeSignal { get; set; }
 
+    [Inject]
+    public FindFreeRoleSignal findFreeRoleSignal { get; set; }
+
     //[Inject]
     //public PathSetFinishedSignal pathSetFinishedSignal { get; set; }
 
@@ -411,7 +414,8 @@ public class MapRootView : MapNavHexa,IView {
 //                        SetNodeSelect(selected_pos_id,false);
                         if (isActing == false)
                         {
-                            mapNodeSelectSignal.Dispatch(null);
+                            //mapNodeSelectSignal.Dispatch(null);
+                            findFreeRoleSignal.Dispatch();
                             findNodeSignal.Dispatch(null, false);
                         }
                     }
@@ -450,7 +454,8 @@ public class MapRootView : MapNavHexa,IView {
                             isDraggingPath = false;
                             if (isActing == false)
                             {
-                                mapNodeSelectSignal.Dispatch(null);
+                                //mapNodeSelectSignal.Dispatch(null);
+                                findFreeRoleSignal.Dispatch();
                                 findNodeSignal.Dispatch(null, false);
                             }
                         }

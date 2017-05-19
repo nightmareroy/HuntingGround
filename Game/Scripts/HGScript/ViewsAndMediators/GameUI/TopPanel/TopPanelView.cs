@@ -28,8 +28,8 @@ public class TopPanelView:View
     public Text averageBreathText;
     public Text averageDigestText;
     public Text averageCourageText;
-    public Text averageYoungerMaxText;
-    public Text averageGrowupMaxText;
+    //public Text averageYoungerMaxText;
+    //public Text averageGrowupMaxText;
 
     public Text differenceBloodSugarText;
     public Text differenceMuscleText;
@@ -39,8 +39,10 @@ public class TopPanelView:View
     public Text differenceBreathText;
     public Text differenceDigestText;
     public Text differenceCourageText;
-    public Text differenceYoungerMaxText;
-    public Text differenceGrowupMaxText;
+    //public Text differenceYoungerMaxText;
+    //public Text differenceGrowupMaxText;
+
+    public Text win_conditionText;
 
 
     public void UpdateBanana(PlayerInfo playerInfo)
@@ -66,8 +68,8 @@ public class TopPanelView:View
         JsonObject breathJO = groupJO["breath"] as JsonObject;
         JsonObject digestJO = groupJO["digest"] as JsonObject;
         JsonObject courageJO = groupJO["courage"] as JsonObject;
-        JsonObject youngerMaxJO = groupJO["younger_left_max"] as JsonObject;
-        JsonObject growupMaxJO = groupJO["growup_left_max"] as JsonObject;
+        //JsonObject youngerMaxJO = groupJO["younger_left_max"] as JsonObject;
+        //JsonObject growupMaxJO = groupJO["growup_left_max"] as JsonObject;
 
         //int averageBloodSugar = int.Parse(bloodSugarJO["quality"].ToString());
         //int differenceBloodSugar = int.Parse(bloodSugarJO["difference"].ToString());
@@ -123,20 +125,25 @@ public class TopPanelView:View
         averageCourageText.text = courageJO["quality"].ToString();
         differenceCourageText.text = courageJO["difference"].ToString();
 
-        int averageYoungerMax = int.Parse(youngerMaxJO["quality"].ToString());
-        int differenceYoungerMax = int.Parse(youngerMaxJO["difference"].ToString());
-        averageYoungerMaxText.text = ((float)averageYoungerMax/100f).ToString();
-        differenceYoungerMaxText.text = ((float)differenceYoungerMax / 100f).ToString();
+        //int averageYoungerMax = int.Parse(youngerMaxJO["quality"].ToString());
+        //int differenceYoungerMax = int.Parse(youngerMaxJO["difference"].ToString());
+        //averageYoungerMaxText.text = ((float)averageYoungerMax/100f).ToString();
+        //differenceYoungerMaxText.text = ((float)differenceYoungerMax / 100f).ToString();
 
-        int averageGrowupMax = int.Parse(growupMaxJO["quality"].ToString());
-        int differenceGrowupMax = int.Parse(growupMaxJO["difference"].ToString());
-        averageGrowupMaxText.text = ((float)averageGrowupMax / 100f).ToString();
-        differenceGrowupMaxText.text = ((float)differenceGrowupMax / 100f).ToString();
+        //int averageGrowupMax = int.Parse(growupMaxJO["quality"].ToString());
+        //int differenceGrowupMax = int.Parse(growupMaxJO["difference"].ToString());
+        //averageGrowupMaxText.text = ((float)averageGrowupMax / 100f).ToString();
+        //differenceGrowupMaxText.text = ((float)differenceGrowupMax / 100f).ToString();
     }
 
     public void UpdateCurrentTurn(int currentTurn)
     {
         currentTurnText.text = currentTurn.ToString();
+    }
+
+    public void UpdateWinCondition(string win_condition)
+    {
+        win_conditionText.text = win_condition;
     }
 }
 

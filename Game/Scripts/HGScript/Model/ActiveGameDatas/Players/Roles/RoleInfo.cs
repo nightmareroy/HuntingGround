@@ -30,10 +30,12 @@ public class RoleInfo
     public int far_sight { get; set;}
     public int see_through { get; set;}
 
-    public int younger_left { get; set; }
-    public int growup_left { get; set; }
-    public int younger_left_max { get; set; }
-    public int growup_left_max { get; set; }
+    public int old { get; set; }
+
+    //public int younger_left { get; set; }
+    //public int growup_left { get; set; }
+    //public int younger_left_max { get; set; }
+    //public int growup_left_max { get; set; }
 //    public int alive { get; set;}
 
     //advance
@@ -91,10 +93,27 @@ public class RoleInfo
 
     public float basal_metabolism
     {
-        get { return (float)Math.Floor((float)muscle*0.3f+(float)fat*0.1f); }
+        get { return (float)Math.Floor((float)muscle*0.03f+(float)fat*0.01f); }
     }
 
-
+    public int now_grow_state
+    {
+        get
+        {
+            if (old < 1000)
+            {
+                return 0;
+            }
+            else if (old < 2000)
+            {
+                return 1;
+            }
+            else
+            {
+                return 2;
+            }
+        }
+    }
 
 
     public List<int> skill_id_list;
@@ -133,10 +152,12 @@ public class RoleInfo
         breath = int.Parse(jsonobj["breath"].ToString());
         digest = int.Parse(jsonobj["digest"].ToString());
 
-        younger_left = int.Parse(jsonobj["younger_left"].ToString());
-        growup_left = int.Parse(jsonobj["growup_left"].ToString());
-        younger_left_max = int.Parse(jsonobj["younger_left_max"].ToString());
-        growup_left_max = int.Parse(jsonobj["growup_left_max"].ToString());
+        old = int.Parse(jsonobj["old"].ToString());
+
+        //younger_left = int.Parse(jsonobj["younger_left"].ToString());
+        //growup_left = int.Parse(jsonobj["growup_left"].ToString());
+        //younger_left_max = int.Parse(jsonobj["younger_left_max"].ToString());
+        //growup_left_max = int.Parse(jsonobj["growup_left_max"].ToString());
 
         courage = int.Parse(jsonobj["courage"].ToString());
         far_sight = int.Parse(jsonobj["far_sight"].ToString());

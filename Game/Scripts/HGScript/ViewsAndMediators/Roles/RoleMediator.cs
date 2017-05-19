@@ -58,6 +58,9 @@ public class RoleMediator:Mediator
     [Inject]
     public ColorService colorService { get; set; }
 
+    [Inject]
+    public UpdateRoleFaceSignal updateRoleFaceSignal { get; set; }
+
     MapRootMediator mapRootMediator;
 
     RoleInfo roleInfo;
@@ -79,12 +82,15 @@ public class RoleMediator:Mediator
         mapRootMediator = mainContext.mapRootMediator;
         updateRoleDirectionSignal.AddListener(OnUpdateRoleDirectionSignal);
         mapNodeSelectSignal.AddListener(OnMapNodeSelectSignal);
+        updateRoleFaceSignal.AddListener(OnUpdateRoleFaceSignal);
 
         UpdateRolePos();
 
         roleUIView = resourceService.Spawn("roleui/roleui").GetComponent<RoleUIView>();
         roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal, doActionAnimSignal, flowUpTipSignal, colorService);
         doActionAnimSignal.AddListener(OnDoActionAnimSignal);
+
+        OnUpdateRoleFaceSignal();
         
     }
 
@@ -169,6 +175,12 @@ public class RoleMediator:Mediator
     //    }
     //}
 
+    void OnUpdateRoleFaceSignal()
+    {
+        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+        roleView.SetRoleSize(roleInfo.weight);
+    }
+
     public void OnDestroy()
     {
         Debug.Log("destroy role " + role_id);
@@ -177,6 +189,7 @@ public class RoleMediator:Mediator
         updateRoleDirectionSignal.RemoveListener(OnUpdateRoleDirectionSignal);
         mapNodeSelectSignal.RemoveListener(OnMapNodeSelectSignal);
         doActionAnimSignal.RemoveListener(OnDoActionAnimSignal);
+        updateRoleFaceSignal.RemoveListener(OnUpdateRoleFaceSignal);
     }
 
     void OnDoActionAnimSignal(DoRoleActionAnimSignal.Param param)
@@ -203,7 +216,8 @@ public class RoleMediator:Mediator
 //                    break;
                 //消失
                 case 2:
-                    Destroy(gameObject);
+                    //Destroy(gameObject);
+                    DestroyImmediate(gameObject);
                     break;
                 //掉血（在ui处理）
                 case 3:
@@ -225,6 +239,8 @@ public class RoleMediator:Mediator
         }
 
     }
+
+
 
     void OnMoveAnimComplete()
     {

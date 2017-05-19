@@ -24,6 +24,9 @@ public class MyRoleListPanelMediator : Mediator
     [Inject]
     public UpdateRoleDirectionSignal updateRoleDirectionSignal { get; set; }
 
+    [Inject]
+    public FindFreeRoleSignal findFreeRoleSignal { get; set; }
+
 //    List<RoleInfo> myRoleList=new List<RoleInfo>();
 
     public override void OnRegister()
@@ -41,6 +44,9 @@ public class MyRoleListPanelMediator : Mediator
 
         doRoleActionAnimSignal.AddListener(OnDoRoleActionAnimSignal);
         updateRoleDirectionSignal.AddListener(OnUpdateRoleDirectionSignal);
+        findFreeRoleSignal.AddListener(OnFindFreeRoleSignal);
+
+        findFreeRoleSignal.Dispatch();
     }
 
     void OnDoRoleActionAnimSignal(DoRoleActionAnimSignal.Param param)
@@ -80,9 +86,15 @@ public class MyRoleListPanelMediator : Mediator
         myRoleListPannelView.UpdateRoleDirection(role_id, roleInfo.direction_did);
     }
 
+    void OnFindFreeRoleSignal()
+    {
+        myRoleListPannelView.FindBtn();
+    }
+
     void OnDestroy()
     {
         doRoleActionAnimSignal.RemoveListener(OnDoRoleActionAnimSignal);
         updateRoleDirectionSignal.RemoveListener(OnUpdateRoleDirectionSignal);
+        findFreeRoleSignal.RemoveListener(OnFindFreeRoleSignal);
     }
 }

@@ -182,7 +182,7 @@ public class RoleView:View
         vectorLine = new VectorLine("line",points,lineMaterial,25f,LineType.Continuous,Joins.Weld);
         vectorLine.endCap = "Arrow";
         vectorLine.layer = LayerMask.NameToLayer("Game");
-        vectorLine.vectorObject.transform.position=new Vector3(0,3.5f,0);
+        vectorLine.vectorObject.transform.position=new Vector3(0,4.5f,0);
         vectorLine.drawTransform = mapRootMediator.transform;
         vectorLine.Draw3D();
 
@@ -210,6 +210,12 @@ public class RoleView:View
         Transform toTrans = mainContext.mapRootMediator.mapRootView.GetNodeObj(toid).transform;
         return toTrans.position - fromTrans.position;
         
+    }
+
+    public void SetRoleSize(int weight)
+    {
+        float size = (float)weight / 200f;
+        transform.localScale = new Vector3(size, size, size);
     }
 
     void OnDestroy()

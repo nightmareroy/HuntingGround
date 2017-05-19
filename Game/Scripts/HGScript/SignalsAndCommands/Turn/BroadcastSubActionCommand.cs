@@ -44,6 +44,12 @@ public class BroadcastSubActionCommand:Command
     [Inject]
     public SPlayerInfo sPlayerInfo { get; set; }
 
+    [Inject]
+    public UpdateRoleFaceSignal updateRoleFaceSignal { get; set; }
+
+    [Inject]
+    public FindFreeRoleSignal findFreeRoleSignal { get; set; }
+
 
     //回合动画时间
     float food_step_time = 0.2f;
@@ -132,7 +138,7 @@ public class BroadcastSubActionCommand:Command
                 doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                 doRoleActionAnimSignalParam.role_id = role_id;
                 doRoleActionAnimSignalParam.type = 10;
-                doRoleActionAnimSignalParam.value = blood_sugar;
+                doRoleActionAnimSignalParam.value = fat;
                 fatParamList.Add(doRoleActionAnimSignalParam);
             }
 
@@ -194,23 +200,14 @@ public class BroadcastSubActionCommand:Command
                 courageParamList.Add(doRoleActionAnimSignalParam);
             }
 
-            int life = int.Parse(roleJO["life"].ToString());
-            roleInfo.younger_left += life;
-            if (roleInfo.younger_left < 0)
-            {
-                roleInfo.growup_left += roleInfo.younger_left;
-                roleInfo.younger_left = 0;
-            }
-            if (roleInfo.growup_left < 0)
-            {
-                roleInfo.growup_left = 0;
-            }
-            if (life != 0)
+            int old = int.Parse(roleJO["old"].ToString());
+            roleInfo.old += old;
+            if (old != 0)
             {
                 doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                 doRoleActionAnimSignalParam.role_id = role_id;
                 doRoleActionAnimSignalParam.type = 16;
-                doRoleActionAnimSignalParam.value = life;
+                doRoleActionAnimSignalParam.value = old;
                 lifeParamList.Add(doRoleActionAnimSignalParam);
             }
             //doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
@@ -363,13 +360,17 @@ public class BroadcastSubActionCommand:Command
         {
             doRoleActionAnimSignal.Dispatch(param);
         }
-        yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in directionParamList)
-        {
-            updateRoleDirectionSignal.Dispatch(param.role_id);
-            //doRoleActionAnimSignal.Dispatch(param);
-        }
-        yield return new WaitForSeconds(food_step_time);
+        //yield return new WaitForSeconds(food_step_time);
+        //foreach (DoRoleActionAnimSignal.Param param in directionParamList)
+        //{
+        //    updateRoleDirectionSignal.Dispatch(param.role_id);
+        //}
+
+        updateRoleFaceSignal.Dispatch();
+
+        doMoneyUpdateSignal.Dispatch();
+
+        //findFreeRoleSignal.Dispatch();
 
     }
 
@@ -409,6 +410,8 @@ public class BroadcastSubActionCommand:Command
 
             GameObject roleobj = resourceService.Spawn("role/" + gameInfo.role_dic[role_id].role_did);
             roleobj.name = "role_" + role_id;
+
+            updateRoleDirectionSignal.Dispatch(role_id);
         }
 
         foreach (string role_id in deleteRolesJS)

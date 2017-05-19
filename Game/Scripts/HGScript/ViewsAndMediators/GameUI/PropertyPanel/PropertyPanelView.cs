@@ -41,13 +41,14 @@ public class PropertyPanelView :View
     public Text breath;
     public Text digest;
     public Text courage;
+    public Text old;
 
     public Text health;
     public Text move;
     public Text weight;
     public Text basal_metabolism;
-    public Text younger_left_max;
-    public Text growup_left_max;
+    //public Text younger_left_max;
+    //public Text growup_left_max;
     public Text now_grow_state;
     
 
@@ -142,25 +143,28 @@ public class PropertyPanelView :View
         breath.text = roleInfo.breath.ToString();
         digest.text = roleInfo.digest.ToString();
         courage.text = roleInfo.courage.ToString();
+        old.text = roleInfo.old.ToString();
 
         health.text = roleInfo.health.ToString();
         move.text = roleInfo.max_move.ToString();
         weight.text = roleInfo.weight.ToString();
         basal_metabolism.text = roleInfo.basal_metabolism.ToString();
-        younger_left_max.text = ((float)roleInfo.younger_left_max / 100f).ToString();
-        growup_left_max.text = ((float)roleInfo.growup_left_max / 100f).ToString();
-        if (roleInfo.younger_left > 0)
+        //younger_left_max.text = ((float)roleInfo.younger_left_max / 100f).ToString();
+        //growup_left_max.text = ((float)roleInfo.growup_left_max / 100f).ToString();
+        switch (roleInfo.now_grow_state)
         {
-            now_grow_state.text = "幼年期(" + (float)roleInfo.younger_left / 100f + ")";
+            case 0:
+                now_grow_state.text = "幼年期";
+                break;
+            case 1:
+                now_grow_state.text = "成长期";
+                break;
+            case 2:
+                now_grow_state.text = "成熟期";
+                break;
+
         }
-        else if (roleInfo.growup_left > 0)
-        {
-            now_grow_state.text = "成长期(" + (float)roleInfo.growup_left / 100f + ")";
-        }
-        else
-        {
-            now_grow_state.text = "成熟期";
-        }
+
         
 
         Tools.ClearChildren(roleSkillsRootT);

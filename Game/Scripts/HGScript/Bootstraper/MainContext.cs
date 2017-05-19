@@ -190,6 +190,8 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<GameoverSignal>().ToSingleton();
         injectionBinder.Bind<UpdateWhenReturnToLogin>().ToSingleton();
         injectionBinder.Bind<UpdateNextturnTimeSignal>().ToSingleton();
+        injectionBinder.Bind<UpdateRoleFaceSignal>().ToSingleton();
+        injectionBinder.Bind<FindFreeRoleSignal>().ToSingleton();
 
         //gamehall push
         //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();

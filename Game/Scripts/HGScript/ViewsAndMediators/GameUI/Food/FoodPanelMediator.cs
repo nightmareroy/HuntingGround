@@ -26,11 +26,14 @@ public class FoodPanelMediator:Mediator
     [Inject]
     public NetService netService { get; set; }
 
+    [Inject]
+    public FindFreeRoleSignal findFreeRoleSignal { get; set; }
+
     RoleInfo roleInfo;
 
     public override void OnRegister()
     {
-        Debug.Log("add");
+        //Debug.Log("add");
         openFoodPanelSignal.AddListener(OnOpenFoodPanelSignal);
 
         foodPanelView.onConfirm += OnConfirm;
@@ -62,9 +65,14 @@ public class FoodPanelMediator:Mediator
         form.Add("role_id", roleInfo.role_id);
         netService.Request(NetService.SubTurn, form, (msg) =>
         {
-
+            //findFreeRoleSignal.Dispatch();
         });
-        mapNodeSelectSignal.Dispatch(null);
+        //mapNodeSelectSignal.Dispatch(null);
+        roleInfo.direction_did = 15;
+        roleInfo.direction_param.Clear();
+        updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
+
+        findFreeRoleSignal.Dispatch();
     }
 
     void OnDestroy()

@@ -17,6 +17,8 @@ public class GameInfo//  : ISerializationCallbackReceiver
     public int gametype_id;
     public int current_turn = 0;
 
+    public string win_condition;
+
     public long nexttime;
 
     //public List<int> playercount_in_group=new List<int>();
@@ -61,6 +63,8 @@ public class GameInfo//  : ISerializationCallbackReceiver
         current_turn = int.Parse(gameObj["current_turn"].ToString());
 
         nexttime = long.Parse(gameObj["nexttime"].ToString());
+
+        win_condition = gameObj["win_condition"].ToString();
 
         map_info = SimpleJson.SimpleJson.DeserializeObject<MapInfo>(mapObj.ToString());
 

@@ -71,7 +71,10 @@ public class MyRoleListPanelView : View
             RoleInfo roleInfo = gameInfo.role_dic[role_id];
             if (roleInfo.uid == sPlayerInfo.uid)
             {
-                assignedRoleList.Add(role_id);
+                if (roleInfo.direction_did == 1)
+                {
+                    assignedRoleList.Add(role_id);
+                }
             }
         }
 
@@ -238,12 +241,16 @@ public class MyRoleListPanelView : View
 //        }
         if (assignedRoleList.Count > 0)
         {
-//            int r = Random.Range(0, assignedRoleList.Count);
-            selecter_id=(selecter_id+1)%assignedRoleList.Count;
+            //            int r = Random.Range(0, assignedRoleList.Count);
+            selecter_id = (selecter_id + 1) % assignedRoleList.Count;
             RoleInfo roleInfo = gameInfo.role_dic[assignedRoleList[selecter_id]];
             MapNavNode node = mapRootView.NodeAt<MapNavNode>(roleInfo.pos_id);
             mapNodeSelectSignal.Dispatch(node);
-            findNodeSignal.Dispatch(node,false);
+            findNodeSignal.Dispatch(node, false);
+        }
+        else
+        {
+            mapNodeSelectSignal.Dispatch(null);
         }
     }
 
@@ -266,7 +273,10 @@ public class MyRoleListPanelView : View
             RoleInfo roleInfo = gameInfo.role_dic[role_id];
             if (roleInfo.uid == sPlayerInfo.uid)
             {
-                assignedRoleList.Add(role_id);
+                if (roleInfo.direction_did == 1)
+                {
+                    assignedRoleList.Add(role_id);
+                }
             }
         }
 

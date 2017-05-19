@@ -39,6 +39,7 @@ public class TopPanelMediator:Mediator
         topPannelView.UpdateBanana(gameInfo.allplayers_dic[sPlayerInfo.uid]);
         topPannelView.UpdateGroup(gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO);
         topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
+        topPannelView.UpdateWinCondition(gameInfo.win_condition);
 
     }
 
