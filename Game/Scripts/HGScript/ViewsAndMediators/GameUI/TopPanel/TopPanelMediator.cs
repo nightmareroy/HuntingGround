@@ -29,6 +29,9 @@ public class TopPanelMediator:Mediator
     [Inject]
     public UpdateCurrentTurnSignal updateCurrentTurnSignal { get; set; }
 
+    [Inject]
+    public DGameDataCollection dGameDataCollection  { get; set; }
+
     public override void OnRegister()
     {
         doMoneyUpdateSignal.AddListener(OnDoBananaUpdateSignal);
@@ -39,7 +42,15 @@ public class TopPanelMediator:Mediator
         topPannelView.UpdateBanana(gameInfo.allplayers_dic[sPlayerInfo.uid]);
         topPannelView.UpdateGroup(gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO);
         topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
-        topPannelView.UpdateWinCondition(gameInfo.win_condition);
+
+        if (gameInfo.gametype_id == 1)
+        {
+            topPannelView.UpdateWinCondition(dGameDataCollection.dSingleGameInfoCollection.dSingleGameInfoDic[gameInfo.progress_id].win_condition);
+        }
+        else
+        {
+            topPannelView.UpdateWinCondition(dGameDataCollection.dGameTypeCollection.dGameTypeDic[gameInfo.gametype_id].win_condition);
+        }
 
     }
 

@@ -70,15 +70,15 @@ public class NextturnMediator:Mediator
 
     public void OnActionAnimFinishSignal()
     {
-        if (gameInfo.allplayers_dic[sPlayerInfo.uid].direction_turn != gameInfo.current_turn)
-        {
-            nextturnView.setBtnInteractable(true);
-        }
+        nextturnView.setBtnInteractable(true);
     }
 
     public void OnUpdateDirectionTurnSignal(int uid)
     {
-        nextturnView.setBtnInteractable(true);
+        if (uid == sPlayerInfo.uid)
+        {
+            nextturnView.setBtnInteractable(false);
+        }
     }
 
     void OnUpdateNextturnTimeSignal()

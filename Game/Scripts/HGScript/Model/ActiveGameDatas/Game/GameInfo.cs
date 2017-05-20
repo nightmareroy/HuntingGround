@@ -17,7 +17,8 @@ public class GameInfo//  : ISerializationCallbackReceiver
     public int gametype_id;
     public int current_turn = 0;
 
-    public string win_condition;
+    public int progress_id = -1;//只在单人游戏中有
+    //public string win_condition;
 
     public long nexttime;
 
@@ -64,7 +65,10 @@ public class GameInfo//  : ISerializationCallbackReceiver
 
         nexttime = long.Parse(gameObj["nexttime"].ToString());
 
-        win_condition = gameObj["win_condition"].ToString();
+        if (gameObj.ContainsKey("progress_id"))
+        {
+            progress_id = int.Parse(gameObj["progress_id"].ToString());
+        }
 
         map_info = SimpleJson.SimpleJson.DeserializeObject<MapInfo>(mapObj.ToString());
 

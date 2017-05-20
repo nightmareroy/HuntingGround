@@ -7,6 +7,7 @@ public class DSingleGameInfo
 {
     public int progress_id;
     public string name;
+    public string win_condition;
 }
 
 public class DSingleGameInfoCollection
