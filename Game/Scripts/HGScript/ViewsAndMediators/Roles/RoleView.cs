@@ -214,7 +214,7 @@ public class RoleView:View
 
     public void SetRoleSize(int weight)
     {
-        float size = (float)weight / 200f;
+        float size = (float)weight / 300f;
         transform.localScale = new Vector3(size, size, size);
     }
 

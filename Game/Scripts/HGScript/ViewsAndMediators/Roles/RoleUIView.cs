@@ -24,7 +24,7 @@ public class RoleUIView:View
 
     //public GameObject flow_up_er;
 
-    
+    public Image directionImg;
 
     //public GameObject pathRoot;
 
@@ -58,13 +58,15 @@ public class RoleUIView:View
 
     ColorService colorService;
 
+    IconSpritesService iconSpritesService;
+
     //int playerid;
     string role_id;
 
     public void Init(MainContext mainContext, GameObject roleObj, GameInfo gameInfo, DGameDataCollection dGameDataCollection,
         string role_id, ActiveGameDataService activeGameDataService, ResourceService resourceService, 
          MapNodeSelectSignal mapNodeSelectSignal, ActionAnimStartSignal actionAnimStartSignal,
-        DoRoleActionAnimSignal doActionAnimSignal, FlowUpTipSignal flowUpTipSignal,ColorService colorService)
+        DoRoleActionAnimSignal doActionAnimSignal, FlowUpTipSignal flowUpTipSignal,ColorService colorService,IconSpritesService iconSpritesService)
     {
         this.requiresContext = false;
         roleUIRectTransform = GetComponent<RectTransform>();
@@ -84,6 +86,7 @@ public class RoleUIView:View
         this.doActionAnimSignal=doActionAnimSignal;
         this.flowUpTipSignal = flowUpTipSignal;
         this.colorService = colorService;
+        this.iconSpritesService = iconSpritesService;
 
         canvasScaler = mainContext.uiCanvas.GetComponent<CanvasScaler>();
 
@@ -319,6 +322,34 @@ public class RoleUIView:View
         roleName.text = roleInfo.name;
         roleNameBack.color = colorService.getColor(gameInfo.allplayers_dic[roleInfo.uid].color_index);
         blood.value = roleInfo.health;
+    }
+
+    public void SetDirection(int direction_did)
+    {
+        
+
+        switch (direction_did)
+        {
+            case 1:
+                directionImg.sprite = iconSpritesService.GetView().move;
+                break;
+            case 2:
+                directionImg.sprite = iconSpritesService.GetView().defend;
+                break;
+            case 3:
+                directionImg.sprite = iconSpritesService.GetView().banana;
+                break;
+            case 11:
+                directionImg.sprite = iconSpritesService.GetView().fead;
+                break;
+            case 13:
+                directionImg.sprite = iconSpritesService.GetView().meat;
+                break;
+            case 15:
+                directionImg.sprite = iconSpritesService.GetView().fin;
+                break;
+
+        }
     }
 
     protected override void OnDestroy()

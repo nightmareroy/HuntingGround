@@ -132,6 +132,7 @@ public class PropertyPanelMediator : Mediator
             gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
             
             //mapNodeSelectSignal.Dispatch(null);
+            //Debug.Log(currentSelectedRole.role_id);
             updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
 
             if (dDirection.delay == 0)

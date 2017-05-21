@@ -251,7 +251,16 @@ public class LoginMediator : Mediator {
                 netService.Request(NetService.registerRoute, user_register, (msg) =>
                 {
                     //Debug.Log(msg.rawString);
-                    loginView.ShowMessage(msg.data.ToString());
+                    if (msg.code == 500)
+                    {
+                        loginView.ShowMessage("注册失败");
+                    }
+                    else if (msg.code == 200)
+                    {
+                        loginView.ShowMessage("注册成功，请返回登录");
+                    }
+
+                    
                 });
 
                 //registerSignal.Dispatch(new RegisterSignal.Param(loginView.loginAccount.text, loginView.loginPwd.text));

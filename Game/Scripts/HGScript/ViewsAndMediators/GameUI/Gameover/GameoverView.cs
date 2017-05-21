@@ -18,6 +18,12 @@ public class GameoverView:View
     [Inject]
     public UpdateWhenReturnToLogin updateWhenReturnToLogin { get; set; }
 
+    [Inject]
+    public NetService netService { get; set; }
+
+    [Inject]
+    public SPlayerInfo sPlayerInfo { get; set; }
+
     public GameObject rootPanel;
 
     public Transform playerItemTplT;
@@ -79,10 +85,16 @@ public class GameoverView:View
 
     public void OnReturnClick()
     {
+        netService.Request(NetService.getUser, null, (msg) => {
+            SPlayerInfo sPlayerInfo_temp = new SPlayerInfo();
+            sPlayerInfo_temp = SimpleJson.SimpleJson.DeserializeObject<SPlayerInfo>(msg.data.ToString());
+            sPlayerInfo.UpdateSplayer(sPlayerInfo_temp);
 
-        asyncSceneService.LoadScene("Login", () => {
-            //Debug.Log("test2");
-            //updateWhenReturnToLogin.Dispatch();
+            asyncSceneService.LoadScene("Login", () =>
+            {
+
+            });
         });
+        
     }
 }

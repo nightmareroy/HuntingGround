@@ -61,6 +61,11 @@ public class RoleMediator:Mediator
     [Inject]
     public UpdateRoleFaceSignal updateRoleFaceSignal { get; set; }
 
+    [Inject]
+    public IconSpritesService iconSpritesService { get; set; }
+
+
+
     MapRootMediator mapRootMediator;
 
     RoleInfo roleInfo;
@@ -87,10 +92,12 @@ public class RoleMediator:Mediator
         UpdateRolePos();
 
         roleUIView = resourceService.Spawn("roleui/roleui").GetComponent<RoleUIView>();
-        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal, doActionAnimSignal, flowUpTipSignal, colorService);
+        roleUIView.Init(mainContext, gameObject, gameInfo, dGameDataCollection, role_id, activeGameDataService, resourceService, mapNodeSelectSignal, actionAnimStartSignal, doActionAnimSignal, flowUpTipSignal, colorService, iconSpritesService);
         doActionAnimSignal.AddListener(OnDoActionAnimSignal);
 
         OnUpdateRoleFaceSignal();
+
+        roleUIView.SetDirection(roleInfo.direction_did);
         
     }
 
@@ -116,11 +123,18 @@ public class RoleMediator:Mediator
 
     void OnUpdateRoleDirectionSignal(string updated_role_id)
     {
-        //Debug.Log(roleid);
+        
         if (updated_role_id != roleInfo.role_id)
             return;
+
         int direction_did = gameInfo.role_dic[updated_role_id].direction_did;
         List<int> direction_path = gameInfo.role_dic[updated_role_id].direction_param;
+
+
+        roleUIView.SetDirection(direction_did);
+
+
+
 
         if (direction_did != 8)//不是吃料理指令
         {
@@ -147,6 +161,9 @@ public class RoleMediator:Mediator
         {
             roleView.ClearArrow();
         }
+
+
+        
 
     }
 

@@ -52,6 +52,8 @@ public class NetService
 
     //account,password
     public const string loginRoute = "connector.entryHandler.login";
+
+    public const string getUser = "connector.entryHandler.get_user";
     
     //account,password
     public const string registerRoute = "connector.entryHandler.register";

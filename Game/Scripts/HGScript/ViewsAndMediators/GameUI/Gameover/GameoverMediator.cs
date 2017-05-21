@@ -14,6 +14,8 @@ public class GameoverMediator:Mediator
     [Inject]
     public GameoverSignal gameoverSignal { get; set; }
 
+    
+
     public override void OnRegister()
     {
         gameoverSignal.AddListener(OnGameoverSignal);
