@@ -19,14 +19,14 @@ public class RoleInfo
     //base
     public string name{get;set;}
     public int blood_sugar { get; set;}
-    public int blood_sugar_max { get; set;}
+    //public int blood_sugar_max { get; set;}
     public int muscle { get; set;}
     public int fat { get; set;}
-    public int amino_acid{ get; set;}
+    //public int amino_acid{ get; set;}
     public int inteligent { get; set; }
     public int breath { get; set;}
     public int digest { get; set;}
-    public int courage { get; set;}
+    //public int courage { get; set;}
     public int far_sight { get; set;}
     public int see_through { get; set;}
 
@@ -45,7 +45,12 @@ public class RoleInfo
     }
     public int weight
     {
-        get { return muscle+fat+amino_acid; }
+        get { return muscle+fat; }
+    }
+
+    public int blood_sugar_max
+    {
+        get { return (int)Math.Round((float)weight / 2f); }
     }
 //    public int attack
 //    {
@@ -87,13 +92,13 @@ public class RoleInfo
         get
         {
 //            return (int)Math.Pow(2,speed_lv);
-            return 5f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
+            return 3f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
         }
     }
 
     public float basal_metabolism
     {
-        get { return (float)Math.Floor((float)muscle*0.03f+(float)fat*0.01f); }
+        get { return (float)Math.Round((float)muscle*0.03f+(float)fat*0.01f); }
     }
 
     public int now_grow_state
@@ -144,11 +149,11 @@ public class RoleInfo
 
         name = jsonobj["name"].ToString();
         blood_sugar = int.Parse(jsonobj["blood_sugar"].ToString());
-        blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
+        //blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
         muscle = int.Parse(jsonobj["muscle"].ToString());
         fat = int.Parse(jsonobj["fat"].ToString());
         inteligent = int.Parse(jsonobj["inteligent"].ToString());
-        amino_acid = int.Parse(jsonobj["amino_acid"].ToString());
+        //amino_acid = int.Parse(jsonobj["amino_acid"].ToString());
         breath = int.Parse(jsonobj["breath"].ToString());
         digest = int.Parse(jsonobj["digest"].ToString());
 
@@ -159,7 +164,7 @@ public class RoleInfo
         //younger_left_max = int.Parse(jsonobj["younger_left_max"].ToString());
         //growup_left_max = int.Parse(jsonobj["growup_left_max"].ToString());
 
-        courage = int.Parse(jsonobj["courage"].ToString());
+        //courage = int.Parse(jsonobj["courage"].ToString());
         far_sight = int.Parse(jsonobj["far_sight"].ToString());
         see_through = int.Parse(jsonobj["see_through"].ToString());
 //        alive = int.Parse(jsonobj["alive"].ToString());

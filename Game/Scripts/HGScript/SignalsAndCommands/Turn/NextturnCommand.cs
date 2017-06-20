@@ -32,6 +32,8 @@ public class NextturnCommand:Command
     public override void Execute()
     {
         //gameInfo.anim_lock++;
+
+        //实际应该在接到网络推送的时候再发送动画开始的signal，此处提前多发送一次，使ui界面停止操作，两次重复的signal并不会带来严重的逻辑问题
         actionAnimStartSignal.Dispatch();
 
         mapNodeSelectSignal.Dispatch(null);

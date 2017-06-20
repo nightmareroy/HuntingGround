@@ -20,14 +20,14 @@ public class TopPanelView:View
     public Text currentTurnText;
 
 
-    public Text averageBloodSugarText;
+    //public Text averageBloodSugarText;
     public Text averageMuscleText;
     public Text averageFatText;
     public Text averageInteligentText;
-    public Text averageAminoAcidText;
+    //public Text averageAminoAcidText;
     public Text averageBreathText;
     public Text averageDigestText;
-    public Text averageCourageText;
+    //public Text averageCourageText;
     //public Text averageYoungerMaxText;
     //public Text averageGrowupMaxText;
 
@@ -35,10 +35,10 @@ public class TopPanelView:View
     public Text differenceMuscleText;
     public Text differenceFatText;
     public Text differenceInteligentText;
-    public Text differenceAminoAcidText;
+    //public Text differenceAminoAcidText;
     public Text differenceBreathText;
     public Text differenceDigestText;
-    public Text differenceCourageText;
+    //public Text differenceCourageText;
     //public Text differenceYoungerMaxText;
     //public Text differenceGrowupMaxText;
 
@@ -60,14 +60,14 @@ public class TopPanelView:View
 
     public void UpdateGroup(JsonObject groupJO)
     {
-        JsonObject bloodSugarJO = groupJO["blood_sugar_max"] as JsonObject;
+        //JsonObject bloodSugarJO = groupJO["blood_sugar_max"] as JsonObject;
         JsonObject muscleJO = groupJO["muscle"] as JsonObject;
         JsonObject fatJO = groupJO["fat"] as JsonObject;
         JsonObject inteligentJO = groupJO["inteligent"] as JsonObject;
-        JsonObject aminoAcidJO = groupJO["amino_acid"] as JsonObject;
-        JsonObject breathJO = groupJO["breath"] as JsonObject;
+        //JsonObject aminoAcidJO = groupJO["amino_acid"] as JsonObject;
+        //JsonObject breathJO = groupJO["breath"] as JsonObject;
         JsonObject digestJO = groupJO["digest"] as JsonObject;
-        JsonObject courageJO = groupJO["courage"] as JsonObject;
+        //JsonObject courageJO = groupJO["courage"] as JsonObject;
         //JsonObject youngerMaxJO = groupJO["younger_left_max"] as JsonObject;
         //JsonObject growupMaxJO = groupJO["growup_left_max"] as JsonObject;
 
@@ -101,8 +101,8 @@ public class TopPanelView:View
         //int averageGrowupMax = int.Parse(growupMaxJO["quality"].ToString());
         //int differenceGrowupMax = int.Parse(growupMaxJO["difference"].ToString());
 
-        averageBloodSugarText.text = bloodSugarJO["quality"].ToString();
-        differenceBloodSugarText.text = bloodSugarJO["difference"].ToString();
+        //averageBloodSugarText.text = bloodSugarJO["quality"].ToString();
+        //differenceBloodSugarText.text = bloodSugarJO["difference"].ToString();
 
         averageMuscleText.text = muscleJO["quality"].ToString();
         differenceMuscleText.text = muscleJO["difference"].ToString();
@@ -113,17 +113,17 @@ public class TopPanelView:View
         averageInteligentText.text = inteligentJO["quality"].ToString();
         differenceInteligentText.text = inteligentJO["difference"].ToString();
 
-        averageAminoAcidText.text = aminoAcidJO["quality"].ToString();
-        differenceAminoAcidText.text = aminoAcidJO["difference"].ToString();
+        //averageAminoAcidText.text = aminoAcidJO["quality"].ToString();
+        //differenceAminoAcidText.text = aminoAcidJO["difference"].ToString();
 
-        averageBreathText.text = breathJO["quality"].ToString();
-        differenceBreathText.text = breathJO["difference"].ToString();
+        //averageBreathText.text = breathJO["quality"].ToString();
+        //differenceBreathText.text = breathJO["difference"].ToString();
 
-        averageDigestText.text = digestJO["quality"].ToString();
-        differenceDigestText.text = digestJO["difference"].ToString();
+        averageDigestText.text = digestJO["quality"] + "%";
+        differenceDigestText.text = digestJO["difference"] + "%%";
 
-        averageCourageText.text = courageJO["quality"].ToString();
-        differenceCourageText.text = courageJO["difference"].ToString();
+        //averageCourageText.text = courageJO["quality"].ToString();
+        //differenceCourageText.text = courageJO["difference"].ToString();
 
         //int averageYoungerMax = int.Parse(youngerMaxJO["quality"].ToString());
         //int differenceYoungerMax = int.Parse(youngerMaxJO["difference"].ToString());

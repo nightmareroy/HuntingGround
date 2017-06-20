@@ -48,6 +48,12 @@ public class FlowUpView:MonoBehaviour
 
         switch (param.type)
         {
+            case FlowUpTipSignal.Type.common:
+                textName.text = "";
+                //textName.color = Color.red;
+                text.color = Color.white;
+                text.text = param.content;
+                break;
             
             case FlowUpTipSignal.Type.blood:
                 textName.text = "血糖";

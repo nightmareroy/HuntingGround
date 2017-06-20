@@ -37,10 +37,10 @@ public class PropertyPanelView :View
     public Text muscle;
     public Text fat;
     public Text inteligent;
-    public Text amino_acid;
+    //public Text amino_acid;
     public Text breath;
     public Text digest;
-    public Text courage;
+    //public Text courage;
     public Text old;
 
     public Text health;
@@ -139,13 +139,13 @@ public class PropertyPanelView :View
         muscle.text = roleInfo.muscle.ToString();
         fat.text = roleInfo.fat.ToString();
         inteligent.text = roleInfo.inteligent.ToString();
-        amino_acid.text = roleInfo.amino_acid.ToString();
+        //amino_acid.text = roleInfo.amino_acid.ToString();
         breath.text = roleInfo.breath.ToString();
-        digest.text = roleInfo.digest.ToString();
-        courage.text = roleInfo.courage.ToString();
+        digest.text = roleInfo.digest+"%";
+        //courage.text = roleInfo.courage.ToString();
         old.text = roleInfo.old.ToString();
 
-        health.text = roleInfo.health.ToString();
+        health.text = roleInfo.health*100+"%";
         move.text = roleInfo.max_move.ToString();
         weight.text = roleInfo.weight.ToString();
         basal_metabolism.text = roleInfo.basal_metabolism.ToString();

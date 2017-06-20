@@ -39,6 +39,12 @@ public class LoginMediator : Mediator {
     [Inject]
     public RegisterSignal registerSignal { get; set; }
 
+    [Inject]
+    public FlowUpTipSignal flowUpTipSignal { get;set; }
+
+    [Inject]
+    public MsgBoxSignal msgBoxSignal { get; set; }
+
     //[Inject]
     //public GetServerListSignal getServerListSignal { get; set; }
 
@@ -142,7 +148,7 @@ public class LoginMediator : Mediator {
         {
             netService.GetServerConnector((connector) =>
                 {
-                    Debug.Log(connector.host + connector.port);
+                    //Debug.Log(connector.host + connector.port);
                     netService.Connect(connector, () =>
                         {
                             Debug.Log("connect success!");
@@ -154,6 +160,12 @@ public class LoginMediator : Mediator {
         {
             pageManager.JumpDown(gamePage);
         }
+
+        mainContext.uiCanvas = GameObject.Find("LoginCanvas");
+        //FlowUpTipSignal.Param f_param = new FlowUpTipSignal.Param("测试");
+        //flowUpTipSignal.Dispatch(f_param);
+
+        //msgBoxSignal.Dispatch("测试", () => { });
     }
 
     void InitPages()

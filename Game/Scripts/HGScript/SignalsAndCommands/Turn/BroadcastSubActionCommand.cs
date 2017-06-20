@@ -70,14 +70,14 @@ public class BroadcastSubActionCommand:Command
         DoSightModefiedAction(modifiedDicJO);
 
         List<DoRoleActionAnimSignal.Param> blood_sugarParamList = new List<DoRoleActionAnimSignal.Param>();
-        List<DoRoleActionAnimSignal.Param> blood_sugar_maxParamList = new List<DoRoleActionAnimSignal.Param>();
+        //List<DoRoleActionAnimSignal.Param> blood_sugar_maxParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> muscleParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> fatParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> inteligentParamList = new List<DoRoleActionAnimSignal.Param>();
-        List<DoRoleActionAnimSignal.Param> amino_acidParamList = new List<DoRoleActionAnimSignal.Param>();
+        //List<DoRoleActionAnimSignal.Param> amino_acidParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> breathParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> digestParamList = new List<DoRoleActionAnimSignal.Param>();
-        List<DoRoleActionAnimSignal.Param> courageParamList = new List<DoRoleActionAnimSignal.Param>();
+        //List<DoRoleActionAnimSignal.Param> courageParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> lifeParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> skillParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> directionParamList = new List<DoRoleActionAnimSignal.Param>();
@@ -108,16 +108,16 @@ public class BroadcastSubActionCommand:Command
                 blood_sugarParamList.Add(doRoleActionAnimSignalParam);
             }
 
-            int blood_sugar_max = int.Parse(roleJO["blood_sugar_max"].ToString());
-            roleInfo.blood_sugar_max += blood_sugar_max;
-            if (blood_sugar_max != 0)
-            {
-                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                doRoleActionAnimSignalParam.role_id = role_id;
-                doRoleActionAnimSignalParam.type = 8;
-                doRoleActionAnimSignalParam.value = blood_sugar_max;
-                blood_sugar_maxParamList.Add(doRoleActionAnimSignalParam);
-            }
+            //int blood_sugar_max = int.Parse(roleJO["blood_sugar_max"].ToString());
+            //roleInfo.blood_sugar_max += blood_sugar_max;
+            //if (blood_sugar_max != 0)
+            //{
+            //    doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            //    doRoleActionAnimSignalParam.role_id = role_id;
+            //    doRoleActionAnimSignalParam.type = 8;
+            //    doRoleActionAnimSignalParam.value = blood_sugar_max;
+            //    blood_sugar_maxParamList.Add(doRoleActionAnimSignalParam);
+            //}
 
             int muscle = int.Parse(roleJO["muscle"].ToString());
             roleInfo.muscle += muscle;
@@ -155,16 +155,16 @@ public class BroadcastSubActionCommand:Command
             }
 
 
-            int amino_acid = int.Parse(roleJO["amino_acid"].ToString());
-            roleInfo.amino_acid += amino_acid;
-            if (amino_acid != 0)
-            {
-                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                doRoleActionAnimSignalParam.role_id = role_id;
-                doRoleActionAnimSignalParam.type = 12;
-                doRoleActionAnimSignalParam.value = amino_acid;
-                amino_acidParamList.Add(doRoleActionAnimSignalParam);
-            }
+            //int amino_acid = int.Parse(roleJO["amino_acid"].ToString());
+            //roleInfo.amino_acid += amino_acid;
+            //if (amino_acid != 0)
+            //{
+            //    doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            //    doRoleActionAnimSignalParam.role_id = role_id;
+            //    doRoleActionAnimSignalParam.type = 12;
+            //    doRoleActionAnimSignalParam.value = amino_acid;
+            //    amino_acidParamList.Add(doRoleActionAnimSignalParam);
+            //}
 
 
             int breath = int.Parse(roleJO["breath"].ToString());
@@ -189,16 +189,16 @@ public class BroadcastSubActionCommand:Command
                 digestParamList.Add(doRoleActionAnimSignalParam);
             }
 
-            int courage = int.Parse(roleJO["courage"].ToString());
-            roleInfo.courage += courage;
-            if (courage != 0)
-            {
-                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                doRoleActionAnimSignalParam.role_id = role_id;
-                doRoleActionAnimSignalParam.type = 15;
-                doRoleActionAnimSignalParam.value = courage;
-                courageParamList.Add(doRoleActionAnimSignalParam);
-            }
+            //int courage = int.Parse(roleJO["courage"].ToString());
+            //roleInfo.courage += courage;
+            //if (courage != 0)
+            //{
+            //    doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            //    doRoleActionAnimSignalParam.role_id = role_id;
+            //    doRoleActionAnimSignalParam.type = 15;
+            //    doRoleActionAnimSignalParam.value = courage;
+            //    courageParamList.Add(doRoleActionAnimSignalParam);
+            //}
 
             int old = int.Parse(roleJO["old"].ToString());
             roleInfo.old += old;
@@ -296,11 +296,11 @@ public class BroadcastSubActionCommand:Command
             doRoleActionAnimSignal.Dispatch(param);
         }
         yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in blood_sugar_maxParamList)
-        {
-            doRoleActionAnimSignal.Dispatch(param);
-        }
-        yield return new WaitForSeconds(food_step_time);
+        //foreach (DoRoleActionAnimSignal.Param param in blood_sugar_maxParamList)
+        //{
+        //    doRoleActionAnimSignal.Dispatch(param);
+        //}
+        //yield return new WaitForSeconds(food_step_time);
         foreach (DoRoleActionAnimSignal.Param param in muscleParamList)
         {
             doRoleActionAnimSignal.Dispatch(param);
@@ -316,11 +316,11 @@ public class BroadcastSubActionCommand:Command
             doRoleActionAnimSignal.Dispatch(param);
         }
         yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in amino_acidParamList)
-        {
-            doRoleActionAnimSignal.Dispatch(param);
-        }
-        yield return new WaitForSeconds(food_step_time);
+        //foreach (DoRoleActionAnimSignal.Param param in amino_acidParamList)
+        //{
+        //    doRoleActionAnimSignal.Dispatch(param);
+        //}
+        //yield return new WaitForSeconds(food_step_time);
         foreach (DoRoleActionAnimSignal.Param param in breathParamList)
         {
             doRoleActionAnimSignal.Dispatch(param);
@@ -331,11 +331,11 @@ public class BroadcastSubActionCommand:Command
             doRoleActionAnimSignal.Dispatch(param);
         }
         yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in courageParamList)
-        {
-            doRoleActionAnimSignal.Dispatch(param);
-        }
-        yield return new WaitForSeconds(food_step_time);
+        //foreach (DoRoleActionAnimSignal.Param param in courageParamList)
+        //{
+        //    doRoleActionAnimSignal.Dispatch(param);
+        //}
+        //yield return new WaitForSeconds(food_step_time);
         foreach (DoRoleActionAnimSignal.Param param in lifeParamList)
         {
             doRoleActionAnimSignal.Dispatch(param);

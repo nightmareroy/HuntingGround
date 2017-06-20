@@ -17,6 +17,9 @@ public class FoodPanelView:View
     [Inject]
     public SPlayerInfo sPlayerInfo { get; set; }
 
+    [Inject]
+    public MsgBoxSignal msgBoxSignal { get; set; }
+
     public GameObject rootPanel;
 
     public Transform topPanelRootT;
@@ -27,6 +30,7 @@ public class FoodPanelView:View
     public Transform topToggleTplT;
     public Transform leftToggleTplT;
     public Transform foodToggleTplT;
+
 
     string role_id;
 
@@ -101,6 +105,7 @@ public class FoodPanelView:View
 
                 UpdateContentPanel();
             });
+            //item.GetComponent<Toggle>().on
         }
 
 
@@ -164,7 +169,7 @@ public class FoodPanelView:View
     {
         Tools.ClearChildren(foodPanelRootT);
 
-        
+        bool have_least_one = false;
         foreach (int food_id in actived_food_ids)
         {
             DFood dFood = dGameDataCollection.dFoodCollection.dFoodDic[food_id];
@@ -241,9 +246,31 @@ public class FoodPanelView:View
                             break;
                     }
 
+                    string green="#009b00ff";
+                    string red="#ff0000ff";
 
-                    item.transform.FindChild("Foreground/Need/banana/value").GetComponent<Text>().text = dFood.banana.ToString();
-                    item.transform.FindChild("Foreground/Need/meat/value").GetComponent<Text>().text = dFood.meat.ToString();
+                    PlayerInfo playerInfo = gameInfo.allplayers_dic[sPlayerInfo.uid];
+                    string banana_color;
+                    if (playerInfo.banana >= dFood.banana)
+                    {
+                        banana_color = green;
+                    }
+                    else
+                    {
+                        banana_color = red;
+                    }
+                    item.transform.FindChild("Foreground/Need/banana/value").GetComponent<Text>().text = "<color=" + banana_color +">"+ playerInfo.banana + "</color>/" + dFood.banana.ToString();
+
+                    string meat_color;
+                    if (playerInfo.meat >= dFood.meat)
+                    {
+                        meat_color = green;
+                    }
+                    else
+                    {
+                        meat_color = red;
+                    }
+                    item.transform.FindChild("Foreground/Need/meat/value").GetComponent<Text>().text = "<color=" + meat_color + ">" + playerInfo.meat + "</color>/" + dFood.meat.ToString();
                     //if (dFood.cook_skills_need.Count == 0)
                     //{
                     //    item.transform.FindChild("Foreground/Need/cook_skill").gameObject.SetActive(false);
@@ -251,7 +278,17 @@ public class FoodPanelView:View
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < dFood.cook_skills_need.Count;i++ )
                     {
-                        sb.Append(dGameDataCollection.dCookSkillCollection.dCookSkillDic[dFood.cook_skills_need[i]].name);
+                        DCookSkill needed_cook_skill=dGameDataCollection.dCookSkillCollection.dCookSkillDic[dFood.cook_skills_need[i]];
+                        string cook_skill_color;
+                        if (playerInfo.actived_food_ids.Contains(needed_cook_skill.cook_skill_id))
+                        {
+                            cook_skill_color = green;
+                        }
+                        else
+                        {
+                            cook_skill_color = red;
+                        }
+                        sb.Append("<color=" + cook_skill_color + ">" + needed_cook_skill.name + "</color>");
                         if (i < dFood.cook_skills_need.Count - 1)
                         {
                             sb.Append(" ");
@@ -265,10 +302,24 @@ public class FoodPanelView:View
                     {
                         item.GetComponent<Toggle>().interactable = false;
                     }
+                    else
+                    {
+                        have_least_one = true;
+                    }
                 }
 
             }
         }
+
+        if (!have_least_one)
+        {
+            msgBoxSignal.Dispatch("现有食材不足以做任何料理，请采集食材", () => { });
+        }
+    }
+
+    public void SetPanelVisible(bool visible)
+    {
+        rootPanel.gameObject.SetActive(visible);
     }
 
     void OnDestroy()

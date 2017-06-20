@@ -350,23 +350,18 @@ public class MapRootView : MapNavHexa,IView {
                 if (!isDraggingCam)
                 {
                     //如果鼠标或者手势在ui元素上方，则不处理
-                    if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
+                    UnityEngine.EventSystems.PointerEventData eventData = new UnityEngine.EventSystems.PointerEventData(eventSystem);
+                    eventData.pressPosition = Input.mousePosition;
+                    eventData.position = Input.mousePosition;
+                    List<UnityEngine.EventSystems.RaycastResult> list = new List<UnityEngine.EventSystems.RaycastResult>();
+                    graphicRaycaster.Raycast(eventData, list);
+                    if (list.Count != 0)
                     {
-                        UnityEngine.EventSystems.PointerEventData eventData = new UnityEngine.EventSystems.PointerEventData(eventSystem);
-                        eventData.pressPosition = Input.mousePosition;
-                        eventData.position = Input.mousePosition;
-                        List<UnityEngine.EventSystems.RaycastResult> list = new List<UnityEngine.EventSystems.RaycastResult>();
-                        graphicRaycaster.Raycast(eventData, list);
-                        if (list.Count != 0)
+                        UnityEngine.EventSystems.RaycastResult result = list[0];
+                        if (result.gameObject.layer == LayerMask.NameToLayer("UI"))
                         {
-                            UnityEngine.EventSystems.RaycastResult result = list[0];
-                            if (result.gameObject.layer == LayerMask.NameToLayer("UI"))
-                            {
-                                return;
-                            }
+                            return;
                         }
-
-
                     }
                 }
 
@@ -550,14 +545,17 @@ public class MapRootView : MapNavHexa,IView {
 
                 if (enableSetPath)
                 {
-                    float toValue = 3.5f;
+                    float toValue = 5f;
                     switch ((int)Math.Floor(roleInfo.max_move))
                     {
                         case 1:
-                            toValue = 3.5f;
+                            toValue = 5f;
                             break;
                         case 2:
-                            toValue = 5f;
+                            toValue = 6.5f;
+                            break;
+                        case 3:
+                            toValue = 8f;
                             break;
                     }
                     args.Add("to", toValue);
@@ -569,7 +567,7 @@ public class MapRootView : MapNavHexa,IView {
             else
             {
 
-                args.Add("to", 3.5f);
+                args.Add("to", 5f);
                 iTween.ValueTo(gameObject, args);
 
                 ClearUnmovableZoon();
@@ -577,7 +575,7 @@ public class MapRootView : MapNavHexa,IView {
         }
         else
         {
-            args.Add("to", 3.5f);
+            args.Add("to", 5f);
             iTween.ValueTo(gameObject, args);
             ClearUnmovableZoon();
         }

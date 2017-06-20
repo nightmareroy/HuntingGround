@@ -29,12 +29,16 @@ public class FoodPanelMediator:Mediator
     [Inject]
     public FindFreeRoleSignal findFreeRoleSignal { get; set; }
 
+    [Inject]
+    public ActionAnimStartSignal actionAnimStartSignal { get; set; }
+
     RoleInfo roleInfo;
 
     public override void OnRegister()
     {
         //Debug.Log("add");
         openFoodPanelSignal.AddListener(OnOpenFoodPanelSignal);
+        actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
 
         foodPanelView.onConfirm += OnConfirm;
 
@@ -75,9 +79,14 @@ public class FoodPanelMediator:Mediator
         findFreeRoleSignal.Dispatch();
     }
 
+    void OnActionAnimStartSignal()
+    {
+        foodPanelView.SetPanelVisible(false);
+    }
+
     void OnDestroy()
     {
-        
+        actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
         openFoodPanelSignal.RemoveListener(OnOpenFoodPanelSignal);
     }
 }

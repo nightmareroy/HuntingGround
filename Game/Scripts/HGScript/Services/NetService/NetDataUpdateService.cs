@@ -27,7 +27,7 @@ public class NetDataUpdateService
         
         GetAllDataUpdateList((netDataUpdateList)=>{
             UpdateAllData(netDataUpdateList,()=>{
-
+                
                 callback();
             });
         });
@@ -59,13 +59,13 @@ public class NetDataUpdateService
             netDataUpdateList.RemoveAt(0);
             netService.WWWRequest(item.url, (www) =>
                 {
-                    fileIOService.WriteAllByte(www.bytes,item.filename,item.path);
+                    //fileIOService.WriteAllByte(www.bytes,item.filename,item.path);
 
-
+                    fileIOService.WriteAllTxt(System.Text.Encoding.UTF8.GetString(www.bytes), item.filename, item.path);
 
 //                    fileIOService.WriteAllTxt(localListJS.ToString(),);
 //                    File.WriteAllBytes(Application.persistentDataPath + item.path + item.filename, www.bytes);
-                    Debug.Log("Download file from:"+item.url+",to:"+item.path+",named:"+item.filename);
+                    Debug.Log("Download file from:" + item.url + ",to:" + Application.persistentDataPath + item.path + ",named:" + item.filename);
                     if(item.callback!=null)
                     {
                         item.callback();
@@ -91,7 +91,6 @@ public class NetDataUpdateService
             {
                 string listStr=www.text;
                 remoteListJS = SimpleJson.SimpleJson.DeserializeObject<JsonObject>(listStr);
-
                 if (!fileIOService.FileExistOrCreate("/DefaultDataList.txt","/DefaultData"))
                 {
                     fileIOService.WriteAllTxt("{}","/DefaultDataList.txt","/DefaultData");
@@ -100,6 +99,7 @@ public class NetDataUpdateService
                 }
                 else
                 {
+                    
                     localListJS = SimpleJson.SimpleJson.DeserializeObject<JsonObject>(fileIOService.ReadAllText("/DefaultData/DefaultDataList.txt"));
                     modifiedListJS=new JsonObject();
                     foreach(string key in remoteListJS.Keys)

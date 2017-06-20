@@ -27,18 +27,24 @@ public class NetService
     [Inject]
     public NetPushSignalSerivice netPushSignalSerivice{ get; set;}
 
+    [Inject]
+    public MsgBoxSignal msgBoxSignal { get;set; }
+
 
     //sessionid
     public string sessionid;
 
     //服务器ip
-    string host_gate = "192.168.0.100";//"127.0.0.1";//"127.0.0.1:8088/huntingground/";
+    string host_gate = "192.168.0.100";
+    //string host_gate = "115.159.186.242";
+
     int port_gate = 3014;
 
     Connection pclient = new Connection();
 
     //default data list
-    public const string defaultDataUrl="192.168.0.100:8080";//"127.0.0.1:8080";
+    public const string defaultDataUrl = "192.168.0.100:8080";
+    //public const string defaultDataUrl = "http://115.159.186.242:8080";
 
     //test
     public const string test = "test/test.php";
@@ -119,81 +125,6 @@ public class NetService
 
 
 
-    
-
-    public NetService()
-    {
-        
-        
-        
-        //Connect(host_gate, port_gate, (netData) =>
-        //{
-        //    Debug.Log(netData.ToString());
-        //});
-        
-        //NetTest();
-        
-
-        //string host = "127.0.0.1";//(www.xxx.com/127.0.0.1/::1/localhost etc.)
-        //int port = 3014;
-        //PomeloClient pclient = new PomeloClient(host, port);
-
-        //pclient.on("onChat", (jsobj) =>
-        //{
-        //    Debug.Log("chatmsg" + jsobj.ToString());
-        //});
-
-        //try
-        //{
-        //    Debug.Log("1");
-        //    JsonObject user = new JsonObject();
-        //    pclient.connect(user,(jsobj) =>
-        //    {
-        //        Debug.Log("3");
-        //        Debug.Log("connect" + jsobj.Count);
-        //        JsonObject msg = new JsonObject();
-        //        msg["uid"] = "ly";
-        //        pclient.request("gate.gateHandler.queryEntry", msg, (jsobj2) =>
-        //        {
-
-        //            Debug.Log("gate:" + jsobj2.ToString());
-
-        //            PomeloClient pclient2 = new PomeloClient(host, int.Parse(jsobj2["port"].ToString()));
-        //            Debug.Log("reconnect!");
-        //            pclient2.connect((jsobj3) =>
-        //            {
-
-        //                JsonObject userMessage = new JsonObject();
-        //                userMessage.Add("username", "ly");
-        //                userMessage.Add("rid", 0);
-        //                pclient2.request("connector.entryHandler.enter", userMessage, (data) =>
-        //                {
-        //                    Debug.Log("connector:" + data.ToString());
-
-        //                    JsonObject message = new JsonObject();
-        //                    message.Add("rid", 1);
-        //                    message.Add("content", "asdfasdf");
-        //                    message.Add("from", "ly");
-        //                    message.Add("target", "*");
-        //                    pclient2.request("chat.chatHandler.send", message, (data2) =>
-        //                    {
-        //                        Debug.Log("chat:" + data2.ToString());
-        //                    });
-        //                });
-        //            });
-
-        //        });
-
-        //    });
-        //    Debug.Log("2");
-        //}
-        //catch (Exception e)
-        //{
-        //    Debug.Log("connect error" + e.ToString());
-        //}
-
-        //Debug.Log("init pomelo");
-    }
 
     public void Init()
     {
@@ -211,12 +142,21 @@ public class NetService
 
         pclient.on(Connection.DisconnectEvent, msg =>
         {
-            Debug.logger.Log("Network error, reason: " + msg.jsonObj["reason"]);
+            //Debug.logger.Log("Network error, reason: " + msg.jsonObj["reason"]);
+            loadingSignal.Dispatch(false);
+            msgBoxSignal.Dispatch("网络已断开，请重新登录", () => {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Login");
+            });
         });
 
         pclient.on(Connection.ErrorEvent, msg =>
         {
-            Debug.logger.Log("Error, reason: " + msg.jsonObj["reason"]);
+            //Debug.logger.Log("Error, reason: " + msg.jsonObj["reason"]);
+            loadingSignal.Dispatch(false);
+            msgBoxSignal.Dispatch("网络错误，请重新登录", () =>
+            {
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Login");
+            });
         });
 
 

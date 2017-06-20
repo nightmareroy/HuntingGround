@@ -192,6 +192,7 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<UpdateNextturnTimeSignal>().ToSingleton();
         injectionBinder.Bind<UpdateRoleFaceSignal>().ToSingleton();
         injectionBinder.Bind<FindFreeRoleSignal>().ToSingleton();
+        commandBinder.Bind<MsgBoxSignal>().To<MsgBoxCommand>();
 
         //gamehall push
         //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();
@@ -248,6 +249,8 @@ public class MainContext : MVCSContext {
         mediationBinder.Bind<FoodPanelView>().To<FoodPanelMediator>();
 
         mediationBinder.Bind<GameoverView>().To<GameoverMediator>();
+
+        mediationBinder.Bind<TalkView>().To<TalkMediator>();
     }
 
     public override IContext Start()

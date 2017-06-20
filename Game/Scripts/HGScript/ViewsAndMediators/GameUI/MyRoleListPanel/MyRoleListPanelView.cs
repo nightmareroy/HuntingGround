@@ -38,8 +38,8 @@ public class MyRoleListPanelView : View
     [Inject]
     public IconSpritesService iconSpritesService { get; set; }
 
-    
 
+    public GameObject scrollViewObj;
     public GameObject contentRootObj;
     public GameObject roleItemTpl;
     public ToggleGroup toggleGroup;
@@ -200,6 +200,22 @@ public class MyRoleListPanelView : View
                         toggle.isOn = true;
                         allToggleChangedListenerEnable = true;
                     }
+
+                    
+                    int index = 0;
+                    int total = contentRootObj.transform.childCount;
+                    for (int i = 0; i < total; i++)
+                    {
+                        Transform childT = contentRootObj.transform.GetChild(i);
+                        if (childT.name == roleInfo.role_id)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    scrollViewObj.GetComponent<ScrollRect>().verticalNormalizedPosition=1f-(float)index/(float)total;
+                    //Debug.Log(roleInfo.name);
+                    //Debug.Log(1f - (float)index / (float)total);
                     return;
                 }
             }

@@ -35,7 +35,6 @@ public class FileIOService {
         }
 
         File.WriteAllText(Application.persistentDataPath + path + name, content);
-
     }
 
     /// <summary>

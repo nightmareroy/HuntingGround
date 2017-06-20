@@ -44,6 +44,9 @@ public class ResourcePoolInfo{
         //flow up tip
         ResourcePool.Add("flowuptip/FlowUpTip", new ResourcePoolInfo("flowuptip/FlowUpTip", 40));
 
+        //msg box
+        ResourcePool.Add("msg_box/msg_box", new ResourcePoolInfo("msg_box/msg_box", 3));
+
         //icon sprites
         ResourcePool.Add("iconsprites/IconSprites", new ResourcePoolInfo("iconsprites/IconSprites", 1));
     }
