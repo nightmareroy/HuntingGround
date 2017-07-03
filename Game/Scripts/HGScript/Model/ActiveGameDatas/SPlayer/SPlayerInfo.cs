@@ -6,7 +6,7 @@ using UnityEngine;
 public class SPlayerInfo
 {
     public int uid=-1;
-    public string account;
+    public string account="";
     //public int current_game_id;
     public int win_count;
     public int failure_count;
@@ -21,6 +21,16 @@ public class SPlayerInfo
         this.failure_count = sPlayerInfo.failure_count;
         this.name = sPlayerInfo.name;
         this.single_game_progress = sPlayerInfo.single_game_progress;
+    }
+
+    public void ClearSPlayer()
+    {
+        uid = -1;
+        account="";
+        win_count = 0;
+        failure_count = 0;
+        name = "";
+        single_game_progress = 1;
     }
 
     //public SPlayerInfo(int id,string name)

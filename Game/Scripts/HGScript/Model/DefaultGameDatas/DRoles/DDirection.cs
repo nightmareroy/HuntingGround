@@ -20,7 +20,7 @@ public class DDirection
 
     public int hide;
 
-    public int delay;
+    //public int delay;
 
 //    public DDirection(int direction_did,string name)
 //    {

@@ -11,6 +11,10 @@ public class DBuilding
     public int building_did;
     public string name;
 
+    public string cost_key;
+    public int cost_value;
+
+    public int max_level;
 
 
 }

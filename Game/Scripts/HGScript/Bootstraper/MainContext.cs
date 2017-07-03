@@ -193,6 +193,8 @@ public class MainContext : MVCSContext {
         injectionBinder.Bind<UpdateRoleFaceSignal>().ToSingleton();
         injectionBinder.Bind<FindFreeRoleSignal>().ToSingleton();
         commandBinder.Bind<MsgBoxSignal>().To<MsgBoxCommand>();
+        injectionBinder.Bind<TalkShowSignal>().ToSingleton();
+        //injectionBinder.Bind<TalkHideSignal>().ToSingleton();
 
         //gamehall push
         //injectionBinder.Bind<CreateMultiGamePushSignal>().ToSingleton();

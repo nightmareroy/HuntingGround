@@ -28,10 +28,18 @@ public class PlayerInfo
 
     public List<int> actived_food_ids;
 
+    public int builing_home_count = 0;
+
+
+    //只在单人游戏中有
+    public List<int> direction_dids;
+
     public int direction_turn;
 
     public int color_index=0;
     //public bool ready = false;
+
+
 
     public JsonObject groupInfoJO=null;
     public JsonObject weight_dicJO = null;

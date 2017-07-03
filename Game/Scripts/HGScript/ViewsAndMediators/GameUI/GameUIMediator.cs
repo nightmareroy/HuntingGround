@@ -29,15 +29,15 @@ public class GameUIMediator:Mediator
 //                
 //
 //                break;
-            case "Fail":
-                netService.Request(NetService.fail,null,(msg)=>{
-//                    Debug.Log(msg.rawString);
-                    if(msg.code==200)
-                    {
-                        endGameSignal.Dispatch();
-                    }
-                });
-                break;
+//            case "Fail":
+//                netService.Request(NetService.fail,null,(msg)=>{
+////                    Debug.Log(msg.rawString);
+//                    if(msg.code==200)
+//                    {
+//                        endGameSignal.Dispatch();
+//                    }
+//                });
+//                break;
         }
     }
 }

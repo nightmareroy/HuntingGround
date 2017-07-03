@@ -8,6 +8,12 @@ public class DSingleGameInfo
     public int progress_id;
     public string name;
     public string win_condition;
+
+    public List<int> food_ids;
+    public List<int> direction_dids;
+    public List<int> landform_map;
+    public List<int> resource_map;
+    public List<int> meat_map;
 }
 
 public class DSingleGameInfoCollection

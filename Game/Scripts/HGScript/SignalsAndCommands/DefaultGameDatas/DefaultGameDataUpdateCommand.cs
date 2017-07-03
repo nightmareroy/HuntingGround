@@ -67,6 +67,9 @@ public class DefaultGameDataUpdateCommand:Command
             dGameDataCollection.dSingleGameInfoCollection=new DSingleGameInfoCollection();
             dGameDataCollection.dSingleGameInfoCollection.InitFromStr(fileIOService.ReadAllText("/DefaultData/Data/DSingleGameInfo.txt"));
 
+            dGameDataCollection.dStoryTalkCollection = new DStoryTalkCollection();
+            dGameDataCollection.dStoryTalkCollection.InitFromStr(fileIOService.ReadAllText("/DefaultData/Data/DStoryTalk.txt"));
+
             //food
             dGameDataCollection.dCookSkillCollection = new DCookSkillCollection();
             dGameDataCollection.dCookSkillCollection.InitFromStr(fileIOService.ReadAllText("/DefaultData/Data/DCookSkill.txt"));

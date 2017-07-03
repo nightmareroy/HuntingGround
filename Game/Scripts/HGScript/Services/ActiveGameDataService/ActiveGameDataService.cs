@@ -67,7 +67,7 @@ public class ActiveGameDataService
         return resultList;
     }
 
-    public List<List<int>> GetAllDirectionDids(string role_id)
+    public List<int> GetAllDirectionDids(string role_id)
     {
 //        List<int> allSkillList = GetAllSkillIds(roleid);
 //        List<int> resultList = new List<int>();
@@ -92,8 +92,9 @@ public class ActiveGameDataService
 //        return resultList;
         RoleInfo roleInfo=gameInfo.role_dic[role_id];
 
-        List<int> delayDirectionDids = new List<int>();
-        List<int> noDelayDirectionDids = new List<int>();
+        List<int> resultList = new List<int>();
+        //List<int> delayDirectionDids = new List<int>();
+        //List<int> noDelayDirectionDids = new List<int>();
 
         foreach (int direction_did in dGameDataCollection.dDirectionCollection.dDirectionDic.Keys)
         {
@@ -175,15 +176,35 @@ public class ActiveGameDataService
             {
                 continue;
             }
+
+            //单人游戏要判断是否解锁了指令
+            if (gameInfo.gametype_id == 1)
+            {
+                
+                if (!gameInfo.allplayers_dic[roleInfo.uid].direction_dids.Contains(dDirection.direction_did))
+                {
+                    continue;
+                }
+            }
+
+            //哺育指令特殊判断
+            //if (dDirection.direction_did == 11)
+            //{
+            //    if()
+            //}
+
             //Debug.Log(dDirection.delay);
-            if (dDirection.delay == 0)
-            {
-                noDelayDirectionDids.Add(dDirection.direction_did);
-            }
-            else if (dDirection.delay == 1)
-            {
-                delayDirectionDids.Add(dDirection.direction_did);
-            }
+
+
+            //if (dDirection.delay == 0)
+            //{
+            //    noDelayDirectionDids.Add(dDirection.direction_did);
+            //}
+            //else if (dDirection.delay == 1)
+            //{
+            //    delayDirectionDids.Add(dDirection.direction_did);
+            //}
+            resultList.Add(dDirection.direction_did);
 
         }
 
@@ -197,9 +218,9 @@ public class ActiveGameDataService
 //        {
 //            return new List<int>();
 //        }
-        List<List<int>> resultList = new List<List<int>>();
-        resultList.Add(noDelayDirectionDids);
-        resultList.Add(delayDirectionDids);
+        
+        //resultList.Add(noDelayDirectionDids);
+        //resultList.Add(delayDirectionDids);
         return resultList;
 
     }

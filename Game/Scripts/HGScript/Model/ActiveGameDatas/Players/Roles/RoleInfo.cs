@@ -19,7 +19,7 @@ public class RoleInfo
     //base
     public string name{get;set;}
     public int blood_sugar { get; set;}
-    //public int blood_sugar_max { get; set;}
+    public int blood_sugar_max { get; set; }
     public int muscle { get; set;}
     public int fat { get; set;}
     //public int amino_acid{ get; set;}
@@ -47,11 +47,19 @@ public class RoleInfo
     {
         get { return muscle+fat; }
     }
-
-    public int blood_sugar_max
+    public int attack
     {
-        get { return (int)Math.Round((float)weight / 2f); }
+        get { return muscle; }
     }
+    public int defence
+    {
+        get { return (int)Math.Round((float)weight/2f); }
+    }
+
+    //public int blood_sugar_max
+    //{
+    //    get { return (int)Math.Round((float)weight / 2f); }
+    //}
 //    public int attack
 //    {
 //        get { return muscle*(1+health); }
@@ -149,7 +157,7 @@ public class RoleInfo
 
         name = jsonobj["name"].ToString();
         blood_sugar = int.Parse(jsonobj["blood_sugar"].ToString());
-        //blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
+        blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
         muscle = int.Parse(jsonobj["muscle"].ToString());
         fat = int.Parse(jsonobj["fat"].ToString());
         inteligent = int.Parse(jsonobj["inteligent"].ToString());

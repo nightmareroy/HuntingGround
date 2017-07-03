@@ -167,6 +167,14 @@ public class LoginView : View {
         }
     }
 
+    public void OnCreatePvEGameClicked()
+    {
+        if (viewClick != null)
+        {
+            viewClick("CreatePvEGame");
+        }
+    }
+
     public void OnLadderClicked()
     {
         if (viewClick != null)

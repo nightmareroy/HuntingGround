@@ -6,6 +6,9 @@ using SimpleJson;
 
 public class TopPanelView:View
 {
+    public Button settingsBtn;
+    //public Transform settingsRootT;
+
     public Toggle toggle;
 
     public Text bananaValueText;
@@ -43,6 +46,8 @@ public class TopPanelView:View
     //public Text differenceGrowupMaxText;
 
     public Text win_conditionText;
+
+    //public Action onSettingsClick;
 
 
     public void UpdateBanana(PlayerInfo playerInfo)
@@ -145,5 +150,10 @@ public class TopPanelView:View
     {
         win_conditionText.text = win_condition;
     }
+
+    //public void OnSettingsClick()
+    //{
+    //    settingsRootT.gameObject.SetActive(true);
+    //}
 }
 

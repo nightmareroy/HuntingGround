@@ -43,7 +43,8 @@ public class PropertyPanelView :View
     //public Text courage;
     public Text old;
 
-    public Text health;
+    public Text attack;
+    public Text defence;
     public Text move;
     public Text weight;
     public Text basal_metabolism;
@@ -60,10 +61,12 @@ public class PropertyPanelView :View
 
 
     //direction list
-    public Transform roleDelayDirections;
-    public Transform roleNoDelayDirections;
-    public Transform roleDelayDirectionsRootT;
-    public Transform roleNoDelayDirectionsRootT;
+    public Transform roleDirections;
+    public Transform roleDirectionsRootT;
+    //public Transform roleDelayDirections;
+    //public Transform roleNoDelayDirections;
+    //public Transform roleDelayDirectionsRootT;
+    //public Transform roleNoDelayDirectionsRootT;
     public Transform roleDirectionBtnTpl;
 
     //building
@@ -145,7 +148,8 @@ public class PropertyPanelView :View
         //courage.text = roleInfo.courage.ToString();
         old.text = roleInfo.old.ToString();
 
-        health.text = roleInfo.health*100+"%";
+        attack.text = roleInfo.attack.ToString();
+        defence.text = roleInfo.defence.ToString();
         move.text = roleInfo.max_move.ToString();
         weight.text = roleInfo.weight.ToString();
         basal_metabolism.text = roleInfo.basal_metabolism.ToString();
@@ -260,10 +264,12 @@ public class PropertyPanelView :View
 
     public void SetRoleDirections(string role_id)
     {
-        Tools.ClearChildren(roleDelayDirections);
-        Tools.ClearChildren(roleNoDelayDirections);
-        roleDelayDirectionsRootT.gameObject.SetActive(true);
-        roleNoDelayDirectionsRootT.gameObject.SetActive(true);
+        Tools.ClearChildren(roleDirections);
+        roleDirectionsRootT.gameObject.SetActive(true);
+        //Tools.ClearChildren(roleDelayDirections);
+        //Tools.ClearChildren(roleNoDelayDirections);
+        //roleDelayDirectionsRootT.gameObject.SetActive(true);
+        //roleNoDelayDirectionsRootT.gameObject.SetActive(true);
 
         RoleInfo roleInfo = gameInfo.role_dic[role_id];
         if (roleInfo.direction_did == 15)
@@ -271,38 +277,35 @@ public class PropertyPanelView :View
             return;
         }
 
-        List<List<int>> allDirectionDids = activeGameDataService.GetAllDirectionDids(role_id);
+        List<int> allDirectionDids = activeGameDataService.GetAllDirectionDids(role_id);
 
         for (int i = 0; i < allDirectionDids.Count; i++)
         {
-            for (int j = 0; j < allDirectionDids[i].Count; j++)
-            {
-                //Debug.Log(i + ",,," + j);
-                int directionDid = allDirectionDids[i][j];
-                DDirection dDirection = dGameDataCollection.dDirectionCollection.dDirectionDic[directionDid];
-                GameObject btnObj = GameObject.Instantiate(roleDirectionBtnTpl.gameObject as UnityEngine.Object) as GameObject;
+            int directionDid = allDirectionDids[i];
+            DDirection dDirection = dGameDataCollection.dDirectionCollection.dDirectionDic[directionDid];
+            GameObject btnObj = GameObject.Instantiate(roleDirectionBtnTpl.gameObject as UnityEngine.Object) as GameObject;
 
-                if (i == 0)
-                {
-                    btnObj.transform.SetParent(roleNoDelayDirections);
-                }
-                else if (i == 1)
-                {
-                    btnObj.transform.SetParent(roleDelayDirections);
-                }
-                btnObj.transform.localScale = Vector3.one;
-                btnObj.transform.localRotation = Quaternion.identity;
-                //            btnObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-                btnObj.transform.localPosition = Vector3.zero;
-                btnObj.SetActive(true);
-                btnObj.name = directionDid.ToString();
-                btnObj.transform.FindChild("Text").GetComponent<Text>().text = dDirection.name;
-                btnObj.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    if (onDirectionClick != null)
-                        onDirectionClick(directionDid);
-                });
-            }
+            btnObj.transform.SetParent(roleDirections);
+            //if (i == 0)
+            //{
+            //    btnObj.transform.SetParent(roleNoDelayDirections);
+            //}
+            //else if (i == 1)
+            //{
+            //    btnObj.transform.SetParent(roleDelayDirections);
+            //}
+            btnObj.transform.localScale = Vector3.one;
+            btnObj.transform.localRotation = Quaternion.identity;
+            //            btnObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+            btnObj.transform.localPosition = Vector3.zero;
+            btnObj.SetActive(true);
+            btnObj.name = directionDid.ToString();
+            btnObj.transform.FindChild("Text").GetComponent<Text>().text = dDirection.name;
+            btnObj.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                if (onDirectionClick != null)
+                    onDirectionClick(directionDid);
+            });
             
 
 
@@ -368,8 +371,9 @@ public class PropertyPanelView :View
     //}
     public void HideRoleDirections()
     {
-        roleDelayDirectionsRootT.gameObject.SetActive(false);
-        roleNoDelayDirectionsRootT.gameObject.SetActive(false);
+        //roleDelayDirectionsRootT.gameObject.SetActive(false);
+        //roleNoDelayDirectionsRootT.gameObject.SetActive(false);
+        roleDirectionsRootT.gameObject.SetActive(false);
     }
         
 }

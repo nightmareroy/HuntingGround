@@ -29,6 +29,8 @@ public class ResourcePoolInfo{
         ResourcePool.Add("role/0", new ResourcePoolInfo("role/0", 15));
         ResourcePool.Add("role/1", new ResourcePoolInfo("role/1/goku", 15));
         ResourcePool.Add("role/2", new ResourcePoolInfo("role/2/chimpanzee", 20));
+        ResourcePool.Add("role/3", new ResourcePoolInfo("role/2/chimpanzee", 20));
+        ResourcePool.Add("role/4", new ResourcePoolInfo("role/2/chimpanzee", 20));
 
         //building
         ResourcePool.Add("building/1", new ResourcePoolInfo("building/1/home", 20));

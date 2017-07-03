@@ -28,6 +28,7 @@ public class DGameDataCollection
 
     //single game info
     public DSingleGameInfoCollection dSingleGameInfoCollection;
+    public DStoryTalkCollection dStoryTalkCollection;
 
     //food
     public DCookSkillCollection dCookSkillCollection;

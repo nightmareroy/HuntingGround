@@ -23,12 +23,12 @@ public class GameUIView:View
 
     }
 
-    public void OnFailClick()
-    {
-        if (viewClick != null)
-        {
-            viewClick("Fail");
-        }
-    }
+    //public void OnFailClick()
+    //{
+    //    if (viewClick != null)
+    //    {
+    //        viewClick("Fail");
+    //    }
+    //}
 }
 

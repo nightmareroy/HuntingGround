@@ -30,6 +30,9 @@ public class NetService
     [Inject]
     public MsgBoxSignal msgBoxSignal { get;set; }
 
+    [Inject]
+    public SPlayerInfo sPlayerInfo { get;set; }
+
 
     //sessionid
     public string sessionid;
@@ -74,6 +77,8 @@ public class NetService
     //
     public const string SingleGameStart="game.gameHandler.SingleGameStart";
     //
+    public const string PvEGameStart = "game.gameHandler.PvEGameStart";
+    //
     //public const string CreateMultiGame = "gamelist.gamelistHandler.CreateMultiGame";
     ////
     //public const string CancelOrLeaveMultiGame="gamelist.gamelistHandler.CancelOrLeaveMultiGame";
@@ -114,7 +119,8 @@ public class NetService
     //
     public const string getgameinfo = "game.gameHandler.getgameinfo";
     //
-    public const string fail = "game.gameHandler.fail";
+    public const string LeaveGame = "game.gameHandler.LeaveGame";
+
 
     //
 //    public const string doAction = "doAction";
@@ -143,6 +149,7 @@ public class NetService
         pclient.on(Connection.DisconnectEvent, msg =>
         {
             //Debug.logger.Log("Network error, reason: " + msg.jsonObj["reason"]);
+            sPlayerInfo.ClearSPlayer();
             loadingSignal.Dispatch(false);
             msgBoxSignal.Dispatch("网络已断开，请重新登录", () => {
                 UnityEngine.SceneManagement.SceneManager.LoadScene("Login");
@@ -152,6 +159,7 @@ public class NetService
         pclient.on(Connection.ErrorEvent, msg =>
         {
             //Debug.logger.Log("Error, reason: " + msg.jsonObj["reason"]);
+            sPlayerInfo.ClearSPlayer();
             loadingSignal.Dispatch(false);
             msgBoxSignal.Dispatch("网络错误，请重新登录", () =>
             {

@@ -64,8 +64,8 @@ public class BroadcastSubActionCommand:Command
         JsonObject modifiedDicJO = actionDicJO["modified_dic"] as JsonObject;
         JsonObject propertyDicJO = actionDicJO["property_dic"] as JsonObject;
         JsonObject weight_dicJS = actionDicJO["weight_dic"] as JsonObject;
+        int builing_home_count = int.Parse(actionDicJO["builing_home_count"].ToString());
         updateWeightsSignal.Dispatch(weight_dicJS);
-
 
         DoSightModefiedAction(modifiedDicJO);
 
@@ -366,6 +366,8 @@ public class BroadcastSubActionCommand:Command
         //    updateRoleDirectionSignal.Dispatch(param.role_id);
         //}
 
+        gameInfo.allplayers_dic[sPlayerInfo.uid].builing_home_count = builing_home_count;
+
         updateRoleFaceSignal.Dispatch();
 
         doMoneyUpdateSignal.Dispatch();
@@ -384,7 +386,6 @@ public class BroadcastSubActionCommand:Command
         JsonObject meatJS = jo["meat_map"] as JsonObject;
         JsonObject addBuildingsJS = jo["add_buildings"] as JsonObject;
         JsonArray deleteBuildingsJS = jo["delete_buildings"] as JsonArray;
-
         foreach (string role_id in posJS.Keys)
         {
             int pos_id = int.Parse(posJS[role_id].ToString());
@@ -429,9 +430,9 @@ public class BroadcastSubActionCommand:Command
 
 
 
-
         foreach (string building_id in addBuildingsJS.Keys)
         {
+            
             BuildingInfo buildingInfo = SimpleJson.SimpleJson.DeserializeObject<BuildingInfo>(addBuildingsJS[building_id].ToString());
             gameInfo.building_dic.Add(buildingInfo.building_id, buildingInfo);
 

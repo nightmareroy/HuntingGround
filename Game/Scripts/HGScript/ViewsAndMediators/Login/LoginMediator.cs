@@ -143,7 +143,7 @@ public class LoginMediator : Mediator {
         friendGameStartPushSignal.AddListener(OnFriendGameStartPushSignal);
         refuseInviteFightPushSignal.AddListener(OnRefuseInviteFightPushSignal);
 
-
+        Debug.Log(netService.GetConnectStatus());
         if (netService.GetConnectStatus() == Pomelo.DotNetClient.NetWorkState.DISCONNECTED)
         {
             netService.GetServerConnector((connector) =>
@@ -308,6 +308,32 @@ public class LoginMediator : Mediator {
                             }
                         });
                     });
+                });
+                break;
+            case "CreatePvEGame":
+                netService.Request(NetService.PvEGameStart, null, (msg) =>
+                {
+                    if (msg.code == 200)
+                    {
+                        netService.Request(NetService.LoadGame, null, (msg2) =>
+                            {
+                                if (msg2.code == 200)
+                                {
+                                    JsonObject gameInfoJO = (msg2.data as JsonObject)["gameinfo"] as JsonObject;
+                                    JsonObject groupInfoJO = (msg2.data as JsonObject)["groupinfo"] as JsonObject;
+                                    JsonObject weight_dicJO = (msg2.data as JsonObject)["weight_dic"] as JsonObject;
+                                    gameInfo.InitFromJson(gameInfoJO);
+                                    gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO = groupInfoJO;
+                                    gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO = weight_dicJO;
+                                    //gameInfo.allplayers_dic[sPlayerInfo.uid].color_index = 0;
+                                    startGameSignal.Dispatch();
+                                }
+                            });
+                    }
+                    else
+                    {
+                        loginView.ShowMessage(msg.data.ToString());
+                    }
                 });
                 break;
             case "Ladder":

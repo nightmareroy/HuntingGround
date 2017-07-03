@@ -43,6 +43,7 @@ public class TopPanelMediator:Mediator
         topPannelView.UpdateGroup(gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO);
         topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
 
+
         if (gameInfo.gametype_id == 1)
         {
             topPannelView.UpdateWinCondition(dGameDataCollection.dSingleGameInfoCollection.dSingleGameInfoDic[gameInfo.progress_id].win_condition);
@@ -79,6 +80,7 @@ public class TopPanelMediator:Mediator
     {
         topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
     }
+
 
     void OnDestroy()
     {
