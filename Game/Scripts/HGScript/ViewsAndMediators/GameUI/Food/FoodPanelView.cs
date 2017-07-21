@@ -20,6 +20,8 @@ public class FoodPanelView:View
     [Inject]
     public MsgBoxSignal msgBoxSignal { get; set; }
 
+    
+
     public GameObject rootPanel;
 
     public Transform topPanelRootT;
@@ -219,6 +221,7 @@ public class FoodPanelView:View
                         if (value)
                         {
                             current_selected_food_id = dFood.food_id;
+                            
                             confirmBtn.interactable = true;
                         }
                     });

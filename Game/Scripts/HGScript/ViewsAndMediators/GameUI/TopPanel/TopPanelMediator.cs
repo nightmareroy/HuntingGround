@@ -34,12 +34,12 @@ public class TopPanelMediator:Mediator
 
     public override void OnRegister()
     {
-        doMoneyUpdateSignal.AddListener(OnDoBananaUpdateSignal);
+        doMoneyUpdateSignal.AddListener(OnDoMoneyUpdateSignal);
         doGroupGeneUpdateSignal.AddListener(OnDoGroupGeneUpdateSignal);
         actionAnimStartSignal.AddListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.AddListener(OnActionAnimFinishSignal);
         updateCurrentTurnSignal.AddListener(OnUpdateCurrentTurn);
-        topPannelView.UpdateBanana(gameInfo.allplayers_dic[sPlayerInfo.uid]);
+        OnDoMoneyUpdateSignal();
         topPannelView.UpdateGroup(gameInfo.allplayers_dic[sPlayerInfo.uid].groupInfoJO);
         topPannelView.UpdateCurrentTurn(gameInfo.current_turn);
 
@@ -55,9 +55,23 @@ public class TopPanelMediator:Mediator
 
     }
 
-    void OnDoBananaUpdateSignal()
+    void OnDoMoneyUpdateSignal()
     {
-        topPannelView.UpdateBanana(gameInfo.allplayers_dic[sPlayerInfo.uid]);
+        int banana = 0;
+        int meat = 0;
+        int branch = 0;
+        foreach (string role_id in gameInfo.role_dic.Keys)
+        {
+            RoleInfo roleInfo=gameInfo.role_dic[role_id];
+            banana += roleInfo.temp_direction_banana;
+            meat += roleInfo.temp_direction_meat;
+            branch += roleInfo.temp_direction_branch;
+        }
+        PlayerInfo playerInfo = gameInfo.allplayers_dic[sPlayerInfo.uid];
+        banana += playerInfo.banana;
+        meat += playerInfo.meat;
+        branch += playerInfo.branch;
+        topPannelView.UpdateMoney(banana,meat,branch);
     }
 
     void OnDoGroupGeneUpdateSignal(JsonObject groupJO)
@@ -84,7 +98,7 @@ public class TopPanelMediator:Mediator
 
     void OnDestroy()
     {
-        doMoneyUpdateSignal.RemoveListener(OnDoBananaUpdateSignal);
+        doMoneyUpdateSignal.RemoveListener(OnDoMoneyUpdateSignal);
         doGroupGeneUpdateSignal.RemoveListener(OnDoGroupGeneUpdateSignal);
         actionAnimStartSignal.RemoveListener(OnActionAnimStartSignal);
         actionAnimFinishSignal.RemoveListener(OnActionAnimFinishSignal);

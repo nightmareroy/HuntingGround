@@ -50,15 +50,18 @@ public class TopPanelView:View
     //public Action onSettingsClick;
 
 
-    public void UpdateBanana(PlayerInfo playerInfo)
+    public void UpdateMoney(int banana,int meat,int branch)
     {
-        bananaValueText.text = playerInfo.banana.ToString();
+
+
+
+        bananaValueText.text = banana.ToString();
         //bananaModifyText.text = "("+playerInfo.bananaModify.ToString()+")";
 
-        meatValueText.text = playerInfo.meat.ToString();
+        meatValueText.text = meat.ToString();
         //meatModifyText.text = "(" + playerInfo.meatModify.ToString()+")";
 
-        branchValueText.text = playerInfo.branch.ToString();
+        branchValueText.text = branch.ToString();
         //branchModifyText.text = "(" + playerInfo.branchModify.ToString() + ")";
 
     }

@@ -17,6 +17,7 @@ public class RoleView:View
     //Material defendNodeMat;
     //Material moveNodeMat;
 
+    public Transform faceT;
     public MeshRenderer color;
 
     public Material redMat;
@@ -68,6 +69,7 @@ public class RoleView:View
 
         string[] ids = gameObject.name.Split('_');
         string role_id = ids[1];
+        //Debug.Log(role_id);
         RoleInfo roleInfo=gameInfo.role_dic[role_id];
         
         switch (gameInfo.allplayers_dic[roleInfo.uid].color_index)
@@ -214,8 +216,9 @@ public class RoleView:View
 
     public void SetRoleSize(int weight)
     {
-        float size = (float)weight / 300f;
-        transform.localScale = new Vector3(size, size, size);
+        float size = (float)Math.Pow(weight/6000f, 2f / 3f);//(float)weight / 300f;
+        Debug.Log(size);
+        faceT.localScale = new Vector3(size, size, size);
     }
 
     void OnDestroy()

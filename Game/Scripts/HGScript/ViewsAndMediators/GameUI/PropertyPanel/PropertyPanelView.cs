@@ -43,8 +43,8 @@ public class PropertyPanelView :View
     //public Text courage;
     public Text old;
 
-    public Text attack;
-    public Text defence;
+    //public Text attack;
+    //public Text defence;
     public Text move;
     public Text weight;
     public Text basal_metabolism;
@@ -73,7 +73,7 @@ public class PropertyPanelView :View
     public Transform buildingPanelT;
     public Text building_name;
     public Text building_level;
-    public Text building_dstance;
+    //public Text building_dstance;
 
 
 
@@ -143,13 +143,13 @@ public class PropertyPanelView :View
         fat.text = roleInfo.fat.ToString();
         inteligent.text = roleInfo.inteligent.ToString();
         //amino_acid.text = roleInfo.amino_acid.ToString();
-        breath.text = roleInfo.breath.ToString();
-        digest.text = roleInfo.digest+"%";
+        breath.text = roleInfo.lipase.ToString();
+        digest.text = (float)roleInfo.digest/10f+"%";
         //courage.text = roleInfo.courage.ToString();
         old.text = roleInfo.old.ToString();
 
-        attack.text = roleInfo.attack.ToString();
-        defence.text = roleInfo.defence.ToString();
+        //attack.text = roleInfo.attack.ToString();
+        //defence.text = roleInfo.defence.ToString();
         move.text = roleInfo.max_move.ToString();
         weight.text = roleInfo.weight.ToString();
         basal_metabolism.text = roleInfo.basal_metabolism.ToString();
@@ -327,7 +327,7 @@ public class PropertyPanelView :View
 
             building_name.text = dBuilding.name;
             building_level.text = buildingInfo.level.ToString();
-            building_dstance.text = buildingInfo.distance_from_home.ToString();
+            //building_dstance.text = buildingInfo.distance_from_home.ToString();
 //            if (buildingInfo.building_direction_did != 0)
 //            {
 //                building_current_direction.text = dBuilding.name;

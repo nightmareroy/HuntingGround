@@ -26,7 +26,7 @@ public class AllPlayerListPanelMediator : Mediator
 
     public override void OnRegister()
     {
-        allPlayerListPanelView.UpdatePlayers();
+        allPlayerListPanelView.UpdatePlayers(gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO);
         //Debug.Log(gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO.ToString());
         allPlayerListPanelView.UpdateWeights(gameInfo.allplayers_dic[sPlayerInfo.uid].weight_dicJO);
         updateDirectionTurnSignal.AddListener(OnUpdateDirectionTurnSignal);

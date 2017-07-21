@@ -12,6 +12,9 @@ public class AllPlayerListPanelView : View
     [Inject]
     public GameInfo gameInfo{ get; set;}
 
+    [Inject]
+    public ColorService colorService { get; set; }
+
 //    [Inject]
 //    public 
 
@@ -20,12 +23,15 @@ public class AllPlayerListPanelView : View
         
     }
 
-    public void UpdatePlayers()
+    public void UpdatePlayers(JsonObject weight_dic)
     {
-        foreach (int player_id in gameInfo.allplayers_dic.Keys)
+        foreach (string key in weight_dic.Keys)
         {
+            int player_id = int.Parse(key);
             PlayerInfo playerInfo = gameInfo.allplayers_dic[player_id];
             GameObject playerItemObj = GameObject.Instantiate(playerItemTpl.gameObject as Object) as GameObject;
+
+            playerItemObj.GetComponent<Image>().color = colorService.getColor(gameInfo.allplayers_dic[player_id].color_index);
 
             playerItemObj.name = playerInfo.uid.ToString();
             playerItemObj.transform.FindChild("Name").GetComponent<Text>().text=playerInfo.name;

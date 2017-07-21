@@ -32,6 +32,12 @@ public class FoodPanelMediator:Mediator
     [Inject]
     public ActionAnimStartSignal actionAnimStartSignal { get; set; }
 
+    [Inject]
+    public DoMoneyUpdateSignal doMoneyUpdateSignal { get; set; }
+
+    [Inject]
+    public DGameDataCollection dGameDataCollection { get; set; }
+
     RoleInfo roleInfo;
 
     public override void OnRegister()
@@ -61,19 +67,27 @@ public class FoodPanelMediator:Mediator
 
         //updateRoleDirectionSignal.Dispatch(role_id);
 
-        List<int> paramList=new List<int>();
-        paramList.Add(food_id);
-        JsonObject form = new JsonObject();
-        form.Add("direction_did", 8);
-        form.Add("direction_param", paramList);
-        form.Add("role_id", roleInfo.role_id);
-        netService.Request(NetService.SubTurn, form, (msg) =>
-        {
-            //findFreeRoleSignal.Dispatch();
-        });
+        //List<int> paramList=new List<int>();
+        //paramList.Add(food_id);
+        //JsonObject form = new JsonObject();
+        //form.Add("direction_did", 8);
+        //form.Add("direction_param", paramList);
+        //form.Add("role_id", roleInfo.role_id);
+        //netService.Request(NetService.SubTurn, form, (msg) =>
+        //{
+        //    //findFreeRoleSignal.Dispatch();
+        //});
         //mapNodeSelectSignal.Dispatch(null);
-        roleInfo.direction_did = 15;
+
+        DFood dFood = dGameDataCollection.dFoodCollection.dFoodDic[food_id];
+
+        gameInfo.role_dic[role_id].temp_direction_banana = -dFood.banana;
+        gameInfo.role_dic[role_id].temp_direction_meat = -dFood.meat;
+        doMoneyUpdateSignal.Dispatch();
+
+        roleInfo.direction_did = 8;
         roleInfo.direction_param.Clear();
+        roleInfo.direction_param.Add(food_id);
         updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
 
         findFreeRoleSignal.Dispatch();

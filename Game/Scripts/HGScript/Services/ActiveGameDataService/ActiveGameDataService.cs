@@ -165,7 +165,6 @@ public class ActiveGameDataService
             if (dDirection.meat.Count > 0)
             {
                 int meat_id = gameInfo.map_info.meat[roleInfo.pos_id] / 100;
-
                 if (!dDirection.meat.Contains(meat_id))
                 {
                     continue;

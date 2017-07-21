@@ -24,7 +24,7 @@ public class RoleInfo
     public int fat { get; set;}
     //public int amino_acid{ get; set;}
     public int inteligent { get; set; }
-    public int breath { get; set;}
+    //public int breath { get; set;}
     public int digest { get; set;}
     //public int courage { get; set;}
     public int far_sight { get; set;}
@@ -47,14 +47,14 @@ public class RoleInfo
     {
         get { return muscle+fat; }
     }
-    public int attack
-    {
-        get { return muscle; }
-    }
-    public int defence
-    {
-        get { return (int)Math.Round((float)weight/2f); }
-    }
+    //public int attack
+    //{
+    //    get { return muscle; }
+    //}
+    //public int defence
+    //{
+    //    get { return (int)Math.Round((float)weight/2f); }
+    //}
 
     //public int blood_sugar_max
     //{
@@ -100,13 +100,18 @@ public class RoleInfo
         get
         {
 //            return (int)Math.Pow(2,speed_lv);
-            return 3f*(0.5f+health*0.5f)*(float)muscle/(float)weight;
+            return 4f*(0.0f+health*1f)*(float)muscle/(float)weight;
         }
     }
 
-    public float basal_metabolism
+    public int basal_metabolism
     {
-        get { return (float)Math.Round((float)muscle*0.03f+(float)fat*0.01f); }
+        get { return (int)Math.Round((float)muscle*0.09f+(float)fat*0.03f); }
+    }
+
+    public int lipase
+    {
+        get { return (int)Math.Round(basal_metabolism * (2 - health)); }
     }
 
     public int now_grow_state
@@ -132,6 +137,10 @@ public class RoleInfo
     public List<int> skill_id_list;
 
     public List<int> cook_skill_id_list;
+
+    public int temp_direction_banana = 0;
+    public int temp_direction_meat = 0;
+    public int temp_direction_branch = 0;
 
 //    public bool retreating;
 //    public int fighting_last_turn;
@@ -162,7 +171,7 @@ public class RoleInfo
         fat = int.Parse(jsonobj["fat"].ToString());
         inteligent = int.Parse(jsonobj["inteligent"].ToString());
         //amino_acid = int.Parse(jsonobj["amino_acid"].ToString());
-        breath = int.Parse(jsonobj["breath"].ToString());
+        //breath = int.Parse(jsonobj["breath"].ToString());
         digest = int.Parse(jsonobj["digest"].ToString());
 
         old = int.Parse(jsonobj["old"].ToString());

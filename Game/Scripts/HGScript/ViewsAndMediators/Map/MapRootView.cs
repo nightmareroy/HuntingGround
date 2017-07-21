@@ -202,7 +202,7 @@ public class MapRootView : MapNavHexa,IView {
         }
 
         //整个terrain的宽度（地形必须是正方形的，方便设置高度分辨率）
-        terrainWidth=(mapVerticalSize + 6f) * vert;
+        terrainWidth=(mapVerticalSize + 10f) * vert;
 
         mainTerrainData.heightmapResolution = 512;
 
@@ -471,8 +471,24 @@ public class MapRootView : MapNavHexa,IView {
             Vector3 delta = thisHit - startHit;
             if (isDraggingCam)
             {
+                //Debug.Log(gameAndUICamerasRoot.transform.localPosition);
                 gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x - delta.x, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z - delta.z);
-
+                if (gameAndUICamerasRoot.transform.localPosition.x < -10f)
+                {
+                    gameAndUICamerasRoot.transform.position = new Vector3(-10f, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z);
+                }
+                if (gameAndUICamerasRoot.transform.localPosition.x > 10f)
+                {
+                    gameAndUICamerasRoot.transform.position = new Vector3(10f, gameAndUICamerasRoot.transform.position.y, gameAndUICamerasRoot.transform.position.z);
+                }
+                if (gameAndUICamerasRoot.transform.localPosition.z < -10f)
+                {
+                    gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x, gameAndUICamerasRoot.transform.position.y, -10f);
+                }
+                if (gameAndUICamerasRoot.transform.localPosition.z > 10f)
+                {
+                    gameAndUICamerasRoot.transform.position = new Vector3(gameAndUICamerasRoot.transform.position.x, gameAndUICamerasRoot.transform.position.y, 10f);
+                }
             }
         }
     }

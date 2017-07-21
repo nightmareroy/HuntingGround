@@ -75,7 +75,7 @@ public class BroadcastSubActionCommand:Command
         List<DoRoleActionAnimSignal.Param> fatParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> inteligentParamList = new List<DoRoleActionAnimSignal.Param>();
         //List<DoRoleActionAnimSignal.Param> amino_acidParamList = new List<DoRoleActionAnimSignal.Param>();
-        List<DoRoleActionAnimSignal.Param> breathParamList = new List<DoRoleActionAnimSignal.Param>();
+        //List<DoRoleActionAnimSignal.Param> breathParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> digestParamList = new List<DoRoleActionAnimSignal.Param>();
         //List<DoRoleActionAnimSignal.Param> courageParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> lifeParamList = new List<DoRoleActionAnimSignal.Param>();
@@ -167,16 +167,16 @@ public class BroadcastSubActionCommand:Command
             //}
 
 
-            int breath = int.Parse(roleJO["breath"].ToString());
-            roleInfo.breath += breath;
-            if (breath != 0)
-            {
-                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                doRoleActionAnimSignalParam.role_id = role_id;
-                doRoleActionAnimSignalParam.type = 13;
-                doRoleActionAnimSignalParam.value = breath;
-                breathParamList.Add(doRoleActionAnimSignalParam);
-            }
+            //int breath = int.Parse(roleJO["breath"].ToString());
+            //roleInfo.breath += breath;
+            //if (breath != 0)
+            //{
+            //    doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            //    doRoleActionAnimSignalParam.role_id = role_id;
+            //    doRoleActionAnimSignalParam.type = 13;
+            //    doRoleActionAnimSignalParam.value = breath;
+            //    breathParamList.Add(doRoleActionAnimSignalParam);
+            //}
 
             int digest = int.Parse(roleJO["digest"].ToString());
             roleInfo.digest += digest;
@@ -321,11 +321,11 @@ public class BroadcastSubActionCommand:Command
         //    doRoleActionAnimSignal.Dispatch(param);
         //}
         //yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in breathParamList)
-        {
-            doRoleActionAnimSignal.Dispatch(param);
-        }
-        yield return new WaitForSeconds(food_step_time);
+        //foreach (DoRoleActionAnimSignal.Param param in breathParamList)
+        //{
+        //    doRoleActionAnimSignal.Dispatch(param);
+        //}
+        //yield return new WaitForSeconds(food_step_time);
         foreach (DoRoleActionAnimSignal.Param param in digestParamList)
         {
             doRoleActionAnimSignal.Dispatch(param);

@@ -194,6 +194,7 @@ public class RoleMediator:Mediator
 
     void OnUpdateRoleFaceSignal()
     {
+        //Debug.Log(role_id);
         RoleInfo roleInfo = gameInfo.role_dic[role_id];
         roleView.SetRoleSize(roleInfo.weight);
     }

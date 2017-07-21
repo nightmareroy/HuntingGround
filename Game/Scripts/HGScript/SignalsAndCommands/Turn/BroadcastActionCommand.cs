@@ -81,7 +81,7 @@ public class BroadcastActionCommand:Command
 
     //回合动画时间
     float step_time=0.5f;
-    float food_step_time = 0.2f;
+    float food_step_time = 0.4f;
 
 
     public override void Execute()
@@ -134,7 +134,7 @@ public class BroadcastActionCommand:Command
     {
         actionAnimStartSignal.Dispatch();
 
-        
+        Debug.Log(111);
 
 
 
@@ -226,7 +226,7 @@ public class BroadcastActionCommand:Command
                     List<DoRoleActionAnimSignal.Param> fatParamList = new List<DoRoleActionAnimSignal.Param>();
                     List<DoRoleActionAnimSignal.Param> inteligentParamList = new List<DoRoleActionAnimSignal.Param>();
                     //List<DoRoleActionAnimSignal.Param> amino_acidParamList = new List<DoRoleActionAnimSignal.Param>();
-                    List<DoRoleActionAnimSignal.Param> breathParamList = new List<DoRoleActionAnimSignal.Param>();
+                    //List<DoRoleActionAnimSignal.Param> breathParamList = new List<DoRoleActionAnimSignal.Param>();
                     List<DoRoleActionAnimSignal.Param> digestParamList = new List<DoRoleActionAnimSignal.Param>();
                     //List<DoRoleActionAnimSignal.Param> courageParamList = new List<DoRoleActionAnimSignal.Param>();
                     List<DoRoleActionAnimSignal.Param> lifeParamList = new List<DoRoleActionAnimSignal.Param>();
@@ -318,16 +318,16 @@ public class BroadcastActionCommand:Command
                         //}
 
 
-                        int breath = int.Parse(roleJO["breath"].ToString());
-                        roleInfo.breath += breath;
-                        if (breath != 0)
-                        {
-                            doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                            doRoleActionAnimSignalParam.role_id = role_id;
-                            doRoleActionAnimSignalParam.type = 13;
-                            doRoleActionAnimSignalParam.value = breath;
-                            breathParamList.Add(doRoleActionAnimSignalParam);
-                        }
+                        //int breath = int.Parse(roleJO["breath"].ToString());
+                        //roleInfo.breath += breath;
+                        //if (breath != 0)
+                        //{
+                        //    doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                        //    doRoleActionAnimSignalParam.role_id = role_id;
+                        //    doRoleActionAnimSignalParam.type = 13;
+                        //    doRoleActionAnimSignalParam.value = breath;
+                        //    breathParamList.Add(doRoleActionAnimSignalParam);
+                        //}
 
                         int digest = int.Parse(roleJO["digest"].ToString());
                         roleInfo.digest += digest;
@@ -470,11 +470,11 @@ public class BroadcastActionCommand:Command
                     //    doRoleActionAnimSignal.Dispatch(param);
                     //}
                     //yield return new WaitForSeconds(food_step_time);
-                    foreach (DoRoleActionAnimSignal.Param param in breathParamList)
-                    {
-                        doRoleActionAnimSignal.Dispatch(param);
-                    }
-                    yield return new WaitForSeconds(food_step_time);
+                    //foreach (DoRoleActionAnimSignal.Param param in breathParamList)
+                    //{
+                    //    doRoleActionAnimSignal.Dispatch(param);
+                    //}
+                    //yield return new WaitForSeconds(food_step_time);
                     foreach (DoRoleActionAnimSignal.Param param in digestParamList)
                     {
                         doRoleActionAnimSignal.Dispatch(param);
@@ -540,15 +540,23 @@ public class BroadcastActionCommand:Command
                 case 10:
                     JsonObject moneyJS = stepJS["money"] as JsonObject;
 
-                    int banana_add = int.Parse(moneyJS["banana"].ToString());
-                    int meat_add = int.Parse(moneyJS["meat"].ToString());
-                    int branch_add = int.Parse(moneyJS["branch"].ToString());
+                    int banana_new = int.Parse(moneyJS["banana"].ToString());
+                    int meat_new = int.Parse(moneyJS["meat"].ToString());
+                    int branch_new = int.Parse(moneyJS["branch"].ToString());
 
                     JsonObject groupJO = moneyJS["group"] as JsonObject;
 
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].banana += banana_add;
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].meat += meat_add;
-                    gameInfo.allplayers_dic[sPlayerInfo.uid].branch += branch_add;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].banana = banana_new;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].meat = meat_new;
+                    gameInfo.allplayers_dic[sPlayerInfo.uid].branch = branch_new;
+                    foreach (string role_id in gameInfo.role_dic.Keys)
+                    {
+                        RoleInfo roleInfo = gameInfo.role_dic[role_id];
+                        roleInfo.temp_direction_banana = 0;
+                        roleInfo.temp_direction_meat = 0;
+                        roleInfo.temp_direction_branch = 0;
+
+                    }
 
                     doGroupGeneUpdateSignal.Dispatch(groupJO);
                     doMoneyUpdateSignal.Dispatch();
@@ -677,6 +685,7 @@ public class BroadcastActionCommand:Command
 
         foreach (string building_id in addBuildingsJS.Keys)
         {
+            //Debug.Log(addBuildingsJS[building_id].ToString());
             BuildingInfo buildingInfo = SimpleJson.SimpleJson.DeserializeObject<BuildingInfo>(addBuildingsJS[building_id].ToString());
             gameInfo.building_dic.Add(buildingInfo.building_id, buildingInfo);
 

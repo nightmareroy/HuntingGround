@@ -48,6 +48,9 @@ public class PropertyPanelMediator : Mediator
     [Inject]
     public FlowUpTipSignal flowUpTipSignal { get; set; }
 
+    [Inject]
+    public DoMoneyUpdateSignal doMoneyUpdateSignal { get; set; }
+
 
     RoleInfo currentSelectedRole;
     BuildingInfo currentSelectedBuilding;
@@ -121,72 +124,91 @@ public class PropertyPanelMediator : Mediator
         PlayerInfo playerInfo = gameInfo.allplayers_dic[currentSelectedRole.uid];
         //Debug.Log(direction_did);
         DDirection dDirection=dGameDataCollection.dDirectionCollection.dDirectionDic[direction_did];
+
+
+        
+
+
         if (direction_did == 8)//料理
         {
             openFoodPanelSignal.Dispatch(currentSelectedRole.role_id);
         }
-        else if (direction_did==1)//移动
+        else
         {
-            MapNavNode node = mainContext.mapRootMediator.mapRootView.NodeAt<MapNavNode>(currentSelectedRole.pos_id);
-            findNodeSignal.Dispatch(node, true);
-        }
-        
-        else 
-        {
-            //异常处理
-            if (dDirection.direction_did == 11)//哺育
-            {
-                if (currentSelectedRole.now_grow_state == 0)
-                {
-                    flowUpTipSignal.Dispatch(new FlowUpTipSignal.Param("幼年期猩猩不可繁育"));
-                    return;
-                }
-                if (currentSelectedRole.health < 0.8)
-                {
-                    flowUpTipSignal.Dispatch(new FlowUpTipSignal.Param("猩猩的健康度不能小于80%"));
-                    return;
-                }
-            }
-            if (dDirection.direction_did == 9)//搭窝
-            {
+            currentSelectedRole.temp_direction_banana = 0;
+            currentSelectedRole.temp_direction_meat = 0;
+            currentSelectedRole.temp_direction_branch = 0;
+            doMoneyUpdateSignal.Dispatch();
 
-                DBuilding dBuilding = dGameDataCollection.dBuildingCollection.dBuildingDic[1];//树窝
-                if (playerInfo.branch < dBuilding.cost_value * (playerInfo.builing_home_count + 1))
-                {
-                    flowUpTipSignal.Dispatch(new FlowUpTipSignal.Param("需要树枝：" + dBuilding.cost_value * (playerInfo.builing_home_count + 1)));
-                    return;
-                }
+            if (direction_did == 1)//移动
+            {
+                MapNavNode node = mainContext.mapRootMediator.mapRootView.NodeAt<MapNavNode>(currentSelectedRole.pos_id);
+                findNodeSignal.Dispatch(node, true);
             }
 
-            gameInfo.role_dic[currentSelectedRole.role_id].direction_did = direction_did;
-            gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
-            
-            //mapNodeSelectSignal.Dispatch(null);
-            //Debug.Log(currentSelectedRole.role_id);
-            updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
+            else
+            {
+                //异常处理
+                if (dDirection.direction_did == 9)//搭窝
+                {
 
-            //if (dDirection.delay == 0)//即时指令
-            //{
-                
+                    DBuilding dBuilding = dGameDataCollection.dBuildingCollection.dBuildingDic[1];//树窝
+                    int cost = dBuilding.cost_value * (playerInfo.builing_home_count + 1);
+                    if (playerInfo.branch < cost)
+                    {
+                        flowUpTipSignal.Dispatch(new FlowUpTipSignal.Param("需要树枝：" + dBuilding.cost_value * (playerInfo.builing_home_count + 1)));
+                        return;
+                    }
+                    else
+                    {
+                        currentSelectedRole.temp_direction_branch -= cost;
+                        doMoneyUpdateSignal.Dispatch();
+                    }
+                }
+                if (dDirection.direction_did == 11)//哺育
+                {
+                    if (currentSelectedRole.now_grow_state == 0)
+                    {
+                        flowUpTipSignal.Dispatch(new FlowUpTipSignal.Param("幼年期猩猩不可繁育"));
+                        return;
+                    }
+                    if (currentSelectedRole.health < 0.8)
+                    {
+                        flowUpTipSignal.Dispatch(new FlowUpTipSignal.Param("猩猩的健康度不能小于80%"));
+                        return;
+                    }
+                }
 
-            //    JsonObject form = new JsonObject();
-            //    form.Add("direction_did", gameInfo.role_dic[currentSelectedRole.role_id].direction_did);
-            //    form.Add("direction_param", gameInfo.role_dic[currentSelectedRole.role_id].direction_param);
-            //    form.Add("role_id", currentSelectedRole.role_id);
-            //    netService.Request(NetService.SubTurn, form, (msg) =>
-            //    {
 
-            //    });
-            //}
-            
-            
+                gameInfo.role_dic[currentSelectedRole.role_id].direction_did = direction_did;
+                gameInfo.role_dic[currentSelectedRole.role_id].direction_param.Clear();
 
-            
+                //mapNodeSelectSignal.Dispatch(null);
+                //Debug.Log(currentSelectedRole.role_id);
+                updateRoleDirectionSignal.Dispatch(currentSelectedRole.role_id);
 
-            findFreeRoleSignal.Dispatch();
+                //if (dDirection.delay == 0)//即时指令
+                //{
 
+
+                //    JsonObject form = new JsonObject();
+                //    form.Add("direction_did", gameInfo.role_dic[currentSelectedRole.role_id].direction_did);
+                //    form.Add("direction_param", gameInfo.role_dic[currentSelectedRole.role_id].direction_param);
+                //    form.Add("role_id", currentSelectedRole.role_id);
+                //    netService.Request(NetService.SubTurn, form, (msg) =>
+                //    {
+
+                //    });
+                //}
+
+
+
+
+
+                findFreeRoleSignal.Dispatch();
+
+            }
         }
-
         
         
     }

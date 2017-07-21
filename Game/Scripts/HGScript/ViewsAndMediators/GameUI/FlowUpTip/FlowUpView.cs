@@ -62,59 +62,59 @@ public class FlowUpView:MonoBehaviour
                 break;
             case FlowUpTipSignal.Type.blood_max:
                 textName.text = "血糖上限";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.muscle:
                 textName.text = "肌肉";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.fat:
                 textName.text = "脂肪";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.inteligent:
                 textName.text = "智商";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.amino_acid:
                 textName.text = "氨基酸";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.breath:
                 textName.text = "肺活量";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.digest:
                 textName.text = "肠胃";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.courage:
                 textName.text = "勇气";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.life:
                 textName.text = "衰老";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 break;
             case FlowUpTipSignal.Type.skill:
                 textName.text = "战斗技能";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 text.text = dGameDataCollection.dSkillCollection.dSkillDic[param.value].name;
                 break;
             case FlowUpTipSignal.Type.cook_skill:
                 textName.text = "料理技能";
-                textName.color = Color.red;
-                text.color = Color.red;
+                textName.color = Color.white;
+                text.color = Color.white;
                 text.text=dGameDataCollection.dCookSkillCollection.dCookSkillDic[param.value].name;
                 break;
 
@@ -144,6 +144,7 @@ public class FlowUpView:MonoBehaviour
     public void DestroyItself()
     {
         //Destroy(gameObject);
+        //Debug.Log("DestroyItself");
         
         resourceService.Despawn("flowuptip/FlowUpTip",gameObject);
     }

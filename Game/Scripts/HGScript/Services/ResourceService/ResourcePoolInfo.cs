@@ -31,10 +31,12 @@ public class ResourcePoolInfo{
         ResourcePool.Add("role/2", new ResourcePoolInfo("role/2/chimpanzee", 20));
         ResourcePool.Add("role/3", new ResourcePoolInfo("role/2/chimpanzee", 20));
         ResourcePool.Add("role/4", new ResourcePoolInfo("role/2/chimpanzee", 20));
+        ResourcePool.Add("role/7", new ResourcePoolInfo("role/7/bear", 20));
 
         //building
         ResourcePool.Add("building/1", new ResourcePoolInfo("building/1/home", 20));
         ResourcePool.Add("building/3", new ResourcePoolInfo("building/3/monkey", 30));
+        ResourcePool.Add("building/4", new ResourcePoolInfo("building/4/bear_home", 30));
 
         //roleui
         ResourcePool.Add("roleui/roleui",new ResourcePoolInfo("roleui/roleui",15));
