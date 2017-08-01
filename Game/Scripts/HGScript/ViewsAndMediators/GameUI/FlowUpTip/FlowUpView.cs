@@ -117,19 +117,28 @@ public class FlowUpView:MonoBehaviour
                 text.color = Color.white;
                 text.text=dGameDataCollection.dCookSkillCollection.dCookSkillDic[param.value].name;
                 break;
-
-            case FlowUpTipSignal.Type.banana:
-                textName.text = "水果";
-                textName.color = Color.yellow;
-                text.color = Color.yellow;
-                break;
             case FlowUpTipSignal.Type.meat:
                 textName.text = "生肉";
                 textName.color = Color.yellow;
                 text.color = Color.yellow;
                 break;
-            case FlowUpTipSignal.Type.branch:
-                textName.text = "树枝";
+            case FlowUpTipSignal.Type.banana:
+                textName.text = "香蕉";
+                textName.color = Color.yellow;
+                text.color = Color.yellow;
+                break;
+            case FlowUpTipSignal.Type.ant:
+                textName.text = "白蚁";
+                textName.color = Color.yellow;
+                text.color = Color.yellow;
+                break;
+            case FlowUpTipSignal.Type.egg:
+                textName.text = "鸟蛋";
+                textName.color = Color.yellow;
+                text.color = Color.yellow;
+                break;
+            case FlowUpTipSignal.Type.honey:
+                textName.text = "蜂蜜";
                 textName.color = Color.yellow;
                 text.color = Color.yellow;
                 break;

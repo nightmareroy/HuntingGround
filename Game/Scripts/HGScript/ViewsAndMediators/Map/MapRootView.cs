@@ -26,7 +26,8 @@ public class MapRootView : MapNavHexa,IView {
     public Material grassMat;
     public Material forestMat;
 
-    public Material corpseMat;
+    public Material meatMat;
+    public Material bananaMat;
     public Material eggMat;
     public Material honeyMat;
     public Material termiteMat;
@@ -271,6 +272,8 @@ public class MapRootView : MapNavHexa,IView {
     {
         int center_x = pos_id % mapHorizontalSize;
 
+        RoleInfo roleInfo = activeGameDataService.GetRoleInMap(pos_id);
+
 //        int[][][] sightSystem = sightSys[center_x & 1];
         List<int> list = new List<int>();
         list.Add(pos_id);
@@ -286,7 +289,7 @@ public class MapRootView : MapNavHexa,IView {
 //        }
 
 
-        List<MapNavNode> l= NodesAround<MapNavNode>(NodeAt<MapNavNode>(pos_id),move,NodeCostCallback);
+        List<MapNavNode> l= NodesAround<MapNavNode>(NodeAt<MapNavNode>(pos_id),move,NodeCostCallback,roleInfo);
         foreach (MapNavNode n in l)
         {
             list.Add(n.idx);
@@ -917,9 +920,13 @@ public class MapRootView : MapNavHexa,IView {
                     break;
                 case 2:
                     meatT.gameObject.SetActive(true);
-                    meatT.GetComponent<MeshRenderer>().material = corpseMat;
+                    meatT.GetComponent<MeshRenderer>().material = meatMat;
                     break;
                 case 3:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = bananaMat;
+                    break;
+                case 4:
                     meatT.gameObject.SetActive(true);
                     meatT.GetComponent<MeshRenderer>().material = termiteMat;
                     break;
@@ -1013,9 +1020,13 @@ public class MapRootView : MapNavHexa,IView {
                     break;
                 case 2:
                     meatT.gameObject.SetActive(true);
-                    meatT.GetComponent<MeshRenderer>().material = corpseMat;
+                    meatT.GetComponent<MeshRenderer>().material = meatMat;
                     break;
                 case 3:
+                    meatT.gameObject.SetActive(true);
+                    meatT.GetComponent<MeshRenderer>().material = bananaMat;
+                    break;
+                case 4:
                     meatT.gameObject.SetActive(true);
                     meatT.GetComponent<MeshRenderer>().material = termiteMat;
                     break;
@@ -1185,6 +1196,8 @@ public class MapRootView : MapNavHexa,IView {
         }
     }
 
+    public delegate float NewNodeCostCallback(MapNavNode fromNode, MapNavNode toNode, RoleInfo roleInfo);
+
     /// <summary> Returns a list of nodes that represents a path from one node to another. An A* algorithm is used
     /// to calculate the path. Return an empty list on error or if the destination node can't be reached. </summary>
     /// <param name="start">    The node where the path should start. </param>
@@ -1194,8 +1207,8 @@ public class MapRootView : MapNavHexa,IView {
     ///                         for normal nodes and 2+ for higher cost to move onto the node and 0
     ///                         if the node can't be moved onto; for example when the node is occupied. </param>
     /// <returns> Return an empty list on error or if the destination node can't be reached. </returns>
-    public override List<T> Path<T>(MapNavNode start, MapNavNode end, NodeCostCallback callback)
-    //        where T : MapNavNode
+    public List<T> Path<T>(MapNavNode start, MapNavNode end, NewNodeCostCallback callback, RoleInfo roleInfo)
+            where T : MapNavNode
     {
         if (start == null || end == null) return new List<T>(0);
         if (start.idx == end.idx) return new List<T>(0);
@@ -1215,7 +1228,7 @@ public class MapRootView : MapNavHexa,IView {
             {
                 if (callback != null)
                 {
-                    next_cost = callback(start, end);
+                    next_cost = callback(start, end, roleInfo);
                     if (next_cost >= 1) path.Add((T)end);
                 }
                 return path;
@@ -1240,7 +1253,7 @@ public class MapRootView : MapNavHexa,IView {
                 for (int i = 0; i < neighbors.Count; i++)
                 {
                     next = neighbors[i];
-                    if (callback != null) next_cost = callback(grid[current], grid[next]);
+                    if (callback != null) next_cost = callback(grid[current], grid[next], roleInfo);
                     if (next_cost <= 0.0f) continue;
 
                     new_cost = cost_so_far[current] + next_cost;
@@ -1288,10 +1301,10 @@ public class MapRootView : MapNavHexa,IView {
     /// Return a value higher than one (like 2 or 3) if moving to the target node would cost more and potentially
     /// exclude the node from the returned list of nodes (when cost to reach it would be bigger than "radius"). </param>
     /// <returns> Returns a list of nodes that can be used with grid[]. Returns empty list (not null) if there was an error. </returns>
-    public virtual List<T> NodesAround<T>(MapNavNode node, float radius, NodeCostCallback callback)
+    public virtual List<T> NodesAround<T>(MapNavNode node, float radius, NewNodeCostCallback callback,RoleInfo roleInfo)
         where T : MapNavNode
     {
-        List<int> accepted = NodeIndicesAround(node.idx, radius, callback);
+        List<int> accepted = NodeIndicesAround(node.idx, radius, callback,roleInfo);
         if (accepted.Count > 0)
         {
             List<T> res = new List<T>();
@@ -1313,11 +1326,11 @@ public class MapRootView : MapNavHexa,IView {
     /// Return a value higher than one (like 2 or 3) if moving to the target node would cost more and potentially
     /// exclude the node from the returned list of nodes (when cost to reach it would be bigger than "radius"). </param>
     /// <returns> Returns a list of node indices that can be used with grid[]. Returns empty list (not null) if there was an error. </returns>
-    public virtual List<int> NodeIndicesAround(int nodeIdx, float radius, NodeCostCallback callback)
+    public virtual List<int> NodeIndicesAround(int nodeIdx, float radius, NewNodeCostCallback callback,RoleInfo roleInfo)
     {
         List<int> accepted = new List<int>(); // accepted nodes
         Dictionary<int, float> costs = new Dictionary<int, float>(); // <idx, cost> - used to track which nodes have been checked
-        CheckNodesRecursive(nodeIdx, radius, callback, -1, 0, ref accepted, ref costs);
+        CheckNodesRecursive(nodeIdx, radius, callback, -1, 0, ref accepted, ref costs,roleInfo);
         return accepted;
     }
 
@@ -1325,7 +1338,7 @@ public class MapRootView : MapNavHexa,IView {
 
 
     /// <summary> This is a Helper for NodeIndicesAround(int idx, int radius, bool includeCentralNode, ValidationCallback callback) </summary>
-    protected virtual void CheckNodesRecursive(int idx, float radius, NodeCostCallback callback, int cameFrom, float currDepth, ref List<int> accepted, ref Dictionary<int, float> costs)
+    protected virtual void CheckNodesRecursive(int idx, float radius, NewNodeCostCallback callback, int cameFrom, float currDepth, ref List<int> accepted, ref Dictionary<int, float> costs,RoleInfo roleInfo)
     {
         List<int> ids = _neighbours(idx);
         for (int i = 0; i < ids.Count; i++)
@@ -1335,7 +1348,7 @@ public class MapRootView : MapNavHexa,IView {
             if (cameFrom == ids[i]) continue;
 
             // get cost to move to the node
-            float res = callback == null ? 1f : callback(grid[idx], grid[ids[i]]);
+            float res = callback == null ? 1f : callback(grid[idx], grid[ids[i]],roleInfo);
 
             // can move to node?
             if (res <= 0.0f) continue;
@@ -1366,17 +1379,26 @@ public class MapRootView : MapNavHexa,IView {
             costs[ids[i]] = d;
 
             // and test its neighbours for possible valid nodes
-            CheckNodesRecursive(ids[i], radius, callback, idx, d, ref accepted, ref costs);
+            CheckNodesRecursive(ids[i], radius, callback, idx, d, ref accepted, ref costs,roleInfo);
         }
     }
 
 
-    public float NodeCostCallback(MapNavNode fromNode, MapNavNode toNode)
+    public float NodeCostCallback(MapNavNode fromNode, MapNavNode toNode, RoleInfo roleInfo)
     {
         Dictionary<int, DLandform> dLandformDic = dGameDataCollection.dLandformCollection.dLandformDic;
 
+
+        //RoleInfo roleInfo = activeGameDataService.GetRoleInMap(fromNode.idx);
+
         float fromCost=dLandformDic[gameInfo.map_info.landform[fromNode.idx]].cost;
         float toCost = dLandformDic[gameInfo.map_info.landform[toNode.idx]].cost;
+        //Debug.Log(roleInfo.name);
+        //Debug.Log(roleInfo.Get_advanced_property().climb);
+        if (dLandformDic[gameInfo.map_info.landform[toNode.idx]].landform_id == 2 && roleInfo.Get_advanced_property().climb > 0)
+        {
+            toCost = 1f;
+        }
 
         //if(toCost==0f)
         //{

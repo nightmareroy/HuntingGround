@@ -226,12 +226,14 @@ public class FoodPanelView:View
                         }
                     });
 
+                    //营养
                     item.transform.FindChild("Foreground/Nutritions/carbohydrate/value").GetComponent<Text>().text = dFood.carbohydrate.ToString();
                     item.transform.FindChild("Foreground/Nutritions/fat/value").GetComponent<Text>().text = dFood.fat.ToString();
                     item.transform.FindChild("Foreground/Nutritions/protein/value").GetComponent<Text>().text = dFood.protein.ToString();
                     item.transform.FindChild("Foreground/Nutritions/minerals/value").GetComponent<Text>().text = dFood.minerals.ToString();
                     item.transform.FindChild("Foreground/Nutritions/dietary_fiber/value").GetComponent<Text>().text = dFood.dietary_fiber.ToString();
                     item.transform.FindChild("Foreground/Nutritions/vitamin/value").GetComponent<Text>().text = dFood.vitamin.ToString();
+                    Debug.Log(dFood.inspire_skill_type);
                     switch(dFood.inspire_skill_type)
                     {
                         case 0:
@@ -253,6 +255,21 @@ public class FoodPanelView:View
                     string red="#ff0000ff";
 
                     PlayerInfo playerInfo = gameInfo.allplayers_dic[sPlayerInfo.uid];
+
+
+
+                    //食材需求
+                    string meat_color;
+                    if (playerInfo.meat >= dFood.meat)
+                    {
+                        meat_color = green;
+                    }
+                    else
+                    {
+                        meat_color = red;
+                    }
+                    item.transform.FindChild("Foreground/Need/meat/value").GetComponent<Text>().text = "<color=" + meat_color + ">" + playerInfo.meat + "</color>/" + dFood.meat.ToString();
+
                     string banana_color;
                     if (playerInfo.banana >= dFood.banana)
                     {
@@ -264,16 +281,39 @@ public class FoodPanelView:View
                     }
                     item.transform.FindChild("Foreground/Need/banana/value").GetComponent<Text>().text = "<color=" + banana_color +">"+ playerInfo.banana + "</color>/" + dFood.banana.ToString();
 
-                    string meat_color;
-                    if (playerInfo.meat >= dFood.meat)
+                    string ant_color;
+                    if (playerInfo.ant >= dFood.ant)
                     {
-                        meat_color = green;
+                        ant_color = green;
                     }
                     else
                     {
-                        meat_color = red;
+                        ant_color = red;
                     }
-                    item.transform.FindChild("Foreground/Need/meat/value").GetComponent<Text>().text = "<color=" + meat_color + ">" + playerInfo.meat + "</color>/" + dFood.meat.ToString();
+                    item.transform.FindChild("Foreground/Need/ant/value").GetComponent<Text>().text = "<color=" + ant_color + ">" + playerInfo.ant + "</color>/" + dFood.ant.ToString();
+
+                    string egg_color;
+                    if (playerInfo.egg >= dFood.egg)
+                    {
+                        egg_color = green;
+                    }
+                    else
+                    {
+                        egg_color = red;
+                    }
+                    item.transform.FindChild("Foreground/Need/egg/value").GetComponent<Text>().text = "<color=" + egg_color + ">" + playerInfo.egg + "</color>/" + dFood.egg.ToString();
+
+                    string honey_color;
+                    if (playerInfo.honey >= dFood.honey)
+                    {
+                        honey_color = green;
+                    }
+                    else
+                    {
+                        honey_color = red;
+                    }
+                    item.transform.FindChild("Foreground/Need/honey/value").GetComponent<Text>().text = "<color=" + honey_color + ">" + playerInfo.honey + "</color>/" + dFood.honey.ToString();
+
                     //if (dFood.cook_skills_need.Count == 0)
                     //{
                     //    item.transform.FindChild("Foreground/Need/cook_skill").gameObject.SetActive(false);
@@ -301,7 +341,11 @@ public class FoodPanelView:View
 
 
 
-                    if (gameInfo.allplayers_dic[sPlayerInfo.uid].banana < dFood.banana || gameInfo.allplayers_dic[sPlayerInfo.uid].meat < dFood.meat)
+                    if (gameInfo.allplayers_dic[sPlayerInfo.uid].meat < dFood.meat||
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].banana < dFood.banana ||
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].ant < dFood.ant ||
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].egg < dFood.egg ||
+                        gameInfo.allplayers_dic[sPlayerInfo.uid].honey < dFood.honey)
                     {
                         item.GetComponent<Toggle>().interactable = false;
                     }

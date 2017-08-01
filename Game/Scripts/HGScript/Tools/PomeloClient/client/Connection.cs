@@ -343,7 +343,8 @@ namespace Pomelo.DotNetClient
             jsonObj.Add("reason", reason);
             Message msg = new Message(MessageType.MSG_SYS, DisconnectEvent, jsonObj);
             __receiveMsgQueue.Enqueue(msg);
-
+            if (_protocol != null) _protocol.close();
+            _socket.Shutdown(SocketShutdown.Both);
             _socket.Close();
             _socket = null;
         }

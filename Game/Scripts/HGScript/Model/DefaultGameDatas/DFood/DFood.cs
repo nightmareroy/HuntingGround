@@ -9,8 +9,11 @@ public class DFood
     public int food_id;
     public string name;
     public List<int> cook_skills_need;
-    public int banana;
     public int meat;
+    public int banana;
+    public int ant;
+    public int egg;
+    public int honey;
     public int protein;
     public int minerals;
     public int fat;

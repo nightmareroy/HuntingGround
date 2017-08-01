@@ -24,9 +24,11 @@ public class FlowUpTipSignal:Signal<FlowUpTipSignal.Param>
         life,
         skill,
         cook_skill,
-        banana,
         meat,
-        branch
+        banana,
+        ant,
+        egg,
+        honey
     }
 
     public class Param

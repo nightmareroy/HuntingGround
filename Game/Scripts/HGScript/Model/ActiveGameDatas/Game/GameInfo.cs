@@ -9,6 +9,9 @@ public class GameInfo//  : ISerializationCallbackReceiver
 {
     [Inject]
     public SPlayerInfo sPlayerInfo { get; set;}
+
+    [Inject]
+    public DGameDataCollection dGameDataCollection { get; set; }
     //List<int> _keys = new List<int>();
     //List<int> _values = new List<int>();
 
@@ -87,7 +90,7 @@ public class GameInfo//  : ISerializationCallbackReceiver
         foreach (string key in rolesObj.Keys)
         {
             RoleInfo roleInfo = new RoleInfo();
-            roleInfo.InitFromJson(rolesObj[key] as JsonObject,this);
+            roleInfo.InitFromJson(rolesObj[key] as JsonObject,this,dGameDataCollection);
             role_dic.Add(roleInfo.role_id, roleInfo);
         }
 

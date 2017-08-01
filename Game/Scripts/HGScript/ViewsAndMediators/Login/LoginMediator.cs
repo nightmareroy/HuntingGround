@@ -143,7 +143,6 @@ public class LoginMediator : Mediator {
         friendGameStartPushSignal.AddListener(OnFriendGameStartPushSignal);
         refuseInviteFightPushSignal.AddListener(OnRefuseInviteFightPushSignal);
 
-        Debug.Log(netService.GetConnectStatus());
         if (netService.GetConnectStatus() == Pomelo.DotNetClient.NetWorkState.DISCONNECTED)
         {
             netService.GetServerConnector((connector) =>

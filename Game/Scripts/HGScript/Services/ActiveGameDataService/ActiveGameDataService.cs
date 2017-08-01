@@ -67,7 +67,7 @@ public class ActiveGameDataService
         return resultList;
     }
 
-    public List<int> GetAllDirectionDids(string role_id)
+    public List<List<int>> GetAllDirectionDids(string role_id)
     {
 //        List<int> allSkillList = GetAllSkillIds(roleid);
 //        List<int> resultList = new List<int>();
@@ -92,9 +92,9 @@ public class ActiveGameDataService
 //        return resultList;
         RoleInfo roleInfo=gameInfo.role_dic[role_id];
 
-        List<int> resultList = new List<int>();
-        //List<int> delayDirectionDids = new List<int>();
-        //List<int> noDelayDirectionDids = new List<int>();
+        List<List<int>> resultList = new List<List<int>>();
+        List<int> delayDirectionDids = new List<int>();
+        List<int> noDelayDirectionDids = new List<int>();
 
         foreach (int direction_did in dGameDataCollection.dDirectionCollection.dDirectionDic.Keys)
         {
@@ -195,15 +195,15 @@ public class ActiveGameDataService
             //Debug.Log(dDirection.delay);
 
 
-            //if (dDirection.delay == 0)
-            //{
-            //    noDelayDirectionDids.Add(dDirection.direction_did);
-            //}
-            //else if (dDirection.delay == 1)
-            //{
-            //    delayDirectionDids.Add(dDirection.direction_did);
-            //}
-            resultList.Add(dDirection.direction_did);
+            if (dDirection.delay == 0)
+            {
+                noDelayDirectionDids.Add(dDirection.direction_did);
+            }
+            else if (dDirection.delay == 1)
+            {
+                delayDirectionDids.Add(dDirection.direction_did);
+            }
+            //resultList.Add(dDirection.direction_did);
 
         }
 
@@ -217,11 +217,43 @@ public class ActiveGameDataService
 //        {
 //            return new List<int>();
 //        }
-        
-        //resultList.Add(noDelayDirectionDids);
-        //resultList.Add(delayDirectionDids);
+
+        resultList.Add(noDelayDirectionDids);
+        resultList.Add(delayDirectionDids);
         return resultList;
 
+    }
+
+    public struct OnShowMoney
+    {
+        public int banana;
+        public int meat;
+        public int ant;
+        public int egg;
+        public int honey;
+        //public int branch;
+    }
+
+    public OnShowMoney GetOnShowMoney()
+    {
+        OnShowMoney onShowMoney = new OnShowMoney();
+        //foreach (string role_id in gameInfo.role_dic.Keys)
+        //{
+        //    RoleInfo roleInfo = gameInfo.role_dic[role_id];
+        //    onShowMoney.banana += roleInfo.temp_direction_banana;
+        //    onShowMoney.meat += roleInfo.temp_direction_meat;
+        //    onShowMoney.ant += roleInfo.temp_direction_ant;
+        //    onShowMoney.egg += roleInfo.temp_direction_egg;
+        //    onShowMoney.honey += roleInfo.temp_direction_honey;
+        //}
+        PlayerInfo playerInfo = gameInfo.allplayers_dic[sPlayerInfo.uid];
+        onShowMoney.banana += playerInfo.banana;
+        onShowMoney.meat += playerInfo.meat;
+        onShowMoney.ant += playerInfo.ant;
+        onShowMoney.egg += playerInfo.egg;
+        onShowMoney.honey += playerInfo.honey;
+
+        return onShowMoney;
     }
 
 

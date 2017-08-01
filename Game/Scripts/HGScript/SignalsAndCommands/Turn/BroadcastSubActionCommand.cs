@@ -50,6 +50,9 @@ public class BroadcastSubActionCommand:Command
     [Inject]
     public FindFreeRoleSignal findFreeRoleSignal { get; set; }
 
+    [Inject]
+    public DGameDataCollection dGameDataCollection { get;set; }
+
 
     //回合动画时间
     float food_step_time = 0.2f;
@@ -81,9 +84,12 @@ public class BroadcastSubActionCommand:Command
         List<DoRoleActionAnimSignal.Param> lifeParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> skillParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> directionParamList = new List<DoRoleActionAnimSignal.Param>();
-        List<DoRoleActionAnimSignal.Param> bananaParamList = new List<DoRoleActionAnimSignal.Param>();
         List<DoRoleActionAnimSignal.Param> meatParamList = new List<DoRoleActionAnimSignal.Param>();
-        List<DoRoleActionAnimSignal.Param> branchParamList = new List<DoRoleActionAnimSignal.Param>();
+        List<DoRoleActionAnimSignal.Param> bananaParamList = new List<DoRoleActionAnimSignal.Param>();
+        List<DoRoleActionAnimSignal.Param> antParamList = new List<DoRoleActionAnimSignal.Param>();
+        List<DoRoleActionAnimSignal.Param> eggParamList = new List<DoRoleActionAnimSignal.Param>();
+        List<DoRoleActionAnimSignal.Param> honeyParamList = new List<DoRoleActionAnimSignal.Param>();
+        //List<DoRoleActionAnimSignal.Param> branchParamList = new List<DoRoleActionAnimSignal.Param>();
 
         foreach (string role_id in propertyDicJO.Keys)
         {
@@ -253,38 +259,71 @@ public class BroadcastSubActionCommand:Command
             }
             //updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
 
-            int banana = int.Parse(roleJO["banana"].ToString());
-            gameInfo.allplayers_dic[sPlayerInfo.uid].banana += banana;
-            if (banana != 0)
-            {
-                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
-                doRoleActionAnimSignalParam.role_id = role_id;
-                doRoleActionAnimSignalParam.type = 20;
-                doRoleActionAnimSignalParam.value = banana;
-                bananaParamList.Add(doRoleActionAnimSignalParam);
-            }
-
             int meat = int.Parse(roleJO["meat"].ToString());
             gameInfo.allplayers_dic[sPlayerInfo.uid].meat += meat;
             if (meat != 0)
             {
                 doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                 doRoleActionAnimSignalParam.role_id = role_id;
-                doRoleActionAnimSignalParam.type = 21;
+                doRoleActionAnimSignalParam.type = 20;
                 doRoleActionAnimSignalParam.value = meat;
                 meatParamList.Add(doRoleActionAnimSignalParam);
             }
 
-            int branch = int.Parse(roleJO["branch"].ToString());
-            gameInfo.allplayers_dic[sPlayerInfo.uid].branch += branch;
-            if (branch != 0)
+            int banana = int.Parse(roleJO["banana"].ToString());
+            gameInfo.allplayers_dic[sPlayerInfo.uid].banana += banana;
+            if (banana != 0)
+            {
+                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                doRoleActionAnimSignalParam.role_id = role_id;
+                doRoleActionAnimSignalParam.type = 21;
+                doRoleActionAnimSignalParam.value = banana;
+                bananaParamList.Add(doRoleActionAnimSignalParam);
+            }
+
+            int ant = int.Parse(roleJO["ant"].ToString());
+            gameInfo.allplayers_dic[sPlayerInfo.uid].ant += ant;
+            if (ant != 0)
             {
                 doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
                 doRoleActionAnimSignalParam.role_id = role_id;
                 doRoleActionAnimSignalParam.type = 22;
-                doRoleActionAnimSignalParam.value = branch;
-                branchParamList.Add(doRoleActionAnimSignalParam);
+                doRoleActionAnimSignalParam.value = ant;
+                antParamList.Add(doRoleActionAnimSignalParam);
             }
+
+            int egg = int.Parse(roleJO["egg"].ToString());
+            gameInfo.allplayers_dic[sPlayerInfo.uid].egg += egg;
+            if (meat != 0)
+            {
+                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                doRoleActionAnimSignalParam.role_id = role_id;
+                doRoleActionAnimSignalParam.type = 23;
+                doRoleActionAnimSignalParam.value = egg;
+                eggParamList.Add(doRoleActionAnimSignalParam);
+            }
+
+            int honey = int.Parse(roleJO["honey"].ToString());
+            gameInfo.allplayers_dic[sPlayerInfo.uid].honey += honey;
+            if (honey != 0)
+            {
+                doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+                doRoleActionAnimSignalParam.role_id = role_id;
+                doRoleActionAnimSignalParam.type = 24;
+                doRoleActionAnimSignalParam.value = honey;
+                honeyParamList.Add(doRoleActionAnimSignalParam);
+            }
+
+            //int branch = int.Parse(roleJO["branch"].ToString());
+            //gameInfo.allplayers_dic[sPlayerInfo.uid].branch += branch;
+            //if (branch != 0)
+            //{
+            //    doRoleActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
+            //    doRoleActionAnimSignalParam.role_id = role_id;
+            //    doRoleActionAnimSignalParam.type = 22;
+            //    doRoleActionAnimSignalParam.value = branch;
+            //    branchParamList.Add(doRoleActionAnimSignalParam);
+            //}
 
         }
 
@@ -346,25 +385,36 @@ public class BroadcastSubActionCommand:Command
             doRoleActionAnimSignal.Dispatch(param);
         }
         yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in bananaParamList)
-        {
-            doRoleActionAnimSignal.Dispatch(param);
-        }
-        yield return new WaitForSeconds(food_step_time);
         foreach (DoRoleActionAnimSignal.Param param in meatParamList)
         {
             doRoleActionAnimSignal.Dispatch(param);
         }
         yield return new WaitForSeconds(food_step_time);
-        foreach (DoRoleActionAnimSignal.Param param in branchParamList)
+        foreach (DoRoleActionAnimSignal.Param param in bananaParamList)
         {
             doRoleActionAnimSignal.Dispatch(param);
         }
+        yield return new WaitForSeconds(food_step_time);
+        foreach (DoRoleActionAnimSignal.Param param in antParamList)
+        {
+            doRoleActionAnimSignal.Dispatch(param);
+        }
+        yield return new WaitForSeconds(food_step_time);
+        foreach (DoRoleActionAnimSignal.Param param in eggParamList)
+        {
+            doRoleActionAnimSignal.Dispatch(param);
+        }
+        yield return new WaitForSeconds(food_step_time);
+        foreach (DoRoleActionAnimSignal.Param param in honeyParamList)
+        {
+            doRoleActionAnimSignal.Dispatch(param);
+        }
+        yield return new WaitForSeconds(food_step_time);
         //yield return new WaitForSeconds(food_step_time);
-        //foreach (DoRoleActionAnimSignal.Param param in directionParamList)
-        //{
-        //    updateRoleDirectionSignal.Dispatch(param.role_id);
-        //}
+        foreach (DoRoleActionAnimSignal.Param param in directionParamList)
+        {
+            updateRoleDirectionSignal.Dispatch(param.role_id);
+        }
 
         gameInfo.allplayers_dic[sPlayerInfo.uid].builing_home_count = builing_home_count;
 
@@ -400,7 +450,7 @@ public class BroadcastSubActionCommand:Command
         foreach (string role_id in addRolesJS.Keys)
         {
             RoleInfo roleInfo = new RoleInfo();
-            roleInfo.InitFromJson(addRolesJS[role_id] as JsonObject, gameInfo);
+            roleInfo.InitFromJson(addRolesJS[role_id] as JsonObject, gameInfo,dGameDataCollection);
 
             gameInfo.role_dic.Add(role_id, roleInfo);
 

@@ -127,7 +127,7 @@ namespace Pomelo.DotNetClient
 
             //Set compress data
             JsonObject sys = (JsonObject)msg["sys"];
-
+            //Debug.Log(sys.ToString());
             JsonObject dict = new JsonObject();
             if (sys.ContainsKey("dict")) dict = (JsonObject)sys["dict"];
 

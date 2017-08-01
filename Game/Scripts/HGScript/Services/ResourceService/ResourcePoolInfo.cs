@@ -31,6 +31,7 @@ public class ResourcePoolInfo{
         ResourcePool.Add("role/2", new ResourcePoolInfo("role/2/chimpanzee", 20));
         ResourcePool.Add("role/3", new ResourcePoolInfo("role/2/chimpanzee", 20));
         ResourcePool.Add("role/4", new ResourcePoolInfo("role/2/chimpanzee", 20));
+        ResourcePool.Add("role/5", new ResourcePoolInfo("role/2/chimpanzee", 20));
         ResourcePool.Add("role/7", new ResourcePoolInfo("role/7/bear", 20));
 
         //building

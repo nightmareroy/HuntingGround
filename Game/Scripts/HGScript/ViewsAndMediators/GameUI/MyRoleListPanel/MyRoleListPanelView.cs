@@ -318,14 +318,17 @@ public class MyRoleListPanelView : View
             case 2:
                 directionIcon.sprite = iconSpritesService.GetView().defend;
                 break;
-            case 3:
-                directionIcon.sprite = iconSpritesService.GetView().banana;
+            //case 3:
+            //    directionIcon.sprite = iconSpritesService.GetView().banana;
+            //    break;
+            case 8:
+                directionIcon.sprite = iconSpritesService.GetView().food;
                 break;
             case 11:
                 directionIcon.sprite = iconSpritesService.GetView().fead;
                 break;
             case 13:
-                directionIcon.sprite = iconSpritesService.GetView().meat;
+                directionIcon.sprite = iconSpritesService.GetView().banana;
                 break;
             case 15:
                 directionIcon.sprite = iconSpritesService.GetView().fin;

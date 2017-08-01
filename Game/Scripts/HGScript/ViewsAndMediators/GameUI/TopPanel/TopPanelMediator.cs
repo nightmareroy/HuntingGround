@@ -32,6 +32,9 @@ public class TopPanelMediator:Mediator
     [Inject]
     public DGameDataCollection dGameDataCollection  { get; set; }
 
+    [Inject]
+    public ActiveGameDataService activeGameDataService { get; set; }
+
     public override void OnRegister()
     {
         doMoneyUpdateSignal.AddListener(OnDoMoneyUpdateSignal);
@@ -57,21 +60,8 @@ public class TopPanelMediator:Mediator
 
     void OnDoMoneyUpdateSignal()
     {
-        int banana = 0;
-        int meat = 0;
-        int branch = 0;
-        foreach (string role_id in gameInfo.role_dic.Keys)
-        {
-            RoleInfo roleInfo=gameInfo.role_dic[role_id];
-            banana += roleInfo.temp_direction_banana;
-            meat += roleInfo.temp_direction_meat;
-            branch += roleInfo.temp_direction_branch;
-        }
-        PlayerInfo playerInfo = gameInfo.allplayers_dic[sPlayerInfo.uid];
-        banana += playerInfo.banana;
-        meat += playerInfo.meat;
-        branch += playerInfo.branch;
-        topPannelView.UpdateMoney(banana,meat,branch);
+        ActiveGameDataService.OnShowMoney onShowMoney = activeGameDataService.GetOnShowMoney();
+        topPannelView.UpdateMoney(onShowMoney.meat, onShowMoney.banana,onShowMoney.ant, onShowMoney.egg,onShowMoney.honey);
     }
 
     void OnDoGroupGeneUpdateSignal(JsonObject groupJO)

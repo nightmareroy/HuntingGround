@@ -9,8 +9,8 @@ public class DSkill
 {
     public int skill_id;
     public string name;
-    public string property;
-    public int param;
+    public List<string> keys;
+    public List<int> values;
     public string desc;
 
 //    public DSkill(int skillid,string name,string property,int param,string desc)

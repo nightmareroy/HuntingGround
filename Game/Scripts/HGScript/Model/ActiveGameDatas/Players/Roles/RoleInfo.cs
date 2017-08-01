@@ -8,7 +8,8 @@ public class RoleInfo
 {
 //    [Inject]
 //    public GameInfo gameInfo{ get; set;}
-    public GameInfo gameInfo;
+    GameInfo gameInfo;
+    DGameDataCollection dGameDataCollection;
 
 
     public string role_id;
@@ -17,20 +18,72 @@ public class RoleInfo
     public int pos_id;
 
     //base
-    public string name{get;set;}
-    public int blood_sugar { get; set;}
-    public int blood_sugar_max { get; set; }
-    public int muscle { get; set;}
-    public int fat { get; set;}
+    public string name;
+    public int blood_sugar;
+    //public int blood_sugar_max { get; set; }
+    public int muscle;
+    public int fat;
     //public int amino_acid{ get; set;}
-    public int inteligent { get; set; }
+    public int inteligent;
     //public int breath { get; set;}
-    public int digest { get; set;}
+    public int digest;
     //public int courage { get; set;}
-    public int far_sight { get; set;}
-    public int see_through { get; set;}
+    public int old;
 
-    public int old { get; set; }
+    public int infight;
+    public int get_branch;
+    public int get_stone;
+
+    public List<int> skill_id_list;
+    public List<int> cook_skill_id_list;
+
+
+    public class Advanced_property
+    {
+        public int far_sight;
+        public int see_through;
+        public int climb;
+        public int hurl;
+        public int due;
+        public int taunt;
+        public int fast_move;
+        public int careful;
+        public int cooking;
+        public int pachydermia;
+        public int coward;
+        public int ferocious;
+        public int hide;
+        public int brandish;
+        public int agressive;
+        public int sweet_meat;
+    }
+    //Advanced_property advanced_property = new Advanced_property();
+
+    public Advanced_property Get_advanced_property()
+    {
+        Advanced_property temp_advanced_property = new Advanced_property();
+
+        foreach (int skill_id in skill_id_list)
+        {
+            DSkill dSkill = dGameDataCollection.dSkillCollection.dSkillDic[skill_id];
+            for(int i=0;i<dSkill.keys.Count;i++)
+            {
+                string key=dSkill.keys[i];
+                int add_value=dSkill.values[i];
+
+                System.Reflection.FieldInfo fieldInfo=temp_advanced_property.GetType().GetField(key);
+                int src_value = (int)fieldInfo.GetValue(temp_advanced_property);
+                fieldInfo.SetValue(temp_advanced_property, src_value + add_value);
+            }
+        }
+
+        return temp_advanced_property;
+    }
+
+    //skill
+    
+    
+
 
     //public int younger_left { get; set; }
     //public int growup_left { get; set; }
@@ -56,10 +109,10 @@ public class RoleInfo
     //    get { return (int)Math.Round((float)weight/2f); }
     //}
 
-    //public int blood_sugar_max
-    //{
-    //    get { return (int)Math.Round((float)weight / 2f); }
-    //}
+    public int blood_sugar_max
+    {
+        get { return (int)Math.Round((float)weight / 3f); }
+    }
 //    public int attack
 //    {
 //        get { return muscle*(1+health); }
@@ -100,13 +153,18 @@ public class RoleInfo
         get
         {
 //            return (int)Math.Pow(2,speed_lv);
-            return 4f*(0.0f+health*1f)*(float)muscle/(float)weight;
+            float move= 4f*(0.0f+health*1f)*(float)muscle/(float)weight;
+            if (Get_advanced_property().fast_move > 0)
+            {
+                move += 0.5f;
+            }
+            return move;
         }
     }
 
     public int basal_metabolism
     {
-        get { return (int)Math.Round((float)muscle*0.09f+(float)fat*0.03f); }
+        get { return (int)Math.Round((float)muscle*0.03f+(float)fat*0.01f); }
     }
 
     public int lipase
@@ -134,13 +192,14 @@ public class RoleInfo
     }
 
 
-    public List<int> skill_id_list;
+    
 
-    public List<int> cook_skill_id_list;
-
-    public int temp_direction_banana = 0;
-    public int temp_direction_meat = 0;
-    public int temp_direction_branch = 0;
+    //public int temp_direction_banana = 0;
+    //public int temp_direction_meat = 0;
+    //public int temp_direction_ant = 0;
+    //public int temp_direction_egg = 0;
+    //public int temp_direction_honey = 0;
+    //public int temp_direction_branch = 0;
 
 //    public bool retreating;
 //    public int fighting_last_turn;
@@ -154,9 +213,10 @@ public class RoleInfo
     public RoleInfo()
     {
     }
-    public void InitFromJson(JsonObject jsonobj,GameInfo gameInfo)
+    public void InitFromJson(JsonObject jsonobj, GameInfo gameInfo, DGameDataCollection dGameDataCollection)
     {
         this.gameInfo = gameInfo;
+        this.dGameDataCollection = dGameDataCollection;
 
 
         role_id = jsonobj["role_id"].ToString();
@@ -166,7 +226,7 @@ public class RoleInfo
 
         name = jsonobj["name"].ToString();
         blood_sugar = int.Parse(jsonobj["blood_sugar"].ToString());
-        blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
+        //blood_sugar_max = int.Parse(jsonobj["blood_sugar_max"].ToString());
         muscle = int.Parse(jsonobj["muscle"].ToString());
         fat = int.Parse(jsonobj["fat"].ToString());
         inteligent = int.Parse(jsonobj["inteligent"].ToString());
@@ -182,8 +242,23 @@ public class RoleInfo
         //growup_left_max = int.Parse(jsonobj["growup_left_max"].ToString());
 
         //courage = int.Parse(jsonobj["courage"].ToString());
-        far_sight = int.Parse(jsonobj["far_sight"].ToString());
-        see_through = int.Parse(jsonobj["see_through"].ToString());
+        //advanced_property.far_sight = int.Parse(jsonobj["far_sight"].ToString());
+        //advanced_property.see_through = int.Parse(jsonobj["see_through"].ToString());
+
+        //advanced_property.climb = int.Parse(jsonobj["climb"].ToString());
+        //advanced_property.hurl = int.Parse(jsonobj["hurl"].ToString());
+        //advanced_property.due = int.Parse(jsonobj["due"].ToString());
+        //advanced_property.taunt = int.Parse(jsonobj["taunt"].ToString());
+        //advanced_property.fast_move = int.Parse(jsonobj["fast_move"].ToString());
+        //advanced_property.careful = int.Parse(jsonobj["careful"].ToString());
+        //advanced_property.cooking = int.Parse(jsonobj["cooking"].ToString());
+        //advanced_property.pachydermia = int.Parse(jsonobj["pachydermia"].ToString());
+        //advanced_property.coward = int.Parse(jsonobj["coward"].ToString());
+        //advanced_property.ferocious = int.Parse(jsonobj["ferocious"].ToString());
+        //advanced_property.hide = int.Parse(jsonobj["hide"].ToString());
+        //advanced_property.brandish = int.Parse(jsonobj["brandish"].ToString());
+        //advanced_property.agressive = int.Parse(jsonobj["agressive"].ToString());
+        //advanced_property.sweet_meat = int.Parse(jsonobj["sweet_meat"].ToString());
 //        alive = int.Parse(jsonobj["alive"].ToString());
         skill_id_list=SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["skill_id_list"].ToString());
         cook_skill_id_list = SimpleJson.SimpleJson.DeserializeObject<List<int>>(jsonobj["cook_skill_id_list"].ToString());

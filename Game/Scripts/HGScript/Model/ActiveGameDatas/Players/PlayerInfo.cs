@@ -17,7 +17,10 @@ public class PlayerInfo
     //public Dictionary<int, Dictionary<int, DSkill>> roledid_skill_dic = new Dictionary<int, Dictionary<int, DSkill>>();
     public int banana=0;
     public int meat = 0;
-    public int branch=0;
+    public int ant = 0;
+    public int egg = 0;
+    public int honey = 0;
+    //public int branch=0;
 
     //public int bananaModify = 0;
     //public int meatModify = 0;

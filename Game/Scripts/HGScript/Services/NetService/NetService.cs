@@ -56,7 +56,7 @@ public class NetService
     //
     public const string gateRoute = "gate.gateHandler.queryEntry";
 
-    public const string connectRoute = "connector.entryHandler.connect";
+    //public const string connectRoute = "connector.entryHandler.connect";
 
 
     //account,password
@@ -149,6 +149,7 @@ public class NetService
         pclient.on(Connection.DisconnectEvent, msg =>
         {
             //Debug.logger.Log("Network error, reason: " + msg.jsonObj["reason"]);
+            pclient.Disconnect();
             sPlayerInfo.ClearSPlayer();
             loadingSignal.Dispatch(false);
             msgBoxSignal.Dispatch("网络已断开，请重新登录", () => {

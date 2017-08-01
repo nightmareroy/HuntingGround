@@ -290,15 +290,23 @@ public class RoleUIView:View
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
                 case 20:
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.banana, param.value);
-                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
-                    break;
-                case 21:
                     flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.meat, param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
+                case 21:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.banana, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
                 case 22:
-                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.branch, param.value);
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.ant, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 23:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.egg, param.value);
+                    flowUpTipSignal.Dispatch(flowUpTipSignalParam);
+                    break;
+                case 24:
+                    flowUpTipSignalParam = new FlowUpTipSignal.Param(transform, FlowUpTipSignal.Type.honey, param.value);
                     flowUpTipSignal.Dispatch(flowUpTipSignalParam);
                     break;
 
@@ -336,14 +344,17 @@ public class RoleUIView:View
             case 2:
                 directionImg.sprite = iconSpritesService.GetView().defend;
                 break;
-            case 3:
-                directionImg.sprite = iconSpritesService.GetView().banana;
+            //case 3:
+            //    directionImg.sprite = iconSpritesService.GetView().banana;
+            //    break;
+            case 8:
+                directionImg.sprite = iconSpritesService.GetView().food;
                 break;
             case 11:
                 directionImg.sprite = iconSpritesService.GetView().fead;
                 break;
             case 13:
-                directionImg.sprite = iconSpritesService.GetView().meat;
+                directionImg.sprite = iconSpritesService.GetView().banana;
                 break;
             case 15:
                 directionImg.sprite = iconSpritesService.GetView().fin;

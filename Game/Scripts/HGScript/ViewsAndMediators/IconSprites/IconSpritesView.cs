@@ -25,7 +25,7 @@ public class IconSpritesView:MonoBehaviour
     //directions
     public Sprite banana;
     public Sprite meat;
-    public Sprite branch;
+    //public Sprite branch;
     public Sprite defend;
     public Sprite fead;
     public Sprite fin;

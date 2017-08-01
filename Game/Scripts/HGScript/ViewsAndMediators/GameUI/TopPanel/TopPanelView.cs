@@ -17,8 +17,14 @@ public class TopPanelView:View
     public Text meatValueText;
     //public Text meatModifyText;
 
-    public Text branchValueText;
+    //public Text branchValueText;
     //public Text branchModifyText;
+
+    public Text antValueText;
+
+    public Text eggValueText;
+
+    public Text honeyValueText;
 
     public Text currentTurnText;
 
@@ -50,7 +56,7 @@ public class TopPanelView:View
     //public Action onSettingsClick;
 
 
-    public void UpdateMoney(int banana,int meat,int branch)
+    public void UpdateMoney(int meat, int banana, int ant,int egg,int honey)
     {
 
 
@@ -61,8 +67,12 @@ public class TopPanelView:View
         meatValueText.text = meat.ToString();
         //meatModifyText.text = "(" + playerInfo.meatModify.ToString()+")";
 
-        branchValueText.text = branch.ToString();
+        antValueText.text = ant.ToString();
         //branchModifyText.text = "(" + playerInfo.branchModify.ToString() + ")";
+
+        eggValueText.text = egg.ToString();
+
+        honeyValueText.text = honey.ToString();
 
     }
 

@@ -216,8 +216,8 @@ public class RoleView:View
 
     public void SetRoleSize(int weight)
     {
-        float size = (float)Math.Pow(weight/6000f, 2f / 3f);//(float)weight / 300f;
-        Debug.Log(size);
+        float size = (float)Math.Pow(weight/3000f, 2f / 3f);//(float)weight / 300f;
+
         faceT.localScale = new Vector3(size, size, size);
     }
 

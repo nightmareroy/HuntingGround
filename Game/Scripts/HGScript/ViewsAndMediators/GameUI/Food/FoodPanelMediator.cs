@@ -60,35 +60,35 @@ public class FoodPanelMediator:Mediator
 
     void OnConfirm(string role_id,int food_id)
     {
-        //gameInfo.role_dic[role_id].direction_did = 8;//吃料理指令id为8
-        //gameInfo.role_dic[role_id].direction_param.Clear();
-        //gameInfo.role_dic[role_id].direction_param.Add(food_id);
+        gameInfo.role_dic[role_id].direction_did = 8;//吃料理指令id为8
+        gameInfo.role_dic[role_id].direction_param.Clear();
+        gameInfo.role_dic[role_id].direction_param.Add(food_id);
+        mapNodeSelectSignal.Dispatch(null);
+
+        updateRoleDirectionSignal.Dispatch(role_id);
+
+        List<int> paramList = new List<int>();
+        paramList.Add(food_id);
+        JsonObject form = new JsonObject();
+        form.Add("direction_did", 8);
+        form.Add("direction_param", paramList);
+        form.Add("role_id", roleInfo.role_id);
+        netService.Request(NetService.SubTurn, form, (msg) =>
+        {
+            //findFreeRoleSignal.Dispatch();
+        });
         //mapNodeSelectSignal.Dispatch(null);
 
-        //updateRoleDirectionSignal.Dispatch(role_id);
+        //DFood dFood = dGameDataCollection.dFoodCollection.dFoodDic[food_id];
 
-        //List<int> paramList=new List<int>();
-        //paramList.Add(food_id);
-        //JsonObject form = new JsonObject();
-        //form.Add("direction_did", 8);
-        //form.Add("direction_param", paramList);
-        //form.Add("role_id", roleInfo.role_id);
-        //netService.Request(NetService.SubTurn, form, (msg) =>
-        //{
-        //    //findFreeRoleSignal.Dispatch();
-        //});
-        //mapNodeSelectSignal.Dispatch(null);
+        //gameInfo.role_dic[role_id].temp_direction_banana = -dFood.banana;
+        //gameInfo.role_dic[role_id].temp_direction_meat = -dFood.meat;
+        //doMoneyUpdateSignal.Dispatch();
 
-        DFood dFood = dGameDataCollection.dFoodCollection.dFoodDic[food_id];
-
-        gameInfo.role_dic[role_id].temp_direction_banana = -dFood.banana;
-        gameInfo.role_dic[role_id].temp_direction_meat = -dFood.meat;
-        doMoneyUpdateSignal.Dispatch();
-
-        roleInfo.direction_did = 8;
-        roleInfo.direction_param.Clear();
-        roleInfo.direction_param.Add(food_id);
-        updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
+        //roleInfo.direction_did = 8;
+        //roleInfo.direction_param.Clear();
+        //roleInfo.direction_param.Add(food_id);
+        //updateRoleDirectionSignal.Dispatch(roleInfo.role_id);
 
         findFreeRoleSignal.Dispatch();
     }
