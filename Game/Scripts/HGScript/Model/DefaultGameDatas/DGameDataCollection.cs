@@ -34,5 +34,8 @@ public class DGameDataCollection
     public DCookSkillCollection dCookSkillCollection;
     public DFoodCollection dFoodCollection;
 
+    //help
+    public DHelpCollection dHelpCollection;
+
 }
 

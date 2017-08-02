@@ -253,6 +253,8 @@ public class MainContext : MVCSContext {
         mediationBinder.Bind<GameoverView>().To<GameoverMediator>();
 
         mediationBinder.Bind<TalkView>().To<TalkMediator>();
+
+        mediationBinder.Bind<SettingsPanelView>().To<SettingsPanelMediator>();
     }
 
     public override IContext Start()

@@ -438,8 +438,14 @@ public class BroadcastSubActionCommand:Command
         JsonArray deleteBuildingsJS = jo["delete_buildings"] as JsonArray;
         foreach (string role_id in posJS.Keys)
         {
-            int pos_id = int.Parse(posJS[role_id].ToString());
+            JsonObject posJO = posJS[role_id] as JsonObject;
+            int pos_id = int.Parse(posJO["pos_id"].ToString());
+            int direction_did = int.Parse(posJO["direction_did"].ToString());
             gameInfo.role_dic[role_id].pos_id = pos_id;
+            gameInfo.role_dic[role_id].direction_did = direction_did;
+            gameInfo.role_dic[role_id].direction_param.Clear();
+
+            updateRoleDirectionSignal.Dispatch(role_id);
 
             DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
             doActionAnimSignalParam.type = 0;

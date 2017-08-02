@@ -113,10 +113,10 @@ public class RoleInfo
     {
         get { return (int)Math.Round((float)weight / 3f); }
     }
-//    public int attack
-//    {
-//        get { return muscle*(1+health); }
-//    }
+    public int attack
+    {
+        get { return (int)Math.Round((float)muscle * health*0.1f); }
+    }
 //    public int defence
 //    {
 //        get { return fat*(1+health); }

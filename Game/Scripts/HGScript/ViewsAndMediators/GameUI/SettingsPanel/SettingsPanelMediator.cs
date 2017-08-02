@@ -12,6 +12,6 @@ public class SettingsPanelMediator:Mediator
 
     public override void OnRegister()
     {
-        
+        settingsView.Init();
     }
 }

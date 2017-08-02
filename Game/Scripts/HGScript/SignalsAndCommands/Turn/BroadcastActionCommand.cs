@@ -78,6 +78,9 @@ public class BroadcastActionCommand:Command
     [Inject]
     public FindFreeRoleSignal findFreeRoleSignal { get; set; }
 
+    [Inject]
+    public MapNodeSelectSignal mapNodeSelectSignal { get; set; }
+
 
     //回合动画时间
     float step_time=0.5f;
@@ -90,7 +93,7 @@ public class BroadcastActionCommand:Command
         long nexttime = long.Parse(dataJO["nexttime"].ToString());
         gameInfo.nexttime = nexttime;
         updateNextturnTimeSignal.Dispatch();
-
+        mapNodeSelectSignal.Dispatch(null);
         updateDirectionTurnSignal.Dispatch(-1);
         bootstrapView.StartCoroutine(updateDataAndBroadcaseAction(actionListJS));
 
@@ -694,8 +697,14 @@ public class BroadcastActionCommand:Command
 
         foreach (string role_id in posJS.Keys)
         {
-            int pos_id = int.Parse(posJS[role_id].ToString());
+            JsonObject posJO=posJS[role_id] as JsonObject;
+            int pos_id = int.Parse(posJO["pos_id"].ToString());
+            int direction_did = int.Parse(posJO["direction_did"].ToString());
             gameInfo.role_dic[role_id].pos_id = pos_id;
+            gameInfo.role_dic[role_id].direction_did = direction_did;
+            gameInfo.role_dic[role_id].direction_param.Clear();
+
+            updateRoleDirectionSignal.Dispatch(role_id);
 
             DoRoleActionAnimSignal.Param doActionAnimSignalParam = new DoRoleActionAnimSignal.Param();
             doActionAnimSignalParam.type = 0;

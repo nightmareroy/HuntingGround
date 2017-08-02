@@ -31,10 +31,10 @@ public class AllPlayerListPanelView : View
             PlayerInfo playerInfo = gameInfo.allplayers_dic[player_id];
             GameObject playerItemObj = GameObject.Instantiate(playerItemTpl.gameObject as Object) as GameObject;
 
-            playerItemObj.GetComponent<Image>().color = colorService.getColor(gameInfo.allplayers_dic[player_id].color_index);
+            playerItemObj.transform.FindChild("Color").GetComponent<Image>().color = colorService.getColor(gameInfo.allplayers_dic[player_id].color_index);
 
             playerItemObj.name = playerInfo.uid.ToString();
-            playerItemObj.transform.FindChild("Name").GetComponent<Text>().text=playerInfo.name;
+            playerItemObj.transform.FindChild("Color/Name").GetComponent<Text>().text=playerInfo.name;
 
             playerItemObj.transform.SetParent(listT);
             playerItemObj.transform.localScale = Vector3.one;

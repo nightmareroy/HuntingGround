@@ -289,7 +289,7 @@ public class MapRootView : MapNavHexa,IView {
 //        }
 
 
-        List<MapNavNode> l= NodesAround<MapNavNode>(NodeAt<MapNavNode>(pos_id),move,NodeCostCallback,roleInfo);
+        List<MapNavNode> l= NodesAround<MapNavNode>(NodeAt<MapNavNode>(pos_id),move,newNodeCostCallback,roleInfo);
         foreach (MapNavNode n in l)
         {
             list.Add(n.idx);
@@ -1305,6 +1305,7 @@ public class MapRootView : MapNavHexa,IView {
         where T : MapNavNode
     {
         List<int> accepted = NodeIndicesAround(node.idx, radius, callback,roleInfo);
+        
         if (accepted.Count > 0)
         {
             List<T> res = new List<T>();
@@ -1377,14 +1378,14 @@ public class MapRootView : MapNavHexa,IView {
 
             // update the cost to move to this node
             costs[ids[i]] = d;
-
+            
             // and test its neighbours for possible valid nodes
             CheckNodesRecursive(ids[i], radius, callback, idx, d, ref accepted, ref costs,roleInfo);
         }
     }
 
 
-    public float NodeCostCallback(MapNavNode fromNode, MapNavNode toNode, RoleInfo roleInfo)
+    public float newNodeCostCallback(MapNavNode fromNode, MapNavNode toNode, RoleInfo roleInfo)
     {
         Dictionary<int, DLandform> dLandformDic = dGameDataCollection.dLandformCollection.dLandformDic;
 

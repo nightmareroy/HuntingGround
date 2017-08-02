@@ -77,6 +77,10 @@ public class DefaultGameDataUpdateCommand:Command
             dGameDataCollection.dFoodCollection = new DFoodCollection();
             dGameDataCollection.dFoodCollection.InitFromStr(fileIOService.ReadAllText("/DefaultData/Data/DFood.txt"));
 
+            //help
+            dGameDataCollection.dHelpCollection = new DHelpCollection();
+            dGameDataCollection.dHelpCollection.InitFromStr(fileIOService.ReadAllText("/DefaultData/Data/DHelp.txt"));
+
             callback();
         });
 

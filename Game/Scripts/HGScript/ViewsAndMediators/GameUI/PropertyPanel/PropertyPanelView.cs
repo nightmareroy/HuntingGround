@@ -43,7 +43,7 @@ public class PropertyPanelView :View
     //public Text courage;
     public Text old;
 
-    //public Text attack;
+    public Text attack;
     //public Text defence;
     public Text move;
     public Text weight;
@@ -55,6 +55,7 @@ public class PropertyPanelView :View
 
     public Transform roleSkillsRootT;
     public Transform roleSkillItemT;
+    public Transform roleSkillDescT;
 
     public Transform roleCookSkillsRootT;
     public Transform roleCookSkillItemT;
@@ -148,7 +149,7 @@ public class PropertyPanelView :View
         //courage.text = roleInfo.courage.ToString();
         old.text = roleInfo.old.ToString();
 
-        //attack.text = roleInfo.attack.ToString();
+        attack.text = roleInfo.attack.ToString();
         //defence.text = roleInfo.defence.ToString();
         move.text = roleInfo.max_move.ToString();
         weight.text = roleInfo.weight.ToString();
@@ -172,6 +173,8 @@ public class PropertyPanelView :View
         
 
         Tools.ClearChildren(roleSkillsRootT);
+        Text skillDesc = roleSkillDescT.GetComponent<Text>();
+        skillDesc.text = "";
         foreach (int skill_id in roleInfo.skill_id_list)
         {
             DSkill dSkill = dGameDataCollection.dSkillCollection.dSkillDic[skill_id];
@@ -182,14 +185,22 @@ public class PropertyPanelView :View
             skillItem.transform.localPosition = Vector3.zero;
             skillItem.transform.localScale = Vector3.one;
             skillItem.transform.localRotation = Quaternion.identity;
+            skillItem.GetComponent<Toggle>().onValueChanged.AddListener((ison) =>
+            {
+                if (ison)
+                {
+                    skillDesc.text = dSkill.desc;
+                }
+            });
             skillItem.SetActive(true);
 
             Text skillName = skillItem.transform.FindChild("SkillName").GetComponent<Text>();
-            Text skillDesc = skillItem.transform.FindChild("SkillDesc").GetComponent<Text>();
+            //Text skillDesc = skillItem.transform.FindChild("SkillDesc").GetComponent<Text>();
 
             skillName.text = dSkill.name;
-            skillDesc.text = dSkill.desc;
+            //skillDesc.text = dSkill.desc;
         }
+        
 
         Tools.ClearChildren(roleCookSkillsRootT);
         foreach (int cook_skill_id in roleInfo.cook_skill_id_list)
