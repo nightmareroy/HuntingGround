@@ -38,16 +38,16 @@ public class NetService
     public string sessionid;
 
     //服务器ip
-    string host_gate = "192.168.0.100";
-    //string host_gate = "115.159.186.242";
+    //string host_gate = "192.168.0.100";
+    string host_gate = "115.159.186.242";
 
     int port_gate = 3014;
 
     Connection pclient = new Connection();
 
     //default data list
-    public const string defaultDataUrl = "192.168.0.100:8080";
-    //public const string defaultDataUrl = "http://115.159.186.242:8080";
+    //public const string defaultDataUrl = "192.168.0.100:8080";
+    public const string defaultDataUrl = "http://115.159.186.242:8080";
 
     //test
     public const string test = "test/test.php";
